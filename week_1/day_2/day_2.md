@@ -79,3 +79,67 @@ In this example:
 - The return value of the method (the sum of the two numbers) is stored in the variable `result`.
 - Finally, we print the result to the console.
 - Note, the variable data type must match the return type of the method if you are storing the return value.
+
+## Primitive Data Types
+
+A variable is a container for storing data values. This is a key concept in programming, as it allows you to store and manipulate data within your program.
+
+### Syntax for Using Variables in Java
+
+```java
+DataType variableName = value;
+```
+
+In this example:
+
+- `DataType` is the type of data you want to store (e.g., `int`, `double`, `String`).
+- `variableName` is the name you give to the variable.
+- `value` is the initial value assigned to the variable.
+
+Assigning a value to a variable is done using the assignment operator `=`. The value can be a literal value or an expression that evaluates to a value of the specified data type.
+
+When you assign a value to a variable, this is known as **initialization**. You can also change the value of a variable later in your program by reassigning it.
+
+### Primitive Data Types in Java
+
+Java has several primitive data types that are used to store simple values. These data types are built into the language and are not objects.
+
+Note: Java makes an important distinction between primitive data types and reference data types (objects).
+
+- **Primitive Data Types**: These are the basic data types that store simple values directly in memory. They include:
+  - `int`: Used to store integer values (whole numbers).
+  - `double`: Used to store floating-point numbers (decimal values).
+  - `char`: Used to store a single character.
+  - `boolean`: Used to store true or false values.
+- **Reference Data Types**: These are used to store references to objects in memory. They include:
+  - `String`: Used to store a sequence of characters (text).
+  - Arrays: Used to store multiple values of the same type.
+  - Classes: Used to define custom data types.
+
+A key difference between primitive and reference data types is that the memory location associated with a primitive data type variable contains the actual value, while a reference data type variable contains a reference (or pointer) to the memory location where the object is stored.
+
+Java defines a total of eight primitive data types. Of the eight primitive data types, six are numeric data types, one is a character data type, and one is a boolean data type.
+
+To memorize the 8 primitive data types, you can use the saying: "Bitter black coffee sure is for long days."
+
+| Saying | Primitive Data Type | Size (bits)       | Usage             |
+| ------ | ------------------- | ----------------- | ----------------- |
+| Bitter | `boolean`           | 1                 | true/false values |
+| black  | `byte`              | 1 byte (8 bits)   | Small integers    |
+| coffee | `char`              | 2 bytes (16 bits) | Single characters |
+| sure   | `short`             | 2 bytes (16 bits) | Small integers    |
+| is     | `int`               | 4 bytes (32 bits) | Integers          |
+| for    | `float`             | 4 bytes (32 bits) | Floating-point    |
+| long   | `long`              | 8 bytes (64 bits) | Large integers    |
+| days   | `double`            | 8 bytes (64 bits) | Double precision  |
+
+### Real World Application
+
+Primitive data types in Java exist for several reasons:
+
+- **Efficiency**: Primitive data types are designed to be efficient in terms of memory usage and performance. They are stored directly in memory, which allows for faster access and manipulation compared to reference data types.
+- **Simplicity**: Primitive data types provide a simple way to represent basic values such as numbers, characters, and boolean values. They are easy to understand and use, making them suitable for basic programming tasks.
+- **Language Design**: Java was designed to be a statically typed language, meaning that variable types are known at compile time. Primitive data types allow for strict type checking, which helps catch errors early in the development process.
+- **Historical Reasons**: Primitive data types have been part of programming languages for a long time. They provide a foundation for building more complex data structures and algorithms.
+
+Overall, primitive data types in Java serve to provide foundational set of data representation that is efficient, simple, and consistent with the language's design principles. They are essential for performing basic operations and calculations in Java programs.
