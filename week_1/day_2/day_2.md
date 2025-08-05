@@ -143,3 +143,297 @@ Primitive data types in Java exist for several reasons:
 - **Historical Reasons**: Primitive data types have been part of programming languages for a long time. They provide a foundation for building more complex data structures and algorithms.
 
 Overall, primitive data types in Java serve to provide foundational set of data representation that is efficient, simple, and consistent with the language's design principles. They are essential for performing basic operations and calculations in Java programs.
+
+## Working with Basic Operators
+
+### Operators
+
+Operators are special symbols or keywords that perform specific operations on one or more operands (values or variables). They are used to manipulate data and perform calculations in programming.
+
+If we want to make programs that "do something", we are going to need to create instructions that manipulate values and return new ones.
+
+Programming operations can be thought of just like mathematical operations. When programming however, we can almost never assume that a value is known or fixed.
+Instead, we'd have to represent an equation as: `int result = a + b;` where `a` and `b` are variables that can change. The symbols that we to perform operations are called **operators**.
+
+There are several types of operators in Java. We have already seen the assignment operator `=` which assigns a value to a variable.
+
+### Increment and Decrement Operators
+
+Increment and decrement operators are special operators that are used to increase or decrease the value of a variable by 1. They are often used in loops and other iterative processes.
+
+In order to increment or decrement integral values, we can use the common **postfix** operators: `x++` and `x--`, where `x` is a `byte`, `short`, `int`, or `long` variable.
+
+A similar operator is the **prefix** operator, which is written as `++x` or `--x`. The difference is that the prefix operator will change the value before the rest of the expression is evaluated, while the postfix operator will change the value after the rest of the expression is evaluated.
+
+Example:
+
+```java
+int a = 5;
+int b = a++; // b is assigned the value of a (5), then a is incremented to 6
+int c = ++a; // c is assigned the value of a (7), a is incremented before assignment
+System.out.println("a: " + a); // Outputs: a: 7
+System.out.println("b: " + b); // Outputs: b: 5
+System.out.println("c: " + c); // Outputs: c: 7
+```
+
+### Logical Operators
+
+Logical operators are used to combine multiple boolean expressions and return a boolean result.
+
+Logical, or boolean, operators perform operations that return **boolean** results. There are a few logical operators that you should be aware of:
+
+- **&&**: is the logical AND operator - it compares two boolean values and returns true if both values are true.
+- **||**: is the logical OR operator - it compares two boolean values and returns true if at least one of the values is true.
+- **!**: is the logical NOT operator - it negates a boolean value, returning true if the value is false, and false if the value is true.
+
+Example:
+
+```java
+boolean a = true;
+boolean b = false;
+
+if (!(a && b)) {
+    System.out.println("At least one is false");
+}
+```
+
+In this example, we use parentheses to prioritize the evaluation of the `a && b` expression. The `!` operator negates the result, so the condition evaluates to true, and the message is printed.
+
+### Comparison Operators
+
+Comparison operators are used to compare two values and return a boolean result. They are often used in conditional statements and loops.
+
+Here the main comparison operators in Java:
+
+- **==**: checks if two values are equal.
+  - Example: `5 == 5` returns `true`, while `5 == 3` returns `false`.
+- **!=**: checks if two values are not equal.
+  - Example: `5 != 5` returns `false`, while `5 != 3` returns `true`.
+- **>**: checks if the left value is greater than the right value.
+  - Example: `5 > 3` returns `true`, while `5 > 5` returns `false`.
+- **<**: checks if the left value is less than the right value.
+  - Example: `5 < 3` returns `false`, while `5 < 5` returns `false`.
+- **>=**: checks if the left value is greater than or equal to the right value.
+  - Example: `5 >= 5` returns `true`, while `5 >= 3` returns `true`.
+- **<=**: checks if the left value is less than or equal to the right value.
+  - Example: `5 <= 5` returns `true`, while `5 <= 3` returns `false`.
+
+### Ternary Operator
+
+The ternary operator is a shorthand way to write an if-else statement. It takes three operands and is often used to assign a value based on a condition.
+
+The syntax is as follows:
+
+```java
+x = condition ? valueIfTrue : valueIfFalse
+```
+
+If the condition is true, `x` is assigned the value of `valueIfTrue`. If the condition is false, `x` is assigned the value of `valueIfFalse`.
+
+Example:
+
+```java
+boolean skyIsBlue = true;
+boolean twoAndTwoIsFour = true;
+boolean makesSense = (skyIsBlue && twoAndTwoIsFour) ? true : false;
+```
+
+In this example, the condition `(skyIsBlue && twoAndTwoIsFour)` evaluates to true, so `makesSense` is assigned the value of `true`.
+
+### Operator Precedence
+
+Operator precedence determines the order in which operators are evaluated in an expression. Operators with higher precedence are evaluated before operators with lower precedence. (Precedence means "which comes first".)
+
+The operators below are listed in order of precedence, from highest to lowest. operators with higher precedence are evaluated before operators with lower precedence.
+
+When operators of equal precedence appear in the same line of code:
+
+- **Left to Right**: Most operators are evaluated from left to right. For example, in the expression `a - b + c`, the subtraction (`-`) is performed before the addition (`+`).
+- Assignment operators (`=`, `+=`, `-=`) are evaluated from right to left. For example, in the expression `a = b = c`, `b = c` is evaluated first, and then the result is assigned to `a`.
+
+| Operators                                      | Precedence |
+| ---------------------------------------------- | ---------- |
+| `++`, `--` (postfix)                           | Highest    |
+| `++`, `--` (prefix)                            |            |
+| multiplicative: `*`, `/`, `%`                  |            |
+| additive: `+`, `-`                             |            |
+| shift: `<<`, `>>`, `>>>`                       |            |
+| relational: `<`, `>`, `<=`, `>=`, `instanceof` |            |
+| equality: `==`, `!=`                           |            |
+| bitwise AND: `&`                               |            |
+| bitwise XOR: `^`                               |            |
+| bitwise OR: `\|`                               |            |
+| logical AND: `&&`                              |            |
+| logical OR: `\|\|`                             |            |
+| ternary: `? :`                                 |            |
+| assignment: `=`, `+=`, `-=`, `*=`, `/=`, `%=`  | Lowest     |
+
+## Real World Application
+
+Operators are fundamental components of programming languages, including Java, and they serve several important purposes in real-world applications:
+
+- **Data Manipulation**: Operators allow developers to manipulate data and perform calculations. This is essential for tasks such as mathematical computations, data processing, and algorithm implementation.
+- **Control Flow**: Operators are used in conditional statements and loops to control the flow of execution in a program. For example, comparison operators are used in `if` statements to make decisions based on certain conditions.
+- **Expressing Logic**: Logical operators enable developers to express complex logical conditions in a concise manner. This is particularly useful in scenarios where multiple conditions need to be evaluated.
+- **Efficiency**: Operators provide a way to perform operations efficiently. For example, arithmetic operators allow for quick calculations, while bitwise operators enable low-level manipulation of data at the binary level.
+
+Overall, operators are indispensable tools in application development, enabling developers to manipulate data, express logic, control program flow, manipulate strings, improve efficiency, adhere to coding standards, and abstract underlying computational concepts effectively.
+
+## Implementation
+
+### Java Unary Operators
+
+The unary operators in Java are used to perform operations on a single operand. Unary operators are used to perform various operations such as:
+
+- Incrementing or decrementing a value
+- Negating an expression
+- Inverting a boolean value
+- Performing bitwise operations
+
+Example of Unary Operators `++` and `--`:
+
+```java
+public class OperatorExample {
+  public static void main(String[] args) {
+    int x = 10;
+
+    System.out.println("x++:", x++); // Postfix increment: prints 10, then increments x to 11
+    System.out.println("++x:", ++x); // Prefix increment: increments x to 12, then prints 12
+    System.out.println("x--:", x--); // Postfix decrement: prints 12, then decrements x to 11
+    System.out.println("--x:", --x); // Prefix decrement: decrements x to 10, then prints 10
+  }
+}
+```
+
+Example of Unary Operator `!`:
+
+```java
+public class OperatorExample {
+  public static void main(String[] args) {
+    boolean isTrue = true;
+
+    System.out.println("!isTrue:", !isTrue); // Inverts the boolean value, prints false
+  }
+}
+```
+
+### Java Arithmetic Operators
+
+Arithmetic operators in Java are used to perform basic mathematical operations on numeric values. These operators include addition, subtraction, multiplication, division, and modulus.
+Example of Arithmetic Operators:
+
+```java
+public class ArithmeticExample {
+  public static void main(String[] args) {
+    int a = 10;
+    int b = 5;
+
+    System.out.println("Addition (a + b): " + (a + b)); // Outputs: 15
+    System.out.println("Subtraction (a - b): " + (a - b)); // Outputs: 5
+    System.out.println("Multiplication (a * b): " + (a * b)); // Outputs: 50
+    System.out.println("Division (a / b): " + (a / b)); // Outputs: 2
+    System.out.println("Modulus (a % b): " + (a % b)); // Outputs: 0
+  }
+}
+```
+
+### Java `AND` Operator Example: Logical `&&` and Bitwise `&`
+
+The `AND` operator in Java can be used in two contexts: logical `&&` for boolean expressions and bitwise `&` for integer operations.
+
+The logical `&&` operator does not evaluate the second operand if the first operand is false, while the bitwise `&` operator evaluates both operands.
+
+Example of Logical `&&` Operator:
+
+```java
+public class LogicalAndExample {
+  public static void main(String[] args) {
+    int a = 10;
+    int b = 5;
+    int c = 20;
+
+    System.out.println(a < b && b < c); // Outputs: false, because a < b is false
+    System.out.println(a < b & a < c); // Outputs: false, both conditions are evaluated
+  }
+}
+```
+
+Example of Bitwise `&` Operator:
+
+```java
+public class BitwiseAndExample {
+  public static void main(String[] args) {
+    int x = 6; // Binary: 0110
+    int y = 3; // Binary: 0011
+
+    System.out.println("x & y: " + (x & y)); // Outputs: 2 (Binary: 0010)
+  }
+}
+```
+
+### Java `OR` Operator Example: Logical `||` and Bitwise `|`
+
+The `OR` operator in Java can be used in two contexts: logical `||` for boolean expressions and bitwise `|` for integer operations.
+
+The logical `||` operator does not evaluate the second operand if the first operand is true, while the bitwise `|` operator evaluates both operands.
+
+Example of Logical `||` Operator:
+
+```java
+public class LogicalOrExample {
+  public static void main(String[] args) {
+    int a = 10;
+    int b = 5;
+    int c = 20;
+
+    System.out.println(a > b || b < c); // Outputs: true, because a > b is true
+    System.out.println(a > b | a < c); // Outputs: true, both conditions are evaluated
+  }
+}
+```
+
+Example of Bitwise `|` Operator:
+
+```java
+public class BitwiseOrExample {
+  public static void main(String[] args) {
+    int x = 6; // Binary: 0110
+    int y = 3; // Binary: 0011
+
+    System.out.println("x | y: " + (x | y)); // Outputs: 7 (Binary: 0111)
+  }
+}
+```
+
+### Java `XOR` Operator Example: Bitwise `^`
+
+The `XOR` (exclusive OR) operator in Java is represented by the bitwise `^` operator. It performs a bitwise comparison between two integer values, returning a new integer where each bit is set to 1 if the corresponding bits of the operands are different.
+
+```java
+public class BitwiseXorExample {
+  public static void main(String[] args) {
+    int x = 6; // Binary: 0110
+    int y = 3; // Binary: 0011
+
+    System.out.println("x ^ y: " + (x ^ y)); // Outputs: 5 (Binary: 0101)
+  }
+}
+```
+
+### Java Ternary Operator
+
+The ternary operator in Java is a shorthand way to write an if-else statement. It takes three operands and is often used to assign a value based on a condition.
+
+Example of Ternary Operator:
+
+```java
+public class TernaryExample {
+  public static void main(String[] args) {
+    int a = 10;
+    int b = 5;
+
+    String result = (a > b) ? "a is greater than b" : "b is greater than or equal to a";
+    System.out.println(result); // Outputs: a is greater than b
+  }
+}
+```
