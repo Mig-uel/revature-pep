@@ -36,3 +36,46 @@ Here are the key points about the importance of the `main` method:
 - **Command-Line Arguments**: The `String[] args` parameter allows the program to accept command-line arguments, enabling users to pass input values when running the application. This is useful for configuring the behavior of the program at runtime.
 
 It's important to note that while the `main` method is essential for standalone applications, it is not required for Java classes that are used as libraries or frameworks. In such cases, the classes can be instantiated and used without a `main` method.
+
+## Methods
+
+### What is a Method?
+
+A method is a block of code that performs a specific task. It is a way to organize and reuse code in a program. Methods can take input parameters, perform operations, and return output values.
+
+### Parts of a Method
+
+There are 3 minimum required parts of a method:
+
+- **Method Name**: The name of the method, which is used to call the method.
+- **Method Parameters**: The input values that the method takes. These are optional and can be zero or more.
+- **Return Type**: The type of value that the method returns. This can be any data type, including `void` if the method does not return a value.
+
+```java
+int addNumbers(int a, int b) {
+    return a + b;
+}
+```
+
+In this example:
+
+- `int` is the return type, indicating that the method returns an integer value.
+- `addNumbers` is the method name.
+- `(int a, int b)` are the method parameters, indicating that the method takes two integer inputs.
+- `return a + b;` is the return statement, which returns the sum of the two input parameters.
+
+### How Do We Invoke a Method?
+
+To invoke a method, you simply call it by its name and pass the required arguments (if any) in parentheses. Here's an example of how to invoke the `addNumbers` method:
+
+```java
+int result = addNumbers(5, 10);
+System.out.println("The sum is: " + result);
+```
+
+In this example:
+
+- `addNumbers(5, 10)` is the method call, where `5` and `10` are the arguments passed to the method.
+- The return value of the method (the sum of the two numbers) is stored in the variable `result`.
+- Finally, we print the result to the console.
+- Note, the variable data type must match the return type of the method if you are storing the return value.
