@@ -368,3 +368,68 @@ Java allows us to access the member variables outside the class with the followi
 | protected       | Yes     | Yes      | No    |
 | private         | No      | No       | No    |
 | default         | Yes     | No       | No    |
+
+## Arrays
+
+An array is a data structure that allows us to store multiple values of the same type in a single variable. It is a collection of elements, each identified by an index or key.
+
+It is a contiguous block of memory storing a group of sequentially stored elements of the same type. Arrays in Java are of a fixed size and cannot be resized after creation. Arrays are declared with square brackets `[]` after the data type.
+
+```java
+int[] numbers = new int[]{1, 2, 3, 4, 5};
+String languages[] = {"Java", "Python", "JavaScript"};
+```
+
+Note that the square brackets can be placed before or after the name of the array:
+
+```java
+int[] numbers = new int[]{1, 2, 3, 4, 5};
+String[] languages = {"Java", "Python", "JavaScript"};
+```
+
+- Each item of an array is called an element.
+- All elements of an array must be of the same type.
+- Items in an array are referenced via an index, which starts at 0.
+
+```java
+String myElement = languages[0];
+```
+
+Arrays also have a `length` property specifying the length of the array. This is helpful when iterating over arrays with a `for` loop:
+
+```java
+String[] myArr = {"Java", "Python", "JavaScript"};
+
+for (int i = 0; i < myArr.length; i++) {
+  System.out.println(myArr[i]);
+}
+```
+
+Even though it has no corresponding class, an array is an object in Java. It inherits from the `Object` class and can be used with methods like `toString()`, `equals()`, and `hashCode()`.
+
+- Thus, you can refer to an entire array by using the array name, and it will return a string representation of the array.
+
+```java
+public class ArrayDemo {
+  public static void main(String[] args) {
+    String[] myArr = {"Java", "Python", "JavaScript"};
+    System.out.println(myArr);
+  }
+}
+```
+
+### Real World Application
+
+Arrays are the simplest data structures that store items of the same data type.
+Some real-world applications of arrays include:
+
+- Arrangement of the leaderboard of a game
+- 2D arrays, commonly known as matrices, are used in computer graphics, image processing, and data analysis.
+- It is also used for speech processing, in which each speech signal is represented as an array of samples.
+- Your viewing screen is also a 2D array of pixels, where each pixel is represented by an RGB value.
+- Book titles in a library can be stored in an array, allowing for easy access and organization.
+- Online ticketing systems can use arrays to store available seats, making it easier to manage reservations.
+- Contacts on a phone can be stored in an array, allowing for quick access and searching.
+- For CPU scheduling, arrays can be used to manage processes and their priorities.
+- To store the possible moves of chess pieces on a chessboard, arrays can be used to represent the board and the pieces' positions.
+- To store images of a specific size, arrays can be used to represent the pixel values of the image.
