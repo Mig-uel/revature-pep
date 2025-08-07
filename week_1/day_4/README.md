@@ -171,3 +171,110 @@ public class SettingsManager {
 ```
 
 In summary, the static keyword promotes code reusability, simplifies usage, and facilitates the implementation of design patterns such as Singleton and Factory. By understanding and effectively using static members, developers can create more efficient and organized code.
+
+### Implementation
+
+In the Java program below, we are accessing static method `m1()` without creating any object of class `StaticDemo`. The static method can be called directly using the class name.
+
+```java
+public class StaticDemo {
+  public static void m1() {
+      System.out.println("Static method m1()");
+  }
+}
+
+public class Main {
+  public static void main(String[] args) {
+      // Calling static method without creating an object
+      StaticDemo.m1();
+  }
+}
+```
+
+**Static Blocks**
+
+Static blocks are used for static initializations of a class. This code inside a static block is executed when the class is loaded, and it can be used to initialize static variables or perform any setup that needs to be done only once.
+
+```java
+public class StaticBlockDemo {
+  static {
+      System.out.println("Static block executed");
+  }
+
+  public static void main(String[] args) {
+      System.out.println("Main method executed");
+  }
+}
+```
+
+If you need to do computation in order to initialize your static variables, you can declare a static block that gets executed exactly one, when the the class is loaded. This is useful for setting up complex static variables or performing one-time initialization tasks.
+
+```java
+public class StaticBlockDemo {
+  static int a = 10;
+  static int b;
+
+  static {
+      // Complex initialization logic
+      b = a * 2;
+      System.out.println("Static block executed");
+  }
+
+  public static void main(String[] args) {
+      System.out.println("Value of b: " + b);
+  }
+}
+```
+
+**Static Methods**
+
+When a method is declared with the `static` keyword, it is known as a static method. The most common example of a static method is the `main` method, which serves as the entry point for any Java application.
+
+```java
+public class StaticMethodDemo {
+  public static void main(String[] args) {
+      System.out.println("Main method executed");
+  }
+}
+```
+
+Any `static` member can be accessed before any objects of its class are created, and without reference to any object. Methods declared as static have several restrictions:
+
+- They can only directly call other static methods.
+- They cannot access instance variables or instance methods.
+- They can only directly access static data.
+- They cannot refer to `this` or `super` keywords.
+
+```java
+class Test {
+  // static variable
+  static int a = 10;
+
+  // instance variable
+  int b = 20;
+
+  // static method
+  static void m1() {
+    a = 20;
+    System.out.println("Static method m1() called");
+
+    // cannot make a static reference to non-static variable b
+    b = 30;
+
+    // cannot make a static reference to the non static method m2()
+    m2();
+
+    // cannot use super in static context
+    System.out.println(super.a);
+  }
+
+  // non-static method
+  void m2() {
+    System.out.println("Non-static method m2() called");
+  }
+
+  public static void main(String[] args) {
+    // main method
+  }
+}
+```
