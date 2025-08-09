@@ -124,3 +124,115 @@ The call to the parameterized constructor of the `Person` class creates a new `P
 - The `this` object reference of the calling object is stored in the stack frame of the `buildPerson` method.
 
 Heap memory is allocated for the new `Person` object, and the reference to this object is returned to the `main` method.
+
+## Casting
+
+Casting is the process of converting a variable from one type to another. In Java, there are two types of casting: **primitive casting** and **reference casting**.
+
+- **Primitive Casting**: This involves converting between primitive data types, such as `int`, `float`, and `char`. For example:
+
+```java
+int intValue = 10;
+float floatValue = (float) intValue; // explicit casting
+```
+
+- **Reference Casting**: This involves converting between reference types, such as objects and their subclasses. For example:
+
+```java
+Animal animal = new Dog();
+Dog dog = (Dog) animal; // explicit casting
+```
+
+Java can automatically convert some primitive types to others and so so whenever needed, but it cannot automatically convert reference types. In such cases, explicit casting is required.
+
+For example, an `int` can be converted to a `float` without explicit casting, but large `int` values won't be converted exactly because `int` values can have more digits than `float` can represent.
+
+Whenever you perform a mathematical operation on two values that aren't of the same type, Java automatically converts one of them to the type of the other. This is known as **type promotion**.
+
+Here are some rules Java follows when doing a type conversion:
+
+- If one of the values is a `double`, the other value is automatically converted to a `double`.
+- If neither is a `double`, but one is a `float`, the other is converted to a `float`.
+- If neither is a `double` nor a `float`, but one is a `long`, the other is converted to a `long`.
+- If all else fails, the values are converted to `int`.
+
+### Casting
+
+Casting is the process of explicitly converting a variable from one type to another. In Java, you can cast primitive types and reference types. This is also called **type casting**. Casting is necessary in some situations, such as when you want to treat a subclass object as an instance of a superclass.
+
+When working with some primitive numeric types, Java will automatically do the conversion for you. This will only work when the conversion is safe, meaning that the value can be represented in the target type without loss of information. The automatic conversion is supported when the source type is smaller than the target type. For example, you can convert an `int` to a `long` without any issues:
+
+```java
+int intValue = 100;
+long longValue = intValue; // automatic conversion
+```
+
+### Real World Application
+
+In the example below, an `int` (size of 32 bits) is being cast to a `double` (size of 64 bits). This is a safe conversion because a `double` can represent all possible values of an `int` without loss of information.
+
+```java
+public class CastingExample {
+    public static void main(String[] args) {
+        int intValue = 100;
+        double doubleValue = intValue; // automatic conversion
+    }
+}
+```
+
+However, cases where the original data type is larger than the target type, you will have to use explicit casting using the cast operator `()`:
+
+```java
+public class CastingExample {
+    public static void main(String[] args) {
+        double doubleValue = 100.0;
+        int intValue = (int) doubleValue; // explicit casting
+    }
+}
+```
+
+In some cases, you will have to use the data type's own methods to convert between types. Some of these methods are listed in the table below:
+
+| Original | Target   | Method                          |
+| -------- | -------- | ------------------------------- |
+| `int`    | `String` | `String.valueOf(intValue)`      |
+| `String` | `int`    | `Integer.parseInt(stringValue)` |
+
+### Implementation
+
+**Widening vs Narrowing**
+
+There is an important distinction to be aware of when casting to a type that encompasses a larger range of values (widening) versus a smaller range of values (narrowing).
+
+When implementing a widening type conversion, you won't have to worry about data loss, because you will have extra bits of information to store the number in. For example, when converting an `int` to a `long`, you are simply adding more bits to represent the number.
+
+When implementing a narrowing type conversion, you can potentially lose data, because you are trying to fit a larger value into a smaller space. For example, when converting a `double` to an `int`, you may lose the decimal portion of the number:
+
+- **Widening (Implicit):** This occurs when you convert a smaller primitive type to a larger primitive type. For example, converting an `int` to a `long` is widening because a `long` can hold all possible `int` values without any data loss.
+
+```java
+int intValue = 100;
+long longValue = intValue; // automatic widening conversion
+```
+
+- **Narrowing (Explicit):** This occurs when you convert a larger primitive type to a smaller primitive type. For example, converting a `double` to an `int` is narrowing because an `int` cannot hold all possible `double` values, and you may lose the fractional part.
+
+```java
+double doubleValue = 100.99;
+int intValue = (int) doubleValue; // explicit narrowing conversion
+```
+
+**Casting an `int` to a `byte`**:
+
+Let's see what happens when we cast our value to a type that cannot hold all the bits of information. A `byte` is an 8-bit number that follows the **two's complement** representation for signed numbers. This means it can hold values from -128 to 127.
+
+```java
+int intValue = 200;
+byte byteValue = (byte) intValue; // explicit narrowing conversion
+```
+
+In this example, the `int` value 200 is cast to a `byte`. However, since 200 is outside the range of a `byte`, the result will be a negative number due to overflow. The actual value of `byteValue` will be -56, which is the result of the two's complement representation.
+
+In order to understand this, we need to think back to how binary numbers are represented in memory. The `int` value 200 is represented in binary as `11001000`. When we cast it to a `byte`, only the least significant 8 bits are kept, and the most significant bits are discarded. This results in the binary representation `11001000`, which is -56 in decimal (due to two's complement representation).
+
+This is a common pitfall when working with casting in Java, and it highlights the importance of understanding the range of values that each primitive type can hold.
