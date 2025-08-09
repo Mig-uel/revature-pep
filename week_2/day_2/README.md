@@ -374,3 +374,49 @@ Constructors are essential in object-oriented programming for several reasons:
 6. **Dependency Injection**: Constructors can be used to implement dependency injection, allowing you to provide an object with its dependencies at the time of creation.
 
 Overall, constructors play a crucial role in the design and implementation of robust, maintainable object-oriented systems.
+
+## Garbage Collection
+
+In Java, garbage collection is the process of automatically reclaiming memory that is no longer in use by the program. It helps manage memory efficiently by identifying and removing objects that are no longer reachable or referenced by any part of the program.
+
+The Java Virtual Machine (JVM) includes a garbage collector that runs in the background, monitoring the allocation and deallocation of memory. When an object is created, memory is allocated for it on the heap. If there are no references to that object (i.e., it is no longer reachable), the garbage collector can reclaim that memory for future use.
+
+Garbage collection helps prevent memory leaks, which occur when memory that is no longer needed is not released, leading to increased memory usage and potential application crashes. However, it is important to note that garbage collection is not a substitute for proper memory management practices. Developers should still be mindful of object life-cycles and release resources when they are no longer needed.
+
+Consider the following example:
+
+```java
+Object o1 = new Object(); // 1
+Object o2 = new Object(); // 2
+Object o3 = o1; // 3
+o2 = o3; // 4
+```
+
+How many objects were created in the heap memory? We determine this by counting the number of `new` keywords used to create objects. In this case, two objects were created in the heap memory at lines 1 and 2.
+
+However, we declared 3 reference variables that point to these objects in memory.
+The third line does not create a new object but assigns the reference of `o1` to `o3`, meaning `o3` now points to the same object as `o1`.
+
+The last line reassigns the `o2` reference variable to point to the same object as `o3`, which is the same object as `o1`. This means that the original object referenced by `o2` is no longer reachable, and it becomes eligible for garbage collection.
+
+In lower-level programming languages, memory is manipulated directly in the code, but Java abstracts this process away from the developer. The garbage collector runs periodically to identify and reclaim memory occupied by unreachable objects.
+
+**There is no way we can explicitly force or trigger the garbage collector to run.** However, we can suggest it by calling one of the following methods:
+
+- `System.gc()`: This method suggests that the JVM should run the garbage collector, but it is not guaranteed to do so immediately.
+- `Runtime.getRuntime().gc()`: This method also suggests that the JVM should run the garbage collector, but like `System.gc()`, it is not guaranteed to do so immediately.
+- `System.runFinalization()`: This method suggests that the JVM should run finalization methods for objects that are eligible for garbage collection.
+
+### Real World Application
+
+The biggest benefit of Java's garbage collection is that it allows developers to focus on writing code without worrying about memory management. This leads to fewer memory leaks and crashes, making Java applications more robust and reliable.
+Programmers working in languages without automatic garbage collection often have to manually manage memory, which can lead to bugs and inefficiencies.
+
+Despite the extra work required, some programmers argue in favor of manual memory management over garbage collection, primarily for reasons of performance and control. They argue that garbage collection can introduce unpredictable pauses in application execution, which can be problematic for real-time applications or those requiring low latency.
+
+For scenarios in which garbage collector is negatively impacting performance, developers can use techniques such as:
+
+- **Object Pooling**: Reusing objects instead of creating new ones can reduce the frequency of garbage collection.
+- **Weak References**: Using weak references allows the garbage collector to reclaim memory for objects that are no longer strongly reachable, helping to prevent memory leaks.
+- **Finalizers**: Implementing finalizers allows objects to perform cleanup operations before being garbage collected, although this is generally discouraged due to performance concerns.
+- **Explicit Nulling**: Setting references to `null` when they are no longer needed can help the garbage collector identify unreachable objects more easily.
