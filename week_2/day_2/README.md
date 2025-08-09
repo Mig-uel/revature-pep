@@ -236,3 +236,38 @@ In this example, the `int` value 200 is cast to a `byte`. However, since 200 is 
 In order to understand this, we need to think back to how binary numbers are represented in memory. The `int` value 200 is represented in binary as `11001000`. When we cast it to a `byte`, only the least significant 8 bits are kept, and the most significant bits are discarded. This results in the binary representation `11001000`, which is -56 in decimal (due to two's complement representation).
 
 This is a common pitfall when working with casting in Java, and it highlights the importance of understanding the range of values that each primitive type can hold.
+
+## Classes and Objects
+
+Classes and objects are fundamental concepts in object-oriented programming (OOP). They allow you to model real-world entities and their behaviors in a structured way.
+
+### Classes vs Objects and Reference Variables
+
+It is important to understand the difference between a **class**, an **object**, and a **reference variable** in Java.
+
+A `class` is a template used to instantiate objects. It is also called a **type** when used with a reference variable. A class that is used to instantiate an object determines what state and behavior that object will have.
+
+An **object** is an instance of a class in memory. In Java, you never interact with objects directly. Instead, you interact with them through their reference, which is the memory address where the object is stored.
+
+A **reference variable** is a variable that holds the memory address of an object. It allows you to access the object's state and behavior. Reference variables are declared using the class name as the type. Just like the type of a primitive variable determines the range of values it can hold, the type of a reference variable determines what kind of object it can refer to.
+
+When a class is used as the type of a reference variable, that reference can only be used to refer to objects of that class or its subclasses.
+
+Let's look at the following line of code that we have divided into three parts:
+
+| 1        | 2      | 3                        |
+| -------- | ------ | ------------------------ |
+| `String` | `name` | `new String("John Doe")` |
+
+1. **Type**: `String` is the type of the reference variable. It indicates that `name` can only refer to objects of type `String`.
+2. **Reference Variable**: `name` is the reference variable that will hold the memory address of the `String` object.
+3. **Object Creation**: `new String("John Doe")` is the expression that creates a new `String` object in memory. The `name` reference variable will hold the memory address of this object.
+
+More in-depth:
+
+- The `name` reference variable does not contain a `String` object itself. Instead, it holds the memory address where the `String` object is stored.
+- The `String` type indicates that `name` can only refer to `String` objects or objects of subclasses of `String`.
+- The `String` type means that the `name` reference variable can access methods and properties defined in the `String` class.
+- The `new String("John Doe")` expression creates a new `String` object in memory, it is not the object itself. You can never access an object directly; you always access it through its reference variable.
+
+Understanding these concepts is crucial for working with objects in Java and for grasping the principles of object-oriented programming.
