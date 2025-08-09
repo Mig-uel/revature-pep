@@ -194,3 +194,51 @@ public class UncheckedExceptionExample {
     }
 }
 ```
+
+## Handling Exceptions
+
+When an exception occurs, a special class called `Exception` can be **thrown**, which indicates that something went wrong during the execution of the program. This allows developers to handle errors gracefully and take appropriate actions, such as logging the error or providing user feedback.
+
+If the exception is not handled anywhere in the program, it will propagate up the call stack until it reaches the main method. If it remains unhandled, the program will terminate, and an error message will be displayed.
+
+**Handling Exceptions**
+
+When risky code is written that has the possibility of throwing an exception, it can be handled in one of two ways:
+
+- Handling the exception using a try-catch block
+- Declaring the exception in the method signature using the throws keyword
+
+### Real World Application
+
+The following class accounts for the possibility for the division by zero by throwing an exception if the denominator is zero:
+
+```java
+package com.revature.main;
+import java.util.Scanner;
+import com.revature.exception.DenominatorCannotBeZeroException;
+
+public class Driver {
+  private static Scanner sc = new Scanner(System.in);
+
+  public static double divide(double x, double y) throws DenominatorCannotBeZeroException {
+    if (y == 0) {
+      throw new DenominatorCannotBeZeroException("Denominator cannot be zero.");
+    }
+    return x / y;
+  }
+
+  public static void main(String[] args) {
+    System.out.println("Enter the numerator: ");
+    double numerator = Double.parseDouble(sc.nextLine());
+
+    System.out.println("Enter the denominator: ");
+    double denominator = Double.parseDouble(sc.nextLine());
+
+    try {
+      System.out.println("Result: " + divide(numerator, denominator));
+    } catch (DenominatorCannotBeZeroException e) {
+      System.out.println("Error: " + e.getMessage());
+    }
+  }
+}
+```
