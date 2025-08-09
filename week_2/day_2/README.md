@@ -63,3 +63,134 @@ In real-world applications, wrapper classes in Java are essential for several re
 4. **Compatibility with Generics**: When using generics, you can only use objects. Wrapper classes allow you to use primitive types in generic classes and methods.
 
 Overall, wrapper classes play a crucial role in Java programming by bridging the gap between primitive types and the object-oriented nature of the language. This enables compatibility with collections, generics, APIs, and additional functionality that primitive types lack. They provide flexibility, nullability, and enhanced functionality, making them indispensable in many Java applications.
+
+## Exceptions vs Errors and Hierarchy
+
+In Java, exceptions and errors are both subclasses of the `Throwable` class, but they serve different purposes and have different implications for error handling.
+
+An error in Java signifies a serious problem that a reasonable application should not try to catch. Errors are typically related to the Java Virtual Machine (JVM) and indicate issues that are outside the control of the application, such as running out of memory or a stack overflow. These errors can manifest as compile-time issues, hindering successful compilation, or as run-time issues, impacting program execution. It is essential to address errors, encompassing both compile-time and run-time, before entering either phase.
+
+**It is important to note that you should not catch errors in your code.** They are meant to indicate serious problems that cannot be handled gracefully.
+
+Alternatively, exceptions in Java denote unexpected or undesirable events that occur during the execution of a program. Exceptions can be anticipated and handled by the application, allowing it to recover from the error and continue running.
+
+Exceptions are further categorized into two main types:
+
+1. **Checked Exceptions**: These are exceptions that are checked at compile-time. The Java compiler requires that you either handle these exceptions using a try-catch block or declare them in the method signature using the `throws` keyword. Examples include `IOException`, `SQLException`, etc.
+
+2. **Unchecked Exceptions**: These are exceptions that are not checked at compile-time. They are usually a result of programming errors, such as logic mistakes or improper use of APIs. Unchecked exceptions extend the `RuntimeException` class and do not need to be declared or handled explicitly. Examples include `NullPointerException`, `ArrayIndexOutOfBoundsException`, etc.
+
+In the Java compilation process, the compiler checks that any checked exceptions that could be thrown are handled (via either try-catch blocks or method declarations). If this is not the case, the compiler cannot compile the code successfully. This is an example of a **compilation error** - not an exception.
+
+**Exceptions are never thrown during compilation.** They only occur at runtime when the program is executed. If an exception occurs, it can be caught and handled using a try-catch block, allowing the program to continue running or terminate gracefully.
+
+Compilation errors generally occur due to improper syntax, type mismatches, or other issues that prevent the code from being compiled successfully.
+
+The table below summarizes the differences between Errors, Exceptions, and Compilation Errors:
+
+| Name                | Description                                           | Occurs At    | Can Be Caught? | Must Be Handled? | Example              |
+| ------------------- | ----------------------------------------------------- | ------------ | -------------- | ---------------- | -------------------- |
+| Compilation Error   | The compiler cannot compile the source code           | Compile-time | N/A            | N/A              | Syntax error         |
+| Error               | Severe problem with the Java Virtual Machine (JVM)    | Runtime      | No             | No               | OutOfMemoryError     |
+| Checked Exception   | Any exception not derived from RuntimeException class | Compile-time | Yes            | Yes              | IOException          |
+| Unchecked Exception | Any exception derived from RuntimeException class     | Runtime      | Yes            | No               | NullPointerException |
+
+**Exception Class Hierarchy**
+
+The exception class hierarchy in Java is structured as follows:
+
+```
+Throwable
+├── Error
+│   ├── OutOfMemoryError
+│   ├── StackOverflowError
+│   └── ...
+└── Exception
+    ├── RuntimeException
+    │   ├── NullPointerException
+    │   ├── ArrayIndexOutOfBoundsException
+    │   └── ...
+    ├── IOException
+    ├── SQLException
+    └── ...
+```
+
+### Real World Application
+
+In real-world applications, understanding the distinction between errors and exceptions is crucial for robust software development. Here are some scenarios illustrating their usage:
+
+1. **Error Handling**: When developing a large-scale enterprise application, you might encounter `OutOfMemoryError` if the application consumes too much memory. In this case, it's essential to monitor memory usage and optimize resource management rather than attempting to catch the error.
+
+2. **Checked Exceptions**: When working with file I/O, you may encounter `IOException`. Since this is a checked exception, you must handle it using a try-catch block or declare it in the method signature. This ensures that your application can gracefully handle file-related errors, such as missing files or permission issues.
+
+3. **Unchecked Exceptions**: During development, you might introduce a `NullPointerException` due to a programming oversight. While you can catch this exception, it's better to fix the underlying issue (e.g., adding null checks) to prevent it from occurring in the first place.
+
+By understanding and appropriately handling errors and exceptions, developers can create more resilient applications that provide a better user experience.
+
+**Example of Compile-Time Error**
+
+```java
+public class CompileTimeErrorExample {
+    public static void main(String[] args) {
+        // Creating a final variable
+        final int constantValue = 10;
+        // Attempting to modify a final variable will cause a compile-time error
+        constantValue = 20; // This line will cause a compile-time error
+    }
+}
+```
+
+**Example of Runtime Error**
+
+```java
+import org.apache.commons.math3.util.ArithmeticUtils;
+
+public class RuntimeErrorExample {
+    public static void main(String[] args) {
+       // Attempt to use Apache Commons Math to compute the factorial of 5
+       long factorial = ArithmeticUtils.factorial(5);
+       System.out.println("Factorial of 5 is: " + factorial);
+    }
+}
+```
+
+The compiler will not catch this error at compile time, but it will throw an exception at runtime if the library is not included in the classpath.
+
+When we imported the class using `import org.apache.commons.math3.util.ArithmeticUtils;`, it informs where to find the class during the compilation process. However, during runtime, the availability of the library is crucial. If the library is not present in the classpath, the JVM will throw a `NoClassDefFoundError` or `ClassNotFoundException`, indicating that it cannot find the specified class.
+
+**Checked Exception Example**
+
+Checked exceptions, such as `IOException`, are known to the compiler at compile time. Developer are required to either handle these exceptions using a `try-catch` block or declare them in the method signature using the `throws` keyword.
+
+```java
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
+public class CheckedExceptionExample {
+    public static void main(String[] args) {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader("non_existent_file.txt"));
+            String line = reader.readLine();
+            System.out.println(line);
+            reader.close();
+        } catch (IOException e) {
+            System.out.println("An IOException occurred: " + e.getMessage());
+        }
+    }
+}
+```
+
+**Unchecked Exception Example**
+
+Unchecked exceptions, such as `ArrayIndexOutOfBoundsException`, are not checked by the compiler at compile time. Unlike checked exceptions, the compiler does not enforce explicit handling of unchecked exceptions, providing more flexibility but requiring developers to be cautious about potential runtime errors.
+
+```java
+public class UncheckedExceptionExample {
+    public static void main(String[] args) {
+        int[] numbers = {1, 2, 3};
+        // Attempting to access an invalid index will throw an ArrayIndexOutOfBoundsException
+        System.out.println(numbers[5]);
+    }
+}
+```
