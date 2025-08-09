@@ -271,3 +271,106 @@ More in-depth:
 - The `new String("John Doe")` expression creates a new `String` object in memory, it is not the object itself. You can never access an object directly; you always access it through its reference variable.
 
 Understanding these concepts is crucial for working with objects in Java and for grasping the principles of object-oriented programming.
+
+## Constructors
+
+A **constructor** is a special method in Java that is used to initialize objects. It is called when an object of a class is created, and it allows you to set the initial state of the object.
+
+When we use the `new` keyword in order to create an object, the JVM invokes a special class member called a **constructor**. This constructor is a method that has the same name as the class and does not have a return type, not even `void`. It is used to initialize the object with default or specified values.
+
+A constructor declares how an object is to be instantiated and initialized from the class "blueprint".
+
+```java
+public class ConstructorExample {
+  int myNumber;
+
+  // Constructor
+  public ConstructorExample(int initialNumber) {
+    myNumber = initialNumber;
+  }
+}
+```
+
+A constructor can be overloaded, meaning you can have multiple constructors in a class with different parameter lists. This allows you to create objects in different ways, depending on the information available at the time of creation.
+
+```java
+public class ConstructorExample {
+  int myNumber;
+
+  // Constructor
+  public ConstructorExample(int initialNumber) {
+    myNumber = initialNumber;
+  }
+
+  // Overloaded constructor
+  public ConstructorExample() {
+    myNumber = 0; // Default value
+  }
+}
+```
+
+**`this` Keyword**
+
+The `this` keyword is a reference variable that refers to the current object. It is commonly used in constructors and methods to differentiate between instance variables and parameters with the same name.
+
+```java
+public class ConstructorExample {
+  int myNumber;
+
+  // Constructor
+  public ConstructorExample(int myNumber) {
+    this.myNumber = myNumber;
+  }
+}
+```
+
+`this` refers to the current object, allowing you to access its instance variables and methods.
+
+**`super` Keyword**
+
+The `super` keyword is used to refer to the superclass of the current object. It can be used to call a superclass constructor or to access superclass methods and variables.
+
+```java
+public class SuperExample {
+  int myNumber;
+
+  // Constructor
+  public SuperExample(int myNumber) {
+    this.myNumber = myNumber;
+  }
+}
+
+public class SubExample extends SuperExample {
+  int mySubNumber;
+
+  // Constructor
+  public SubExample(int myNumber, int mySubNumber) {
+    super(myNumber); // Call superclass constructor
+    this.mySubNumber = mySubNumber;
+  }
+}
+```
+
+A `super()` call (or a `this()` call) must be the first statement in the constructor. This means you cannot have any other statements before it. This rule ensures that the superclass is properly initialized before the subclass adds its own initialization logic. If not explicitly called, the default constructor of the superclass is called automatically.
+
+**Default Constructor**
+
+If a class does not explicitly define any constructor, the Java compiler automatically provides a default constructor. This default constructor is a no-argument constructor that initializes instance variables to their default values (e.g., `0` for integers, `null` for objects).
+
+### Real World Application
+
+Constructors are essential in object-oriented programming for several reasons:
+
+1. **Initialization**: Constructors allow you to set initial values for object attributes, ensuring that objects are in a valid state when created.
+
+2. **Overloading**: With constructor overloading, you can create objects in different ways, providing flexibility in how objects are instantiated.
+
+3. **Encapsulation**: Constructors can enforce encapsulation by controlling how objects are created and initialized, allowing you to hide implementation details.
+
+4. **Inheritance**: Inheritance allows subclasses to inherit constructors from their superclasses, promoting code reuse and reducing redundancy.
+
+5. **Polymorphism**: Constructors can be used in conjunction with polymorphism to create objects of different classes through a common interface.
+
+6. **Dependency Injection**: Constructors can be used to implement dependency injection, allowing you to provide an object with its dependencies at the time of creation.
+
+Overall, constructors play a crucial role in the design and implementation of robust, maintainable object-oriented systems.
