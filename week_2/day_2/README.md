@@ -434,3 +434,146 @@ static double readMeasurement() throws ParseError {
 
 /* In the main program, this method is called in a try-catch block to handle any ParseError exceptions that may be thrown. */
 ```
+
+## Creating Custom Exceptions
+
+A programmer can create custom exceptions in Java by extending any exception class. If you extend the `RuntimeException` class, you will create an unchecked exception. This is a good idea if you do **NOT** want to force the caller to handle the exception. If you do always want to require the caller to handle the exception, you should extend the `Exception` class instead.
+
+```java
+public class MyCheckedException extends Exception {}
+public class MyUncheckedException extends RuntimeException {}
+
+public class ExceptionThrower {
+  public static void main(String[] args) {
+    try {
+      throw new MyCheckedException("uh oh");
+    } catch (MyCheckedException e) {} // ignoring it
+
+    if (100 > 1) {
+      throw new MyUncheckedException("you're not required to handle me");
+    }
+  }
+
+  public static void declareChecked() throws MyCheckedException {
+    throw new MyCheckedException("This one is declared!");
+  }
+}
+```
+
+### Real World Application
+
+Custom exceptions in Java can be used for several purposes, such as:
+
+- **Semantic Clarity**: Custom exceptions can provide more meaningful error messages that are specific to the application's domain. For example, instead of throwing a generic `Exception`, you can create a `UserNotFoundException` that clearly indicates the nature of the error.
+- **Granular Error Handling**: By using custom exceptions, you can catch and handle specific error conditions more easily. This allows for more precise recovery strategies and better user feedback.
+- **Enhanced Debugging**: Custom exceptions can include additional context or metadata about the error, making it easier to diagnose and fix issues in the code.
+- **Application-Specific Logic**: Custom exceptions can encapsulate application-specific logic, making it easier to manage errors that are unique to your application's domain.
+
+### Implementation
+
+The example below demonstrates how to create a custom exception, a class tha throws the exception, and a driver that will demonstrate handling exceptions and using the class that throws them. We have a custom package, called `com.revature.bicycle` and created three files, one for each the classes below.
+
+```java
+package com.revature.exceptions.bicycle;
+
+public class Bicycle {
+  public int speed = 0;
+  public int gear = 1;
+
+  public static String bikeShop = "RevaBikes";
+  public static final int MAX_SPEED = 25;
+  public static final int MIN_GEAR = 3;
+
+  public void speedUp(int increment) {
+    if (this.speed + increment > MAX_SPEED) {
+      this.speed = 25;
+      this.gear = 3;
+      System.out.println("Cannot exceed maximum speed of " + MAX_SPEED + " mph.");
+      return;
+    } else {
+      this.speed += increment;
+      this.gear = this.gear < MAX_GEAR ? this.gear + 1 : 3;
+    }
+  }
+
+  public void slowDown(int decrement) throws NegativeSpeedException {
+    if (this.speed - decrement < 0) {
+      throw new NegativeSpeedException();
+    } else {
+      this.speed -= decrement;
+      this.gear = this.gear > 1 ? this.gear - 1 : 1;
+    }
+  }
+}
+```
+
+```java
+package com.revature.exceptions.bicycle;
+import java.io.IOException;
+
+public class BicycleDriver {
+  public static void main(String[] args) {
+    System.out.println("Welcome to the Bicycle Shop: " + Bicycle.bikeShop);
+
+    try {
+      Thread.sleep(1000); // Simulate some processing time
+      // throw new InterruptedException(); // we can throw exceptions
+      // throw new OutOfMemoryError(); // or errors (but why?)
+      // System.exit(0); // this will terminate the program
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    } finally {
+      // will always execute
+      System.out.println("This is the finally block.");
+    }
+
+    System.out.println("This is after the try-catch block.");
+
+    // Order of catch blocks matters! Catch exceptions from most specific to least specific.
+    // try {
+    //   // code that may throw exceptions
+    // } catch (SpecificException e) {
+    //   // handle specific exception
+    // } catch (GeneralException e) {
+    //   // handle general exception
+    // }
+
+    Bicycle bike = new Bicycle();
+    System.out.println("Gear: " + bike.gear + ", Speed: " + bike.speed);
+
+    bike.speedUp(24);
+    System.out.println("Gear: " + bike.gear + ", Speed: " + bike.speed);
+
+    bike.speedUp(2);
+    System.out.println("Gear: " + bike.gear + ", Speed: " + bike.speed);
+
+    try {
+      bike.slowDown(30);
+    } catch (NegativeSpeedException e) {
+      e.printStackTrace();
+    }
+
+    System.out.println("Gear: " + bike.gear + ", Speed: " + bike.speed);
+  }
+
+  // Includes a throw clause on a method's signature to force the caller to handle the exception.
+  // Also known as throwing or propagating the exception.
+  public static void throwSomething() throws IOException {
+    System.out.println("Throwing an IOException...");
+  }
+}
+```
+
+```java
+package com.revature.exceptions.bicycle;
+
+public class NegativeSpeedException extends Exception {
+
+	private static final long serialVersionUID = 1L;
+
+	public NegativeSpeedException() {
+		super("Cannot go a negative speed!");
+	}
+
+}
+```
