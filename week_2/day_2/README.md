@@ -242,3 +242,195 @@ public class Driver {
   }
 }
 ```
+
+## Checked vs Unchecked Exceptions
+
+In Java, exceptions are categorized into two main types: checked and unchecked exceptions.
+
+Exceptions that require mandatory handling are called checked exceptions. These exceptions are checked at compile-time, and the programmer is forced to handle them using try-catch blocks or by declaring them in the method signature with the throws keyword. Examples include IOException and SQLException.
+
+Unchecked exceptions, on the other hand, are not checked at compile-time. These exceptions can occur at runtime and are usually a result of programming errors, such as logic mistakes or improper use of APIs. Examples include NullPointerException and ArrayIndexOutOfBoundsException.
+
+### Real World Application
+
+Checked exceptions are great, so long as you understand when they should be used.
+
+Checked exceptions should be used for predictable, but unpreventable errors that are reasonable to recover from, such as trying to read a file that may not exist.
+
+Unchecked exceptions should be used for errors that are not expected to occur and indicate a programming error, such as trying to access an index that is out of bounds in an array.
+
+Here are some key points to remember about checked and unchecked exceptions:
+
+- Predictable but unpreventable: The caller did everything within their power to validate the input parameters, but some external factor caused the error. For example, you try to reading a file but some deletes it between the time you check if it exists and the time you try to read it. By declaring the exception as checked, you force the caller to handle this case.
+- Reasonable to recover from: There is no point telling callers to anticipate exceptions that they cannot recover from. If a user tries to read a file that does not exist, it is reasonable to handle this case by informing the user and allowing them to choose a different file or create the file.
+- Unless the exception you are throwing meets all of these criteria, it should be an unchecked exception. Unchecked exceptions are not required to be handled or declared, allowing for more flexibility in error handling.
+- Reevaluate at every level: Sometimes the method catching the checked exception isn't the right place to handle it. In that case, consider what is reasonable for your callers. If the exception is predictable, unpreventable, and reasonable to recover from, then it should be a checked exception. If not, it should be an unchecked exception.
+- For both checked and unchecked exceptions, use the right abstraction level. For example, a code repo with two different implementations (database and filesystem) should avoid exposing implementation details by throwing `SQLException` or `IOException` directly. Instead, it should wrap the exceptions in an abstraction layer that spans both implementations, such as a custom exception that represents a general data access error.
+
+### Implementation
+
+**Programming with Exceptions**
+
+Exceptions can used to help write robust programs. They provide an organized and structured approach to robustness. Without exceptions, error handling would be chaotic and difficult to manage. By using exceptions, developers can separate error-handling code from regular code, making the program easier to read and maintain.
+
+When a program encounters an exceptional condition and has no way of handling it immediately, the program can throw an exception. In some cases, it makes sense to throw an exception belonging to one of Java's predefined classes, such as `IllegalArgumentException` or `IOException`. However, if there is no standard class that fits the situation, you can create your own exception class by extending the `Throwable` class or one of its subclasses.
+
+In general, if the programmer does not want to require mandatory handling of an exception, they should use an unchecked exception (extend `RuntimeException`). If the programmer wants to require mandatory handling, they should use a checked exception (extend `Exception`).
+
+Here is an example of a class that extends `Exception` and requires mandatory handling:
+
+```java
+public class ParseError extends Exception {
+  public ParseError(String message) {
+    // Create a ParseError object containing the provided message
+    super(message);
+  }
+}
+```
+
+The class contains a constructor that takes a message as a parameter and passes it to the superclass constructor. This allows the exception to carry a descriptive message when it is thrown. It also inherits `getMessage()` and `toString()` methods from its superclass, which can be used to retrieve the exception message and a string representation of the exception.
+If `e` refers to an object of type `ParseError`, then the function call `e.getMessage()` will return the message passed to the constructor when the exception was created.
+The main point of the `ParseError` class is to simply exist. When an object of type `ParseError` is thrown, it indicates that a parsing error has occurred, and the program can handle it accordingly.
+
+A `throw` statement can be used to throw an error of type `ParseError`:
+
+```java
+throw new ParseError("Invalid input");
+```
+
+or
+
+```java
+throw new ParseError("The word '" + word + "' is not valid");
+```
+
+Since `ParseError` is defined as a subclass of `Exception`, it is a checked exception. This means that the Java compiler will require any method that throws a `ParseError` to either handle it with a try-catch block or declare it in the method signature using the `throws` keyword.
+
+```java
+void getUserData() throws ParseError {
+  // Some code that may throw a ParseError
+}
+```
+
+This would not be required if `ParseError` were defined as a subclass of `RuntimeException` instead of `Exception`.
+
+A way to handle `ParseError` is to use a try-catch block:
+
+```java
+try {
+  getUserData();
+  processUserData()
+} catch (ParseError e) {
+  System.out.println("An error occurred: " + e.getMessage());
+}
+```
+
+Note that since `ParseError` is a subclass of `Exception`, a catch clause of the form `catch (Exception e)` would also catch `ParseError`. However, it is generally better to catch specific exceptions rather than using a generic catch clause, as this allows for more precise error handling.
+
+Sometimes, it's useful to store extra data in an exception object, for example:
+
+```java
+class ShipDestroyed extends RuntimeException {
+  Ship ship; // The ship that was destroyed
+  int where_x, where_y; // Coordinates of the ship's destruction
+
+  ShipDestroyed(String message, Ship s, int x, int y) {
+    // Constructor creates a ShipDestroyed object
+    // carrying an error message plus the information
+    // that the ship 's' was destroyed at location (x, y)
+    // on that screen
+    super(message);
+    ship = s;
+    where_x = x;
+    where_y = y;
+  }
+}
+```
+
+Here, a `ShipDestroyed` object contains an error message and some information about a ship that was destroyed. This could be used, for example, in a statement:
+
+```java
+if (userShip.isHit()) {
+  throw new ShipDestroyed("You've been hit!", userShip, xPos, yPos);
+}
+```
+
+Note: the condition represented by a `ShipDestroyed` object might not even be considered an error. It could just be an expected interruption to the normal flow of a game. Exceptions can sometimes be used to handle such interruptions neatly.
+
+**General Purpose Exception Handling**
+
+The ability to throw exceptions is useful in writing general-purpose methods and classes that are meant to be used in more than one program. In this case, the person writing the method or class often has no reasonable way of handling the error, since that person has no way of knowing exactly how the method or class will be used. In such cases, a novice programmer is often tempter to print an error message and forge ahead, but this is a bad idea. It is better to throw an exception and let the caller handle it.
+
+The program that calls the method or uses the class needs to know that the error has occurred. In languages that do not support exceptions, the only alternative is to return some special value or set the value to some global variable to indicate that an error has occurred. It is very easy to be lazy about checking for special return values every time a method is called. This can lead to programs that behave incorrectly in the presence of errors. By using exceptions, the programmer is forced to think about error handling.
+
+It is easy to modify a function to use exceptions instead of a special return value to signal an error. This modified method throw a `ParseError` when the user's input is illegal, where `ParseError` is the subclass of `Exception`. (Arguably, it might be reasonable to avoid defining a new class and just use `IllegalArgumentException`, which is a subclass of `RuntimeException`.)
+
+```java
+/**
+ * Read the user's input measurement from one line of input.
+ * Precondition: The input line is not empty.
+ * Postcondition: If the user's input is valid, the method returns the
+ *                measurement converted to inches.
+ * @throws ParseError if the user's input is invalid.
+ */
+static double readMeasurement() throws ParseError {
+  double inches; // Total number of inches in user's measurement
+  double measurement; // One measurement, such as the 12 in "12 miles"
+
+  String units; // The units of the measurement, such as "miles" or "feet"
+  char ch; // Used to peek at the next character in the input
+
+  inches = 0; // No inches read yet
+
+  skipBlanks(); // Skip any leading blanks in the input
+  ch = TextIO.peek(); // Peek at the next character in the input
+
+  /* As long as there is more input on the line, read a measurement and add
+     the equivalent number of inches to the variable, inches. If an error is
+     detected during the loop, end the method prematurely by throwing a ParseError. */
+  while (ch != '\n' && ch != '\r') {
+    /* Get the next measurement and the units. Before reading anything,
+       make sure that a legal value is there to read. */
+    if (!Character.isDigit(ch))
+      throw new ParseError("Expected to find a number, but found '" + ch + "' instead.");
+
+    measurement = TextIO.getDouble(); // Read the measurement
+
+    skipBlanks(); // Skip any blanks after the measurement
+
+    if (TextIO.peek() == '\n') {
+      throw new ParseError("Missing unit of measure at end of line.")
+    }
+
+    units = TextIO.getWord(); // Read the unit of measure
+    units = units.toLowerCase(); // Convert to lower case for easier comparison
+
+    // Convert the measurement to inches and add it to the total
+    if (units.equals("inches") || units.equals("inch")) {
+      inches += measurement;
+    } else if (units.equals("feet") || units.equals("foot")) {
+      inches += measurement * 12;
+    } else if (units.equals("yards") || units.equals("yard")) {
+      inches += measurement * 36;
+    } else if (units.equals("miles") || units.equals("mile")) {
+      inches += measurement * 63360;
+    } else {
+      throw new ParseError("Unknown unit of measure: " + units);
+    }
+
+    /* Look ahead to see whether the next thing on the line is
+       the end of line. */
+    skipBlanks();
+    ch = TextIO.peek();
+  }
+
+  // If we get here, we have read all the measurements on the line.
+  if (inches == 0) {
+    throw new ParseError("No valid measurements found.");
+  }
+
+  return inches;
+}
+
+/* In the main program, this method is called in a try-catch block to handle any ParseError exceptions that may be thrown. */
+```
