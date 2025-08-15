@@ -302,3 +302,119 @@ class Rectangle extends Shape {
   }
 }
 ```
+
+## Abstract Classes and Methods
+
+An abstract class is a class that is declared with the `abstract` keyword. It may or may not include abstract methods (methods without a body). Abstract classes cannot be instantiated directly; they are meant to be subclassed.
+
+Abstract classes can have a constructor but still cannot be instantiated directly. Even if you cannot instantiate an abstract class, it still may have some state that it passes down to subclasses that need to be initialized. When a subclass constructor calls `super()`, it calls the abstract class constructor and the state is initialized.
+
+An abstract class can have 0 or more abstract methods, but if a class has at least one abstract method then it must be declared as abstract. It can also have concrete methods (methods with a body) that can be used by subclasses.
+
+```java
+public abstract class GraphicObject {
+  abstract void draw(); // abstract method
+}
+
+class Circle extends GraphicObject {
+  @Override
+  void draw() {
+    System.out.println("Drawing a circle");
+  }
+
+  void resize() {
+    // implementation for resizing a circle
+  }
+}
+
+class Rectangle extends GraphicObject {
+  @Override
+  void draw() {
+    System.out.println("Drawing a rectangle");
+  }
+
+  void resize() {
+    // implementation for resizing a rectangle
+  }
+}
+```
+
+### Real World Application
+
+A real-world use case for abstract classes in Java can be found in the development of a game engine or simulation framework.
+
+Consider a scenario where you are developing a game engine that supports different types of game objects, such as characters, enemies, and obstacles, each with common characteristics and behaviors shared amongst them. Abstract classes can be used to define a common interface and partial implementation for these game objects, while allowing specific objects to extend the abstract and provide their own implementations for certain methods.
+
+- **Abstract GameObject Class**: You could create an abstract class called `GameObject` that defines common properties (like position, velocity) and methods (like `update()`, `draw()`) that all game objects share.
+- **Concrete GameObject Classes**: Concrete subclasses like `Player`, `Enemy`, and `Obstacle` would extend `GameObject` and provide specific implementations for the abstract methods, as well as any additional properties or methods unique to each type of game object.
+- **Usage in Game Engine**: The game engine could then manage a collection of `GameObject` instances, calling their `update()` and `draw()` methods as needed to render the game world and handle interactions between objects.
+
+In this real-world use case, abstract classes provide a way to define a common interface and partial implementation for a group of related classes, promoting code reuse and reducing duplication.
+
+### Implementation
+
+The keyword `abstract` can be applied to a class or a method.
+
+When applied to a method, it specifies to the compiler that the marked method should be implemented by any concrete subclass of the abstract class. This means that the method does not have a body in the abstract class and must be overridden in the subclasses, providing their own implementation.
+
+```java
+public abstract void methodName();
+```
+
+When you declare a method `abstract`, then its container class must also be declared as `abstract`. You may, however, declare a class abstract, but not have any abstract methods.
+
+Remember that an abstract class cannot be instantiated directly. You can only create instances of concrete subclasses that implement all the abstract methods.
+
+**Defining Abstract Methods**
+
+As previously stated, abstract methods do not require a method body (i.e. no curly braces). They only require a method signature, which includes the method name, return type, and parameters (if any).
+
+```java
+package com.example;
+public class Person {
+  protected String name;
+  public abstract String getName();
+  public abstract void setName(String name);
+}
+```
+
+The above code will throw a compilation error because the class `Person` is not declared as abstract, yet it contains abstract methods. To fix this, you need to either provide implementations for the abstract methods or declare the class as abstract.
+
+```java
+package com.example;
+public abstract class Person {
+  protected String name;
+  public abstract String getName();
+  public abstract void setName(String name);
+}
+```
+
+**So why use abstract classes?**
+
+The major reason is to provide a template for other classes to start from. Abstract classes allow you to define common behavior and attributes that can be shared across multiple subclasses, while still enforcing a contract for the subclasses to implement specific methods.
+
+**Using Abstract Classes**
+
+To use an abstract class, you need to create a concrete subclass that extends the abstract class and provides implementations for all its abstract methods.
+
+```java
+package com.example;
+
+public class Developer extends Person {
+  public Developer(String name) {
+    this.name = name;
+  }
+
+  @Override
+  public String getName() {
+    return this.name;
+  }
+
+  @Override
+  public void setName(String name) {
+    this.name = name;
+  }
+}
+```
+
+This creates an inheritance relationship between the `Developer` class and the `Person` class, allowing the `Developer` class to inherit the properties and methods of the `Person` class while providing its own implementations for the abstract methods.
