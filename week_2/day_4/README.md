@@ -209,3 +209,96 @@ class B {
   }
 }
 ```
+
+## Abstraction
+
+**Abstraction** is the OOP principle of hiding the complex implementation details and showing only the essential features of an object. It allows developers to focus on what an object does rather than how it does it.
+
+Think of a car - you do not need to know how the car works, just how to use the interfaces you are given, like the steering wheel and pedals. Thus, a car "abstracts" away the internal details of the engine, motor, driveshaft, and other components, allowing you to drive without needing to understand the complexities of the machinery involved.
+
+Another example is, if an `Animal` class were part of a library for creating animals in Java. The user of the library would not need to know how the `Animal` class is implemented internally; they only need to know how to create an animal and call its methods.
+
+We can also use the generic `Animal` type for reference variables, allowing us to write code that can work with any subclass of `Animal` without knowing the specific type at compile time.
+
+Let's assume that the `Dog` and `Cat` class extend the `Animal` class. When creating an instance of a `Dog` or `Cat`, we can use the `Animal` type for the reference variable:
+
+```java
+Animal myDog = new Dog();
+Animal myCat = new Cat();
+```
+
+This way, we can treat both `Dog` and `Cat` objects as `Animal` objects, allowing us to write more flexible and reusable code.
+The advantage of writing code this way is that later if we decide to add more animal types, we can do so without changing the existing code that uses the `Animal` type. This promotes code reusability and maintainability.
+
+### Real World Application
+
+Abstraction means hiding the lower-level details and showing only the essential features of the object. It helps to reduce programming complexity and effort.
+
+The following example showcases the use of abstraction in Java:
+
+```java
+abstract class Shape {
+  String color;
+
+  // abstract methods
+  abstract double area();
+  public abstract String toString();
+
+  // abstract class can have a constructor
+  public Shape (String color) {
+    this.color = color;
+  }
+
+  // concrete method
+  public String getColor() {
+    return color;
+  }
+}
+```
+
+Here, we created a `Shape` class that is abstract and contains both abstract and concrete methods. The abstract methods `area()` and `toString()` must be implemented by any concrete subclass of `Shape`, while the concrete method `getColor()` can be used as-is by subclasses. The constructor of the abstract class allows us to set the color of the shape when it is created.
+
+When we inherit from the `Shape` class, we must implement the abstract methods:
+
+```java
+class Circle extends Shape {
+  double radius;
+
+  public Circle(String color, double radius) {
+    super(color); // call the constructor of the abstract class
+
+    this.radius = radius;
+  }
+
+  @Override
+  double Area() {
+    return Math.PI * radius * radius; // area of a circle
+  }
+
+  @Override
+  public String toString() {
+    return "Circle [color=" + getColor() + ", radius=" + radius + "]";
+  }
+}
+
+class Rectangle extends Shape {
+  double length;
+  double width;
+
+  public Rectangle(String color, double length, double width) {
+    super(color);
+    this.length = length;
+    this.width = width;
+  }
+
+  @Override
+  double area() {
+    return length * width; // area of a rectangle
+  }
+
+  @Override
+  public String toString() {
+    return "Rectangle [color=" + getColor() + ", length=" + length + ", width=" + width + "]";
+  }
+}
+```
