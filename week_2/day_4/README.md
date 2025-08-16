@@ -510,7 +510,76 @@ In this real-world use case, interfaces provide a way to define a common contrac
 
 ### Implementation
 
-TODO
+An interface defines a new contract for classes to implement similar to how an abstract class defines a contract for subclasses. However, interfaces can be implemented by any class, regardless of its position in the class hierarchy, allowing for a form of multiple inheritance. Likewise, they create a form of inheritance where an interface can be labeled as the parent class and an implementation can be a child class.
+
+Interfaces, however, are limited in the variables and types of methods they can define. They cannot have instance variables, and all methods in an interface are implicitly public and abstract (unless they are default or static methods). As a result of this form of inheritance relationship differs in important ways from classes.
+
+By defining an interface you are creating a type of contract:
+
+- When a class implements an interface, it must adhere to the outline of the interface. In other words, it must provide an implementation for methods outlined in the interface.
+
+An interface typically outlines some number of abstract methods a depicted below:
+
+```java
+public interface Abstractor {
+  String computeOutput();
+}
+```
+
+Note: all interface methods are implicitly `public` and `abstract`, so you do not need to specify those keywords.
+
+If you want to implement this interface in a class, then you must provide concrete implementations for all of its methods:
+
+```java
+public class ConcreteAbstractor implements Abstractor {
+  @Override
+  public String computeOutput() {
+    return "Concrete Output";
+  }
+}
+```
+
+**Default Methods**
+
+In addition to abstract methods, interfaces can also contain default methods. Default methods are methods with a body that provide a default implementation. They are defined using the `default` keyword.
+
+```java
+public interface Swimmer {
+  void swim();
+
+  default void dive() {
+    System.out.println("Diving");
+  }
+}
+```
+
+`default` allow us to provide an implementation for interface methods that should be used if the method is not overridden in the implementing class.
+
+- When a method is default, a method body should be present.
+
+**Defining Variables and Static Methods**
+
+We can also use interfaces to define public static variables and public static methods.
+
+```java
+public interface Swimmer {
+  int NUMBER_OF_FEET_IN_A_LEAGUE = 18_228;
+
+  void swim();
+
+  default void dive() {
+    System.out.println("Diving");
+  }
+
+  static int convertFromFeetToLeagues(int feet) {
+    return feet/NUMBER_OF_FEET_IN_A_LEAGUE;
+  }
+}
+```
+
+Notice the naming convention used. When variables are both `static` and `final`, they are considered to be **constants**. In Java, the naming convention for constants is to use **UPPER_SNAKE_CASE**.
+
+Note: we access our static variables and methods using the interface name, not the instance name.
 
 ## List Interface
 
