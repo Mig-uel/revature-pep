@@ -311,3 +311,347 @@ class SmsSender implements Sendable {
   }
 }
 ```
+
+## Intro to Maven `pom` and `xml` Files
+
+**Introduction to Maven**
+
+[**Maven**](https://maven.apache.org/) is a build automation tool used primarily for Java projects. It simplifies the process of managing project dependencies, building projects, and deploying applications. Maven uses a Project Object Model (POM) file (`pom.xml`) to define project structure, dependencies, and build configurations.
+
+In simple terms, Maven is a tool that is used for building and managing any Java-based project. It provides a consistent way to manage project dependencies, build processes, and project structure.
+
+Maven helps in the following ways:
+
+- Simplifies the build process
+- Manages project dependencies and adding jar files
+- Provides a standardized project structure
+- Facilitates easy integration with other tools and frameworks
+- Documenting project information with change logs and reports
+- Integration with source control systems like Git
+
+Features of Maven that we will go over:
+
+- Project Object Model (POM)
+- Maven lifecycle
+
+Maven project configuration and dependencies are handled via the Project Object Model (POM) file, which is an XML file named `pom.xml`. This file contains essential project information such as project name, version, dependencies, build settings, and plugins required for building and managing the project.
+
+**POM - Project Object Model**
+
+Maven identifies projects through **project coordinates** defined in the `pom.xml` file. These coordinates consist of the following elements:
+
+- `<groupId>`: The unique identifier for the group or organization that is responsible for the project (e.g., `com.example`).
+- `<artifactId>`: The unique identifier for the project itself (e.g., `my-app`).
+- `<version>`: The version of the project (e.g., `1.0.0`).
+
+Together, these uniquely identify a project in the Maven repository and a specific version of that project.
+
+Some other important tags within the `pom.xml` file include:
+
+- `<project>`: The root element of the POM file, which contains all other configuration elements.
+- `<modelVersion>`: The version of the POM model being used (e.g., `4.0.0`).
+- `<name>`: The name of the project (e.g., `My Application`).
+- `<properties>`: A section for defining project properties, such as the Java version or encoding.
+- `<dependencies>`: A section for defining project dependencies, which are external libraries or modules required by the project.
+  - Each dependency has its own `<dependency>` element, which includes `<groupId>`, `<artifactId>`, and `<version>` tags.
+- `<plugins>`: A section for defining Maven plugins, which are used to extend Maven's functionality.
+  - Each plugin has its own `<plugin>` element, which includes `<groupId>`, `<artifactId>`, and `<version>` tags.
+
+Example of a `pom.xml` file:
+
+```xml
+<project>
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.example</groupId>
+  <artifactId>my-app</artifactId>
+  <version>1.0.0</version>
+
+  <properties>
+    <java.version>11</java.version>
+  </properties>
+
+  <name>My Application</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter</artifactId>
+      <version>2.5.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-core</artifactId>
+      <version>${mavenVersion}</version>
+    </dependency>
+  </dependencies>
+</project>
+```
+
+**Maven Build Lifecycle**
+
+When Maven builds your project, it goes through several steps called **phases**.
+
+The default maven build lifecycle goes through the following phases:
+
+1. **validate**: Validate the project is correct and all necessary information is available.
+2. **compile**: Compile the source code of the project.
+3. **test**: Run tests using a suitable testing framework.
+4. **package**: Package the compiled code into a distributable format, such as a JAR or WAR file.
+5. **integration**: Run integration tests.
+6. **verify**: Run any checks to verify the package is valid and meets quality standards.
+7. **install**: Install the package into the local Maven repository.
+8. **deploy**: Copy the final package to the remote repository for sharing with other developers and projects.
+
+Each phase is responsible for a specific task in the build process, and they are executed in order. You can also bind custom tasks to specific phases using plugins, allowing for greater flexibility in the build process.
+
+Each phase in turn is composed of plugin goals that are bound to zero or more build phases. A plugin goal is a specific task that the plugin can perform, such as compiling code, running tests, or packaging the application.
+
+**What are WAR and JAR files?**
+
+Java ARchive (JAR) files are used to package Java classes, metadata, and resources into a single file for distribution. JAR files are typically used for libraries or applications that can be executed by the Java Virtual Machine (JVM).
+Java applications are typically packaged and distributed as JAR files for easy deployment, which are basically ZIP files with a `.jar` extension.
+
+Web applications are distributed as Web Application ARchive (WAR) files, which are similar to JAR files but include additional metadata and resources required for web applications. WAR files contain not only Java classes but also HTML, CSS, JavaScript, and other web-related resources.
+
+Maven projects can be deployed to servlet containers (such as Apache Tomcat) by packaging them as WAR files.
+
+Depending on your project configuration in the `pom.xml` file, Maven will either create a WAR file or a JAR file based on the packaging type specified in the `<packaging>` element during the build process.
+
+**Using the `mvn` Command**
+
+To use the Maven CLI (command-line interface), first test that you have Maven installed:
+
+```
+mvn -v
+```
+
+Now, once you are in your project directory, you can run any phase in the default build lifecycle using the `mvn` command followed by the phase name. For example, to compile your project, you would run:
+
+```
+mvn compile
+```
+
+Maven will look for the `pom.xml` file in the current directory and execute the specified phase along with all preceding phases in the build lifecycle.
+
+To execute a specific Maven goal, use the `plugin:goal` syntax. For example, to run the `clean` goal of the `maven-clean-plugin`, you would use the following command:
+
+```
+mvn dependency:copy-dependencies
+```
+
+```
+mvn org.apache.maven.plugins:maven-clean-plugin:clean
+```
+
+Multiple phases or goals can be run sequentially by specifying them in the command:
+
+```
+mvn clean install
+```
+
+**Code Coverage**
+
+One significant feature of Maven is its integration with various plugins that extend its functionality. These plugins enable tasks such as generating documentation, deploying artifacts to repositories, and performing code analysis.
+
+Code coverage is a metric used to measure the percentage of code that is executed during automated testing. It helps assess the effectiveness of test suites by identifying areas of code that are not adequately tested. Higher code coverage generally indicates a more thoroughly tested codebase, which can lead to improved software quality and reliability.
+Code coverage tools analyze the relationship between the executed code and the source code to generate reports that highlight which parts of the code were executed during tests and which parts were not.
+
+Maven integrates seamlessly with code coverage tools like JaCoCo (Java Code Coverage) and Cobertura. These tools can be configured as Maven plugins in the `pom.xml` file to automatically generate code coverage reports during the build process.
+
+By adding code coverage plugins to the Maven project configuration, developers can automatically generate detailed code coverage reports that provide insights into the effectiveness of their test suites.
+
+### Real World Application
+
+**The Need for Maven**
+
+Maven is widely used in Java projects to manage dependencies, build processes, and project configurations. Its standardized approach simplifies the development workflow, making it easier for teams to collaborate and maintain their codebases. By leveraging Maven's powerful features, developers can focus on writing high-quality code while ensuring that their projects remain organized and manageable.
+
+Maven helps to download dependencies, which refers to the libraries or JAR files. The tool helps get the right JAR files for each project as there may be different versions of the same library.
+
+After Maven, downloading dependencies does not require visiting the official websites of each library. Instead, Maven automatically resolves and downloads the required dependencies from a central repository, streamlining the process and saving developers time. You can visit mvnrepository.com to find libraries in different languages.
+
+Maven also helps to create the right project structure, servlets, and other boilerplate code. This is especially useful for beginners who may not be familiar with the standard conventions of Java projects. By using Maven, developers can ensure that their projects follow best practices and are organized in a way that is easy to understand and maintain.
+
+**Who is Using Maven?**
+
+There are over 4,000 companies using Maven today. Maven is also used in industries other than computer science, like information technology, financial services, banking, hospitals, and more.
+
+Some of the largest corporations using Maven include:
+
+- Google
+- Microsoft
+- Amazon
+- Netflix
+- LinkedIn
+
+### Implementation
+
+Here we will describe the process for installing Maven and take a look at a sample `pom.xml` file.
+
+**Maven `pom.xml` File**
+
+POM (Project Object Model) is the fundamental unit of work in Maven. Maven reads the `pom.xml` file to understand the project structure, dependencies, and build configurations.
+
+Sample `pom.xml` File:
+
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.example</groupId>
+    <artifactId>my-app</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <!-- Add typical dependencies for a web application -->
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>5.3.8</version>
+        </dependency>
+    </dependencies>
+</project>
+```
+
+`pom.xml` tags in detail:
+
+- `<project>`: The root element of the POM file.
+- `<modelVersion>`: The version of the POM model being used.
+- `<groupId>`: The unique identifier for the project's group.
+- `<artifactId>`: The unique identifier for the project.
+- `<version>`: The version of the project.
+- `<dependencies>`: The section where project dependencies are defined.
+- `<dependency>`: A single project dependency.
+- `<name>`: The name of the project.
+- `<scope>`: The scope of the dependency (e.g., compile, test, provided).
+- `<packaging>`: The type of artifact being produced (e.g., jar, war).
+
+**Code Coverage**
+Code coverage is a software metric used to measure how many lines of our code are executed during automated tests.
+
+Here we are going to stroll through some practical aspects of using JaCoCo, a code coverage reports generator for Java projects.
+
+**Maven Configuration**
+
+In order to generate code coverage reports using JaCoCo, we need to add the JaCoCo plugin to our `pom.xml` file. Here is an example configuration:
+
+```xml
+<plugin>
+    <groupId>org.jacoco</groupId>
+    <artifactId>jacoco-maven-plugin</artifactId>
+    <version>0.8.7</version>
+    <executions>
+        <execution>
+            <goals>
+                <goal>prepare-agent</goal>
+            </goals>
+        </execution>
+        <execution>
+            <id>report</id>
+            <phase>test</phase>
+            <goals>
+                <goal>report</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+```
+
+**Code Coverage Reports**
+Before we start looking at JaCoCo's code coverage capabilities, we need to a code sample.
+
+Here's a simple Java function that checks whether a string reads the same backward and forward:
+
+```java
+public boolean isPalindrome(String str) {
+  if (str.length() <= 1) {
+    return true;
+  }
+
+  char firstChar = str.charAt(0);
+  char lastChar = str.charAt(str.length() - 1);
+
+  String mid = str.substring(1, str.length() - 1);
+
+  return (firstChar == lastChar) && isPalindrome(mid);
+}
+```
+
+Now all we need is a simple JUnit test:
+
+```java
+@Test
+public void whenEmptyString_thenAccept() {
+  Palindrome palindromeTester = new Palindrome();
+  assertTrue(palindromeTester.isPalindrome(""));
+}
+```
+
+Running the test using JUnit will automatically set in motion JaCoCo agent. It will create a coverage report in binary format in the target directory.
+
+Obviously, we cannot interpret the output single-handedly, but other tools and plugins can, e.g. SonarQube.
+
+The good news is that we can use the `jacoco:report` goal to generate a human-readable report in HTML format.
+
+**Report Analysis**
+
+JaCoCo reports help us visually analyze code coverage by using diamonds with colors for branches, and background colors for lines.
+
+- Red diamond: Indicates a branch that was not executed.
+- Yellow diamond: Indicates a branch that was partially executed.
+- Green diamond: Indicates a branch that was fully executed.
+- The same color code applies to the background color, but for lines coverage.
+
+JaCoCo mainly provides three important metrics:
+
+- Lines coverage: the amount of code lines executed by tests based on the number of Java bytecode instructions called.
+- Branches coverage: the percentage of branches (e.g., if-else statements) executed by tests.
+- Cyclomatic complexity: a software metric used to measure the complexity of a program. It is calculated based on the control flow of the program, specifically the number of linearly independent paths through the code.
+
+Generally, the lower the cyclomatic complexity, the easier the code is to understand and maintain. It also usually reflects the number of test cases we need to implement in order to cover the codebase.
+
+**Concept Breakdown**
+
+JaCoCo runs as a Java agent. It's responsible for instrumenting the bytecode of the classes being tested. JaCoCo drills into each instruction, and shows which lines are executed and which are not during each test.
+
+To gather coverage data, JaCoCo uses ASM (a Java bytecode manipulation framework) for bytecode instrumentation and analysis on the fly, receiving events from the JVM Tool Interface in the process.
+
+It is also possible to run the JaCoCo agent in server mode, which allows it to collect coverage data from multiple JVMs.
+
+**Code Coverage Score**
+
+In a real world project, as developments progresses, we need to keep track of the code coverage score.
+
+JaCoCo offers a simple way of declaring minimum requirements that should be met, otherwise the build fails.
+
+We can to that by adding the following check goal in our `pom.xml` file:
+
+```xml
+<execution>
+    <id>jacoco-check</id>
+    <goals>
+        <goal>check</goal>
+    </goals>
+    <configuration>
+      <rules>
+        <rule>
+          <element>PACKAGE</element>
+          <limits>
+            <limit>
+              <counter>LINE</counter>
+              <value>COVEREDRATIO</value>
+              <minimum>0.80</minimum>
+            </limit>
+          </limits>
+        </rule>
+      </rules>
+    </configuration>
+</execution>
+```
+
+As we can see, we are limiting the minimum score for lines coverage to 80% at the package level.
+
+The `jacoco:check` goal is bound to the `validate` phase of the Maven build lifecycle, so we can run the Maven command `mvn validate` to check if our code coverage meets the specified requirements.
