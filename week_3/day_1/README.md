@@ -655,3 +655,83 @@ We can to that by adding the following check goal in our `pom.xml` file:
 As we can see, we are limiting the minimum score for lines coverage to 80% at the package level.
 
 The `jacoco:check` goal is bound to the `validate` phase of the Maven build lifecycle, so we can run the Maven command `mvn validate` to check if our code coverage meets the specified requirements.
+
+## Maven Build Lifecycle
+
+The Maven Build Lifecycle is a sequence of phases that define the order in which tasks are executed during the build process. Each phase represents a specific stage in the build lifecycle, and they are executed in a predefined order.
+
+Each phase represents a specific stage in the build process, such as compiling source code, running tests, packaging the application, and deploying it to a server.
+
+The phases are organized into a lifecycle, which is predefined and standardized by Maven.
+
+The phases of the build lifecycle are:
+
+- validate: Validate the project is correct and all necessary information is available.
+- compile: Compile the source code of the project.
+- test: Test the compiled source code using a suitable testing framework.
+- package: Package the compiled code into a distributable format, such as a JAR.
+- verify: Run any checks to verify the package is valid and meets quality standards.
+- install: Install the package into the local Maven repository.
+- deploy: Copy the final package to the remote repository for sharing with other developers and projects.
+
+After the `validate` phase and before the `compile` phase, there are two additional phases:
+
+- initialize: Initialize the build process and set up any necessary resources.
+- generate-sources: Generate any source code or resources needed for the build.
+
+### Real World Application
+
+Understanding the Maven build lifecycle is crucial for effectively managing and controlling the build process of Java projects. By knowing the purpose and order of each phase, developers can customize the build process to meet their specific needs.
+
+Here are some key reasons why understanding the Maven build lifecycle is important:
+
+- **Consistency and Standardization**: Maven provides a standardized build process that ensures consistency across different projects. Understanding the lifecycle helps developers follow best practices and maintain a uniform approach to building and managing projects.
+- **Customization and Extensibility**: By understanding the lifecycle, developers can customize and extend the build process to fit their specific needs. This includes adding new phases, modifying existing ones, or integrating additional tools and plugins.
+- **Troubleshooting and Debugging**: When issues arise during the build process, understanding the lifecycle helps developers identify where the problem occurred and how to resolve it. This knowledge is essential for effective troubleshooting and debugging. Developers can analyze the build logs, identify which phase or plugin encountered an error, and take appropriate actions to fix the issue.
+
+Overall, understanding the Maven build lifecycle empowers developers to effectively manage and control the build process, leading to more efficient and reliable software development.
+
+### Implementation
+
+If you want to invoke any of the phases of the Maven build lifecycle, all you need to do is type `mvn <phase-name>` in your terminal, which is opened in your project directory.
+
+For example, if you want to package your project into a JAR executable, you'd type `mvn package`. This will generate a JAR file in the `target` directory of your project.
+
+Note: this will run every phase up to the specified phase, so in this case, it will run `validate`, `compile`, and `test` phases before the `package` phase.
+If any of these phases fail, the build process will stop and the subsequent phases will not be executed.
+
+**Plugins**
+
+Plugins assist with configuring the build lifecycle of your project. `maven-assembly-plugin` is a popular plugin that allows you to create a JAR file with all dependencies included. This plugin will be required in training after PEP.
+
+**Maven Assembly Plugin**
+
+If your project has external dependencies and you need to build your Maven project into a JAR executable, `mvn package` won't work as intended. Running this command will generate a JAR file in the `target` directory, but it won't include the external dependencies. When the JAR file is ran, the output will state `No Main Manifest Attribute`. To fix this, we are going to need to configure our `pom.xml` file to add the plugin `maven-assembly-plugin`.
+
+```xml
+<plugin>
+    <artifactId>maven-assembly-plugin</artifactId>
+    <configuration>
+        <archive>
+            <manifest>
+                <!-- Change the line below to reference the main class of your application -->
+                <mainClass>com.example.Main</mainClass>
+            </manifest>
+        </archive>
+        <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+        </descriptorRefs>
+    </configuration>
+    <executions>
+        <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+                <goal>single</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+```
+
+Running the command `mvn package` will now create a JAR file in the `target` directory that includes all dependencies and has the correct main class specified in the manifest. You can then run the JAR file using the command `java -jar target/your-jar-with-dependencies.jar`.
