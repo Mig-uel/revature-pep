@@ -383,3 +383,189 @@ Despite being called a "master", Scrum Masters do not have direct authority over
 **Keep Your Team Improving with Scrum Ceremonies**
 
 Scrum ceremonies are a vital part of the Scrum process. Do not neglect them just because your team is short on time. Instead, find ways to make these ceremonies more efficient and focused. This might involve setting clear agendas, using time-boxing techniques, or leveraging technology to streamline communication and collaboration. According to the Scrum Allegiance, 86% if respondents have initial planning sessions, 87% hold daily Scrum meetings, and 81% take the time for a Scrum retrospective. Scrum ceremonies empower teams to plan, maintain, and learn from sprints, ensuring a continuous cycle of improvement, adaptation, and steady productivity.
+
+## Story Pointing and Burndown Charts
+
+Story pointing and burndown charts are essential tools in Agile project management, particularly in Scrum. They help teams estimate the effort required for tasks and track progress throughout the sprint.
+
+**Agile Stories: A Refresher**
+
+Before we talk about story points in Agile, let us remind ourselves what stories are in the Agile context.
+
+A story is a short, simple description of a feature told from the perspective of the person who desires the new capability, usually a user or customer. Stories are often written on index cards or in a digital format and include just enough information for the team to understand the feature and its value. The format typically follows the structure: "As a [user], I want [goal] so that [reason]."
+
+Here's an example of a story: "I manage a small accounting team at work, and I need a way for us to easily share spreadsheets in real-time while being able to communicate with each other simultaneously."
+
+**What are Story Points?**
+
+Story Points (SP) are a unit of measure used to estimate the effort required to complete a user story or task in Agile development. They provide a relative measure of complexity, effort, and risk associated with a particular story, allowing teams to prioritize and plan their work effectively.
+
+They are used by agile teams to provide estimates of the total amount of work required to completely implement items from the product backlog, or user stories. As a result, estimating story points actually entails estimating work and giving each backlog item a point value.
+
+Put another way, it is a numeric value that helps the dev team understand the effort required to complete a story. The team assigns story points based on factors such as complexity, risk, and the amount of work involved.
+
+Story points in Agile are abstract measurements that devs use instead of hours. Points are relative values, so a story with a value of four is twice as complex as a story with a value of two. The actual numbers do not matter - you could assign values between 1,000,000 and 5,000,000 if you want. Instead, you want to give the team an idea of the story's relative difficulty. Story points are not meant to be precise measurements, but rather a tool for facilitating discussion and understanding among team members.
+
+**Story Points Vary Depending On:**
+
+- **The team and individual member**
+
+  - To the relative character of story points, there is an additional dimension: the effectiveness of the team responsible for estimations. One person differs from another based on a variety of criteria, including experience, expertise, and familiarity with the project. Accordingly, a backlog item may be worth five points for one side and only three for another. The same holds true for individual team members; junior and senior will likewise view the "size" of the effort differently.
+
+- **Another value**
+
+  - Because a story point may only exist in relation to another value, it is a relative unit. For example, if a tasks requires two narrative points to finish, it represents twice as much work as a task that required one story point. Comparably, a task estimated at one story point will require one-third effort compared to as task assessed at three story points. To express effort, you might utilize Fibonacci sequence values rather than linear 1 and 2. Rather than the exact numbers you allocate to Agile story points, what counts most is the ratio between the story points and the relative values.
+
+**What is a Burndown Chart?**
+
+A Burndown Chart is a visual representation of work completed versus work remaining over time in an Agile project. It helps teams track their progress and predict when they will complete their work. The chart typically displays the total amount of work (often measured in story points) on the vertical axis and time (usually in sprints) on the horizontal axis.
+
+In order to depict the past and future of the project, the amount of work still to be done is displayed on a vertical axis, and the amount of time since the project's start is displayed on a horizontal axis. As the team completes work, the chart shows a downward trend, indicating that the amount of work remaining is decreasing.
+
+As work is completed, the chart "burns down" towards zero, providing a clear picture of the team's progress. Burndown Charts are useful for identifying potential roadblocks, assessing team performance, and facilitating discussions about project timelines and deliverables.
+
+**Types of Burndown Charts:**
+
+There are two variants of burndown charts:
+
+1. **Sprint Burndown Chart**: Tracks the progress of work completed during a single sprint. It helps the team monitor their velocity and adjust their plans as needed to meet sprint goals.
+2. **Product Burndown Chart**: Tracks the overall progress of work completed for the entire project. It provides a high-level view of the project's status and helps stakeholders understand how much work remains to be done.
+
+**What is Fibonacci Agile Estimation?**
+
+Agile estimation refers to a way of quantifying the effort needed to complete a development task. Many agile teams use story points as the unit to score their tasks. The higher the number of points, the more effort the team believes the task will take.
+
+The Fibonacci sequence is a popular method for assigning story points. In this approach, story points are assigned using the Fibonacci numbers (1, 2, 3, 5, 8, 13, etc.) to represent the relative size and complexity of tasks. The use of Fibonacci numbers helps teams account for uncertainty and variability in their estimates, as the gaps between the numbers increase, reflecting the increasing uncertainty associated with larger tasks.
+
+**Why Use the Fibonacci Sequence for Agile Estimation?**
+
+The Fibonacci sequence is used in Agile estimation because it helps teams make more accurate and realistic estimates. The increasing gaps between the numbers in the sequence reflect the uncertainty and complexity associated with larger tasks. This encourages teams to think critically about the effort required for each task and avoid underestimating or overestimating their work.
+
+Agile consultant Mike Cohn popularized the use of the Fibonacci sequence for Agile estimation in his book "Agile Estimating and Planning." He argued that using Fibonacci numbers helps teams focus on relative sizing rather than absolute values, which can lead to more accurate estimates.
+
+In his article on Fibonacci agile estimation, Cohn asks us to imagine holding a one-kilogram weight (2.2 pounds) in one hand and a two-kilogram weight (4.4 pounds) in the other. While the difference in weight is clear, it's not as easy to quantify the difference in effort required to lift each weight. The difference in weights will need to be greater so that our brains can easily perceive the difference in effort.
+
+This is why Cohn recommends using the Fibonacci sequence for Agile estimation. The numbers your team can choose from takes larger jumps as the sequence progresses, but they grow at a constant rate with each number representing about a 60% increase over the previous number. Cohn points out that even as the numbers get huge, our brains can still perceive the differences if the next number is 60% greater than the last.
+
+**How Does Fibonacci Agile Estimation Work in Practice?**
+
+Imagine your team wanted to estimate the effort needed to build a new widget in your app. Everyone agrees that this task would rate a high level of difficulty and take a long time to complete it.
+
+But now imagine your team used a linear, even number scoring scale for story point estimation: 2, 4, 6, 8, 10...up to 50. Even if everyone agreed this new widget would be on the high end of the point scale, could you all agree whether to assign it 42 points? How about 46 points? Or 548 points?
+
+As the numbers get higher on this scoring scale, you will find it more difficult to determine the right number because there too many options, and the numbers at the high end are not distinct enough from each other.
+
+Moreover, remember that the goal with story points is only to estimate the level of effort. There is no reason to try to zero in on the perfect story-point score. These numbers are just a guide to help your team gauge how much time a task will take and how many resources you will need to devote to it. This is why no viable agile estimation uses decimals.
+
+If your team was using the Fibonacci sequence to estimate the effort to develop this new widget, you would have only a few numbers to choose from at the top end of the scale: 34, 55, 89, and 144. The gaps between these numbers are large enough that your team can easily agree on the level of effort required to complete the task.
+
+If you do the math, you will see Cohn is correct that each of these numbers jump about 60% from the previous number. And as you can see, it would be much easier to reach a consensus on whether the task is a 55 or an 89 than it would be to agree on whether it's a 42 or a 46.
+
+### Real World Application
+
+**Why Should Teams Use Story Points in Agile?**
+
+Story points in Agile benefit development teams and product owners alike.
+
+The effort is the result of several things coming together, and your team needs to take those into account when estimating story points. This includes factors like the complexity of the task, the skills of the team members, and any potential obstacles that could arise during development.
+
+- Amount of work: The total amount of work required to complete the task, including design, coding, testing, and documentation.
+- Work's complexity: The complexity of the task, including any technical challenges or dependencies that may arise during development.
+- Uncertainties and risks: Any uncertainties or risks associated with the task, such as potential changes in requirements or dependencies on other tasks.
+
+Stories points are also relative, so over time, repetition may have a role in determining how much weight you can give certain actions. As a result, the "size" of the finished project will also depend on how experienced your team is with the project and how familiar they are with the technologies involved.
+
+Benefits for development teams:
+
+- The team gets a better understanding of what is required of them, making it easier to plan and execute the work.
+- The team won't over plan or under plan their work, which can lead to missed deadlines or wasted effort.
+- The team can focus on delivering value to the customer rather than getting bogged down in detailed planning.
+- The team knows how much to plan in a sprint, thereby letting them work at a sustainable pace.
+- The team can create a reasonable estimate of how much work they can accomplish in a sprint, which helps them avoid burnout and maintain a healthy work-life balance.
+
+Benefits for product owners:
+
+- They can better assess an item's return on investment (ROI) by understanding the effort involved in delivering it.
+- They can prioritize work more effectively by comparing the relative effort of different items.
+- They can communicate more clearly with stakeholders about the progress and challenges of the project.
+- Owners can better understand the technical risk associated with a task, which helps them make informed decisions about prioritization and resource allocation.
+- They can better forecast the timeline and budget for the project, allowing for more accurate planning and resource allocation.
+
+However, team members should be careful to avoid some common pitfalls when using story points in Agile:
+
+- Do not give story points to small tasks that can be easily completed in a few hours. Instead, focus on larger tasks that require more effort and complexity.
+- Story point creation is a team effort, not a one-person show. Everyone should contribute to the discussion and estimation process.
+- Do not average story points across the team. Each team member may have different perspectives and experiences, so it is essential to consider everyone's input.
+- Do not let one variable influence the story point estimation process. Instead, consider all relevant factors, such as complexity, effort, and risk.
+
+TODO
+
+## Waterfall Methodology
+
+The Waterfall methodology is a linear and sequential approach to software development. It is one of the earliest methodologies used in software engineering and is characterized by distinct phases that must be completed before moving on to the next one.
+
+The phases typically include:
+
+1. **Requirements Gathering**: In this initial phase, all possible requirements of the system to be developed are gathered and documented. This phase is crucial as it sets the foundation for the entire project.
+
+2. **System Design**: Based on the gathered requirements, the system's architecture and design are created. This includes both high-level design (HLD) and low-level design (LLD) documents.
+
+3. **Implementation**: In this phase, the actual coding takes place. Developers write code according to the design specifications created in the previous phase.
+
+4. **Testing**: After implementation, the software is thoroughly tested to identify and fix any defects or issues. This phase ensures that the software meets the specified requirements.
+
+5. **Deployment**: Once testing is complete, the software is deployed to the production environment where it will be used by end-users.
+
+6. **Maintenance**: After deployment, the software enters the maintenance phase, where it is updated and improved based on user feedback and changing requirements.
+
+As each phase completes, the project "spills" over into the next step like a waterfall, with each phase flowing into the next in a linear fashion. This is a tried-and-true method for software development that has been used for decades.
+
+**Advantages**
+
+- It is a simple model that can be followed by developers in developing software.
+- It is easy to understand and manage due to its sequential nature.
+- All the phases are clearly defined, making it easy to track progress and manage resources.
+- It works well for smaller projects with well-defined requirements.
+- It provides a structured approach that can be helpful for teams new to software development.
+
+**Disadvantages**
+
+- It is not ideal for projects with changing requirements, as it is difficult to go back and make changes once a phase is completed.
+- It consumes a lot of time and resources, as each phase must be completed before moving on to the next one.
+- It does not allow for much flexibility or iteration, which can be a drawback in fast-paced development environments.
+- Since each phase needs to be completed before moving on to the next, it can lead to delays if any phase takes longer than expected. As well as, testing is done only after the implementation phase, which can lead to discovering issues late in the development process.
+
+### Real World Application
+
+In the olden days, Waterfall model was used to develop enterprise applications like Customer Relationship Management (CRM) systems, Human Resource Management (HRM) systems, Supply Chain Management (SCM) systems, Inventory Management Systems, Point of Sales (POS) systems, and many more. However, with the advent of Agile methodologies, the use of Waterfall has declined in favor of more flexible and iterative approaches.
+
+With the evolution of technology, there were cases where large scale enterprise systems,with the waterfall model as the default choice, were developed over a period of two to three years byt became redundant by the time they were completed. Slowly, these enterprise systems switch over to more flexible and less expensive models, but the waterfall model continued to be preferred in systems where:
+
+- A human life is a stake and the cost of failure is high, such as in healthcare or aerospace applications.
+- Money and time are secondary factors and what matters most is the quality and reliability of the software.
+- Military and aircraft programs where requirements are well-defined and unlikely to change.
+- Projects with an extremely high degree of oversight and regulatory compliance, such as in finance or pharmaceuticals.
+
+### Implementation
+
+The original Waterfall method's steps included:
+
+- Requirements determination
+- Design
+- Implementation
+- Verification
+- Maintenance
+
+Other models change the Requirements phase into the Idea phase, or break the Requirements phase out into Planning and Analysis. Furthermore, some models further break the Design phase out into Logical and Physical design sub-phases. However, the basic underlying principles remain the same.
+
+Below, the major stages of the Waterfall method are described in detail:
+
+- The Waterfall method makes the assumption that all requirements can be gathered up front during the Requirements phase.
+  - Communication with the user is front-loaded into this phase, as the Project Manager does their best to elicit all necessary information. Once this stage is complete, the process runs "downhill" like a waterfall, where the water starts from the top and flows down to the bottom.
+- The Design phase involves creating a detailed blueprint for the software solution, including architecture, user interfaces, and data models. This phase is best described by breaking it up into Logical Design and Physical Design sub-phases.
+  - During the Logical Design phase, the system's analysts makes use of the information collected in the Requirements phase to design the system independently of any hardware or software system.
+  - Once the higher-level Logical Design is complete, the Physical Design phase begins, where the system's design is translated into a detailed specification that can be implemented in code.
+- The Implementation phase involves the actual coding of the software solution based on the specifications created during the Design phase.
+- The Verification phase involves testing the software to ensure it meets the specified requirements and is free of defects. It was originally called for to ensure that the project is meeting customer expectations.
+  - The project is rolled out to the customer, and the Maintenance phase begins.
+- During the Maintenance phase, the customer is using the software, and any issues or bugs that arise are addressed. This phase also includes updates and enhancements to the software as needed.
