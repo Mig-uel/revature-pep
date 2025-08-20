@@ -569,3 +569,56 @@ Below, the major stages of the Waterfall method are described in detail:
 - The Verification phase involves testing the software to ensure it meets the specified requirements and is free of defects. It was originally called for to ensure that the project is meeting customer expectations.
   - The project is rolled out to the customer, and the Maintenance phase begins.
 - During the Maintenance phase, the customer is using the software, and any issues or bugs that arise are addressed. This phase also includes updates and enhancements to the software as needed.
+
+## Agile vs Waterfall
+
+Agile and Waterfall are two distinctive methodologies of software development. While both aim to deliver high-quality software, they differ significantly in their approach and execution.
+
+- Waterfall is a linear and sequential approach, where each phase must be completed before the next one begins. This makes it easier to manage and control, but can lead to inflexibility and difficulty in accommodating changes.
+- Agile, on the other hand, is an iterative and incremental approach that emphasizes flexibility and collaboration. It allows for changes to be made at any stage of the development process, making it easier to adapt to evolving requirements and customer feedback.
+
+Following the Agile methodology, development will move through a series of cycles throughout the lifetime of the project. The development phase, review, feedback, and then approval of the work item - either yes or no. If yes, implement and complete the task. If no, record and make any necessary changes, track and adjust the backlog or prioritization to reflect the newly acquired knowledge, and then move onto the next work item.
+
+Following the Waterfall methodology, development will move through a simple linear process: requirements gathering, design, implementation, testing, deployment, and maintenance. Each phase must be completed before moving on to the next one, and changes can be difficult to accommodate once a phase is completed.
+
+In summary, the choice between Agile and Waterfall depends on the specific needs and constraints of the project, as well as the preferences of the development team and stakeholders.
+
+### Real World Application
+
+**The advantages of Waterfall:**
+
+- Required less coordination and communication between team members due to clearly defined sequential phases.
+- A clear project phase structure that is easy to understand and manage.
+- The cost of the project can be estimated after the requirements phase, allowing for better budgeting and resource allocation.
+- Better focus on documentation and requirements upfront, which can lead to a more stable foundation for the project.
+- The design phase is more methodical, allowing for a more thorough understanding of the system before implementation begins.
+
+**The disadvantages of Waterfall:**
+
+- Inflexibility in accommodating changes once a phase is completed.
+- Limited customer involvement and feedback during the development process.
+- Potential for scope creep if requirements are not well-defined upfront.
+- Difficulty in managing and mitigating risks throughout the project lifecycle.
+- Harder to break up and share work among team members due to the linear nature of the process.
+- Risk of time waste due to delays in one phase affecting the entire project timeline.
+- Additional hiring requirements to fulfill specialized phase teams whereas Agile encourages more cross-functional teams.
+- Extra communication overhead during handoffs between phases, which can lead to misunderstandings and delays.
+- Product ownership and engagement can be more challenging, as stakeholders may be less involved throughout the process.
+
+**The advantages of Agile:**
+
+- Faster feedback loops and more frequent releases, allowing for quicker adjustments based on user feedback.
+- Identifies problems and bottlenecks earlier in the development process, leading to more efficient problem-solving.
+- Higher potential for customer satisfaction due to continuous involvement and feedback.
+- Time to market is dramatically reduced, allowing for quicker delivery of value to customers.
+- Better visibility/accountability for the team, as progress is tracked and communicated regularly.
+- Dedicated teams drive better productivity and ownership of the work.
+- Flexible prioritization of tasks based on changing requirements and customer needs.
+
+**The disadvantages of Agile:**
+
+- Critical path and inter-project dependencies may not be clearly defined compared to Waterfall.
+- There is an organizational learning curve for teams new to Agile methodologies.
+- Difficulty in estimating project timelines and budgets due to the iterative nature of Agile.
+- Less emphasis on documentation can lead to knowledge gaps and challenges in onboarding new team members.
+- True agile execution with a continuous deployment pipeline has many technical challenges, such as managing dependencies and ensuring code quality.
