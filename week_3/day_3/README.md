@@ -191,3 +191,63 @@ CLIs double as scripting languages (see shell scripting), meaning that is it no 
 `/usr`: Contains user-related programs and data. It is further divided into subdirectories like `/usr/bin` (user binaries), `/usr/lib` (user libraries), and `/usr/share` (shared data).
 
 `/var`: Contains variable data files, such as log files, mail spools, and temporary files created by programs.
+
+## Source Control Management (git, vcs, cvcs, dvcs)
+
+Source control management (SCM) systems are essential tools for developers, allowing them to track changes to code, collaborate with others, and manage different versions of their projects.
+
+- **Version Control Systems (VCS)**: These systems track changes to files over time, allowing developers to revert to previous versions, compare changes, and collaborate with others. Examples include Git, Subversion (SVN), and Mercurial.
+
+Version control is a process to manage a collection of source code and changes that provide you with many capabilities:
+
+- Maintain multiple versions of the code.
+- Ability to revert to previous versions.
+- Developers can work concurrently on the same codebase.
+- Audit traceability of changes with clear history on whom, which, when, where, and what was changed.
+- Copy/Merge/Undo changes.
+- Find out the difference between two versions of the code.
+- Provides full backup without occupying additional space.
+- Review history of changes.
+- Capable for both small and large scale projects.
+
+In simpler words, a Version Control System (VCS) is a system that allows developers to track changes in their code over time. It helps them collaborate, manage different versions of their projects, and revert to previous states if needed.
+
+#### Importance of Version Control Systems
+
+Let's take an example of an organization with a project team of five developers.
+
+Two of the developers are in one location and the other three are in a different location. They received a project and started developing the code, and then come across the following situations:
+
+- Each developer is working on one module at a time whereas others were waiting for developers to complete their tasks so that they can start working on their modules.
+- Whenever they completed their work and decided to deploy the code, they were each taking a full backup of the project and one day they could not do it because the disk space was full.
+- One day one of them deleted on module which they could not bring back and had to recreate it from scratch.
+- They were unable to find out who has done what changes in the code.
+- They could not do any experiments for the new feature without interfering with other developers' work.
+- They need to send the code via email as they were seated in different locations, which led to confusion and version mismatches.
+
+These situations highlight the need for a Version Control System (VCS). A VCS would allow developers to:
+
+- A version control system ensures that all the previous versions of the code can be retrieved later on and all changes are tracked, providing a clear history of who made changes, when, and why.
+- It also explains what a file looked like on a specific date or at a specific point in time.
+- A version control system provides a central repository where all developers can access the latest code, reducing the need for email exchanges and preventing version mismatches and the ability to work concurrently on the same codebase.
+
+#### Types of Version Control Systems
+
+There are two types of Version Control Systems:
+
+- **Centralized Version Control Systems (CVCS)**: In a CVCS, there is a single central repository that stores all versions of the code. Developers check out files from this central repository, make changes, and then check them back in. This model can lead to bottlenecks and conflicts if multiple developers are working on the same files simultaneously.
+
+- **Distributed Version Control Systems (DVCS)**: In a DVCS, each developer has a complete copy of the repository, including its entire history. This allows for more flexible workflows, as developers can work offline, create branches, and merge changes more easily. Git is a popular example of a DVCS.
+
+### Real World Application
+
+#### Benefits of Version Control Systems
+
+A version control system works as a database for your code and makes revisions instead of duplicating the entire codebase which helps to save space.
+
+- It keeps all the history of all the files, which gives you full traceability and auditability of what changes were made, when, and by whom.
+- It provides the ability to revert back to a previous version of the code if something goes wrong.
+- It prevents the risk of losing work due to accidental deletions or overwrites.
+- It helps to identify the differences between two versions of a file, making it easier to understand what has changed.
+- It provides you with the ability to have entirely independent code versions through branching and merging.
+- It provides the ability to work as a distributed team, allowing developers to work on the same codebase without interfering with each other's work.
