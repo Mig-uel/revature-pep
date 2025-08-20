@@ -102,3 +102,54 @@ It is important to know why using the command line is crucial:
   - You can write scripts to automate tasks using shell scripting languages like Bash. This allows for complex workflows to be executed with a single command.
   - For example, if you wanted to copy all your text files to a directory, you'd use this line: `cp *.txt /path/to/directory`
   - A script could be written if you wanted to do this repeatedly, which would save time and reduce errors.
+
+## Moving and Deleting Files Using GitBash
+
+Below are some useful UNIX/Linux commands for moving and deleting files using GitBash. Always remember that UNIX/Linux commands are case-sensitive.
+
+`mv`
+
+The `mv` command moves a file or renames it. It can also be used to move files between directories.
+
+`mv file1 directory1`: Moves "file1" into "directory1".
+`mv file1 file2 file3 directory1`: Moves "file1", "file2", and "file3" into "directory1".
+`mv -i file1 directory1`: Moves "file1" into "directory1", prompting for confirmation if the destination file already exists.
+`mv -n file1 directory1`: Moves "file1" into "directory1", but does not overwrite an existing file in the destination.
+`mv -u file1 directory1`: Moves "file1" into "directory1" only if "file1" is newer than the existing file in the destination.
+`mv -b file1 directory1`: Moves "file1" into "directory1", creating a backup of the destination file if it exists.
+
+---
+
+`cp`
+
+The `cp` command copies files and directories.
+
+`cp second.txt third.txt`: Copies "second.txt" to "third.txt".
+`cp -i second.txt third.txt`: Copies "second.txt" to "third.txt", prompting for confirmation if "third.txt" already exists.
+`cp -b second.txt third.txt`: Copies "second.txt" to "third.txt", creating a backup of "third.txt" if it exists.
+`cp -f second.txt third.txt`: Copies "second.txt" to "third.txt", forcing the copy even if "third.txt" is write-protected.
+`cp -r directory1 directory2`: Recursively copies "directory1" and its contents to "directory2".
+`cp -p second.txt third.txt`: Copies "second.txt" to "third.txt", preserving the original file's attributes (permissions, timestamps, etc.).
+
+---
+
+`rm`
+
+The `rm` command removes files or directories.
+
+`rm file1`: Deletes "file1".
+`rm -i file1`: Prompts for confirmation before deleting "file1".
+`rm -r directory1`: Recursively deletes "directory1" and its contents.
+`rm -f file1`: Forces the deletion of "file1" without prompting for confirmation.
+
+### Real World Application
+
+**Advantages of Using Command Line Interface (CLI)**
+
+When using a command-line interface, you can use detailed commands more efficiently and faster than you can with a graphical user interface (GUI). It demonstrates the advantages of using a command-line interface in this case, as it can handle extremely repetitive tasks across a wide range of systems.
+
+With the assistance of a program like the computer CLI or code, it is easier for the user to control everything. The user's interface is slow when they navigate through different icons. This enables CLI to operate more quickly as commands are directly delivered to the computer. CLI is preferred by many professionals due to its speed and performance.
+
+All options and operations are invoked in consistent form, while with GUIs similar operations often appear on different menus with different interfaces and different applications have different approaches.
+
+CLIs double as scripting languages (see shell scripting), meaning that is it no more difficult to perform a rare operation than a common one. In fact, it is often easier to perform rare operations in a CLI than in a GUI, as the user can write scripts to automate those tasks. Once an operation is analyzed, it can be saved in a script and consistently performed without further effort. With GUIs, users must start over at the beginning every time, as GUI scripting is more limited (and often nonexistent). Simple commands do not even need a script, as the completed command can usually be assigned a name and executed by simply typing that name.
