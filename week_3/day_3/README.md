@@ -251,3 +251,57 @@ A version control system works as a database for your code and makes revisions i
 - It helps to identify the differences between two versions of a file, making it easier to understand what has changed.
 - It provides you with the ability to have entirely independent code versions through branching and merging.
 - It provides the ability to work as a distributed team, allowing developers to work on the same codebase without interfering with each other's work.
+
+## Git Fundamentals
+
+#### What is Version Control?
+
+Version control, also known as source control, is a system that records changes to a file or set of files over time so that you can recall specific versions later. It allows multiple people to work on the same project simultaneously without overwriting each other's changes.
+
+As development environments become more complex, version control systems (VCS) have become essential tools for managing code changes, tracking history, and collaborating with team members.
+
+Version control systems keep track of every modification to the code in a special kind of database. If a mistake is made, developers can easily revert back to a previous version of the code, minimizing the impact of errors and ensuring a smoother development process.
+
+One of the most popular version control systems is Git, which is widely used in the software development industry. Git allows developers to create branches, merge changes, and collaborate on code in a distributed manner.
+
+#### Nearly Every Operation is Local
+
+Because Git is a distributed version control system, most operations are performed locally on the developer's machine. This means that developers can work offline, make commits, and create branches without needing to communicate with a central server. Once they are ready to share their changes, they can push their commits to a remote repository.
+
+This means that there is very little you cannot do if you are offline or off VPN. FFor example, if you get on an airplane or train and want to work on your project, you can do so without any issues. You can make commits, create branches, and even view the history of your changes. Once you are back online, you can push your changes to the remote repository.
+
+#### The Three States
+
+Git has three main states that your files can reside in:
+
+- **Modified**: This is when you have made changes to a file but have not yet staged it for commit. The file is still in your working directory and is not yet part of the version control system.
+- **Staged**: This is when you have marked a modified file to be included in the next commit. The file is still in your working directory, but it is now part of the version control system.
+- **Committed**: This is when you have saved your changes to the local repository. The file is now part of the version control system and is tracked by Git.
+
+### Main Sections of a Git Project
+
+Git has three main sections that you need to understand:
+
+- **Working Directory/Tree**: This is where you make changes to your files. It is the directory on your local machine where you work on your project.
+  - The working tree (or working directory) is a single checkout of one version of the project. These files are pulled out of the compressed database in the Git directory and placed on disk for you to use or modify.
+- **Staging Area**: This is where you prepare your changes to be committed. You can think of it as a buffer between the working directory and the local repository.
+  - The staging area (or index) is a file, also called the index, that lives in your Git directory. It stores information about what will go into your next commit.
+- **Local Repository/Git Directory**: This is where your committed changes are stored. It is a hidden directory called `.git` that contains all the information about your project’s history.
+  - The Git directory (or repository) is where Git stores the metadata and object database for your project. This is the most important part of Git, and it is what makes Git so fast and efficient.
+
+![Sections of Git](git-sections.png)
+
+#### Git Workflow
+
+The basic workflow in Git involves the following steps:
+
+1. **Make Changes**: Edit files in your working directory.
+2. **Stage Changes**: Use `git add` to add changes to the staging area.
+3. **Commit Changes**: Use `git commit` to commit the staged changes to the local repository.
+4. **Push Changes**: Use `git push` to push the committed changes to a remote repository.
+
+This workflow allows you to keep your changes organized and makes it easy to collaborate with others.
+
+![Git Workflow](git-workflow.png)
+
+If a particular version of a file is in the Git directory, it is considered committed. If it has been modified and was added to the staging area, it is considered staged. If it has been modified but not yet staged, it is considered modified.
