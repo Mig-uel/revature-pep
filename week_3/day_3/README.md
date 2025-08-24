@@ -376,3 +376,26 @@ To clone an existing Git repository, follow these steps:
 1. Open a terminal and navigate to the directory where you want to clone the repository.
 2. Run the command `git clone <repository_url>` to create a local copy of the repository.
 3. (Optional) Navigate into the cloned repository directory using `cd <repository_name>`.
+
+## Pushing to a Remote Repository
+
+#### What is a Remote Repository?
+
+A remote repository is a version of your project that is hosted on the internet or another network. It allows you to share your code with others and collaborate on projects.
+
+The `git push` command is used to upload local repository content to a remote repository. Pushing is how you transfer commits from your local repository to a remote repo. It's like uploading your changes to a shared space where others can access them.
+
+The `fetch` and `push` commands are complementary operations. `fetch` imports commits from a remote repository into your local repository, while `push` exports commits from your local repository to a remote one.
+
+#### `git push` Usage
+
+`git push [remote-name] [branch-name]`
+
+- `remote-name`: The name of the remote repository you want to push to (e.g., `origin`).
+- `branch-name`: The name of the branch you want to push (e.g., `main`).
+
+`git push [remote-name] --all`
+
+- Pushes all branches to the specified remote repository.
+
+`git push` is one component of many used in the overall Git "syncing" process, which also includes `fetch`, `pull`, and `merge`. The syncing process ensures that changes are consistently reflected across both local and remote repositories.
