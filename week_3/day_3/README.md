@@ -399,3 +399,75 @@ The `fetch` and `push` commands are complementary operations. `fetch` imports co
 - Pushes all branches to the specified remote repository.
 
 `git push` is one component of many used in the overall Git "syncing" process, which also includes `fetch`, `pull`, and `merge`. The syncing process ensures that changes are consistently reflected across both local and remote repositories.
+
+## Git Commit, Branch, Merge, Push, Pull
+
+#### Git Merge
+
+Merging is the process of combining the changes from one branch into another. It is a common operation in Git and is used to integrate changes from different branches. It is Git's way of putting a forked history back together again.
+
+The `git merge` command lets you take the independent lines of development created by `git branch` and integrate them into a single branch. This is typically done in a feature branch workflow, where you develop a feature in isolation and then merge it back into the main branch when it's complete.
+
+The current branch will be the one you are on when you run the `git merge` command.
+Meaning, the changes from the branch you are merging in will be applied to your current branch. This means that `git merge` is often used in conjunction with `git checkout` to switch to the branch you want to merge into before running the merge command and `git branch -d` to delete the branch after merging if it is no longer needed.
+
+#### How it Works
+
+`git merge` will combine multiple sequences of commits into one unified history. The command takes the contents of a source branch and integrates it with the target branch. In the simplest case, the target branch is updated to point to the same commit as the source branch, effectively making them identical.
+
+`git merge` takes two commit pointers, usually the branch heads, and finds a common base commit between the two. It then creates a new "merge commit" that combines the changes from both branches since that common base.
+
+#### New Merge Commit Node
+
+Merge commits are unique compared to other commits in that they have two parent commits instead of one. This is because a merge commit represents the point where two branches have been combined. The first parent is the tip of the branch you were on when you ran `git merge`, and the second parent is the tip of the branch you merged in.
+
+When you perform a merge, Git will automatically create a new merge commit that has two parents. This merge commit will contain all the changes from both branches, and it will be added to the history of the target branch.
+
+If Git encounters a conflict during the merge (i.e., changes in both branches that cannot be automatically reconciled), it will pause the merge process and prompt you to resolve the conflicts manually. Once the conflicts are resolved, you can complete the merge by committing the changes.
+
+#### Preparing to Merge
+
+Before performing a merge, there are a couple of steps you should take to ensure a smooth process:
+
+- Confirm you are on the branch you want to merge into by using `git checkout <branch-name>`.
+  - Execute `git status` to ensure you are on the correct branch and that there are no uncommitted changes in your working directory.
+  - If needed, execute `git checkout <branch-name>` to switch to the desired branch.
+- Fetch the latest remote commits:
+  - Run `git fetch` to update your local copy of the remote repository. This ensures that you have the most recent changes from the remote branches before merging.
+  - Once the fetch is completed, ensure the main branch is up to date by executing `git pull origin <main-branch>`. This step integrates any new commits from the remote main branch into your local main branch, reducing the likelihood of conflicts during the merge.
+
+#### Merge
+
+Once the preparatory steps are complete, you can proceed with the merge by executing the command:
+
+`git merge <source-branch>`
+
+### Real World Application
+
+#### Merge Conflicts
+
+It's always nice when merges happen seamlessly, but on occasion, you could run into merge conflicts.
+
+Merge conflicts happen when both branches you are trying to merge have made changes to the same lines in a file, or when one branch deletes a file that another branch has modified. When this happens, Git cannot automatically determine which changes to keep and which to discard, so it marks the file as conflicted and pauses the merge process.
+
+When a merge conflict occurs, Git will modify the affected files to include conflict markers that indicate the conflicting sections. The markers look like this:
+
+```
+<<<<<<< HEAD
+// Changes from the current branch
+=======
+ // Changes from the branch being merged in
+>>>>>>> <source-branch>
+```
+
+#### Solving Merge Conflicts
+
+To solve a merge conflict you first need to understand what caused the merge conflict. Did someone delete a file you made changes to? Or maybe you added a file with the same name as an existing file?
+
+Regardless, Git will inform you that you have "unmerged paths" and that you need to resolve the conflicts before you can complete the merge.
+
+Fortunately, Git uses the visual markers shown above to indicate the areas of conflict within the affected files. You can open these files in your favorite text editor or IDE to review and resolve the conflicts.
+
+The equal signs separate the changes from the two branches. You can choose to keep one side, the other side, or a combination of both by editing the file to remove the conflict markers and make the code look the way you want.
+
+After fixing the sections, you need to stage the resolved files using `git add <file>` and then complete the merge by committing the changes with `git commit`. Git will automatically create a merge commit that includes a message indicating that a merge was performed.
