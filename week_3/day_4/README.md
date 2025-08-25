@@ -360,3 +360,169 @@ A **constraint** is a rule that restricts the values that can be stored in a col
 - **Foreign Key**: Establishes a relationship between two tables by referencing the primary key of another table.
 - **Unique**: Ensures that all values in a column are distinct.
 - **Not Null**: Prevents null values from being stored in a column.
+
+## Schema
+
+The term `schema` comes from the Greek word "σχῆμα" which means "shape" or "form". In the context of databases, a `schema` defines the structure of the database, including the tables, columns, data types, and relationships between tables. It serves as a blueprint for how data is organized and accessed within the database.
+
+In layman's terms, a schema is like a map or outline of how the data is organized in a database. It helps database designers and developers understand the relationships between different data entities and how they can be accessed and manipulated.
+
+Database schema is declared using a formal language supported by the database management system (DBMS). The most common language for defining database schema is SQL (Structured Query Language). In enterprise application development, the definition of a schema is centered on modeling the data for a particular set of problems. The solutions will be implemented in software, but the data is stored in a database schema separate from the application of software logic.
+
+### Real World Application
+
+The real world application of `schema` comes in two steps: modeling and then implementation. Modeling can be done using tools to create an Entity Relation Diagram (ERD), which visually represents the entities, attributes, and relationships in the database. Once the model is finalized, it can be implemented in the database using SQL to create the actual tables, columns, and constraints.
+
+Let's look at a schema for an inventory management system.
+
+![schema-inventory-management-system](schema-inventory-management-system.png)
+
+This schema defines the structure of the inventory management system, including the integrity constraints and relationships between tables. It serves as a blueprint for how data is organized and accessed within the database.
+
+Integrity constraints include:
+
+- Column names
+- Data types
+- Data constraints
+- Relationships between tables
+
+With the design done, let's view the script to create this schema in SQL:
+
+```sql
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+CREATE SCHEMA IF NOT EXISTS `inventory` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+
+-- -----------------------------------------------------
+-- Table `inventory`.`SALES_DEPARTMENTS`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `inventory`.`SALES_DEPARTMENTS` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `department_name` VARCHAR(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `department_name_UNIQUE` (`department_name` ASC) VISIBLE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `inventory`.`INVENTORY_ITEMS`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `inventory`.`INVENTORY_ITEMS` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `item_name` VARCHAR(45) NOT NULL,
+  `short_name` VARCHAR(10) NOT NULL,
+  `price` DECIMAL(10,2) UNSIGNED NULL DEFAULT 0.99,
+  `qty` INT NULL DEFAULT 0,
+  `dept_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `short_name_UNIQUE` (`short_name` ASC) VISIBLE,
+  INDEX `fk_item_dept_idx` (`dept_id` ASC) VISIBLE,
+  CONSTRAINT `fk_item_dept`
+    FOREIGN KEY (`dept_id`)
+    REFERENCES `inventory`.`SALES_DEPARTMENTS` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `inventory`.`STORES`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `inventory`.`STORES` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `store_no` INT UNSIGNED NOT NULL,
+  `address` VARCHAR(45) NOT NULL,
+  `contact_no` CHAR(12) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `address_UNIQUE` (`address` ASC) VISIBLE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `inventory`.`CUSTOMERS`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `inventory`.`CUSTOMERS` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(45) NOT NULL,
+  `address` VARCHAR(45) NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `inventory`.`PURCHASE_ORDERS`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `inventory`.`PURCHASE_ORDERS` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `open_date` TIMESTAMP NOT NULL,
+  `close_date` TIMESTAMP NULL,
+  `customer_id` INT NOT NULL,
+  `store_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_po_store_idx` (`store_id` ASC) VISIBLE,
+  INDEX `fk_po_customer_idx` (`customer_id` ASC) VISIBLE,
+  CONSTRAINT `fk_po_store`
+    FOREIGN KEY (`store_id`)
+    REFERENCES `inventory`.`STORES` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_po_customer`
+    FOREIGN KEY (`customer_id`)
+    REFERENCES `inventory`.`CUSTOMERS` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `inventory`.`PO_LINE_ITEMS`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `inventory`.`PO_LINE_ITEMS` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `po_id` INT NOT NULL,
+  `item_id` INT NOT NULL,
+  `price` DECIMAL(10,2) NULL DEFAULT 0.99,
+  `qty` INT NULL DEFAULT 1,
+  PRIMARY KEY (`id`),
+  INDEX `fk_po_item_idx` (`po_id` ASC) VISIBLE,
+  INDEX `fk_item_line_itm_idx` (`item_id` ASC) VISIBLE,
+  CONSTRAINT `fk_po_line_itm`
+    FOREIGN KEY (`po_id`)
+    REFERENCES `inventory`.`PURCHASE_ORDERS` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_item_line_itm`
+    FOREIGN KEY (`item_id`)
+    REFERENCES `inventory`.`INVENTORY_ITEMS` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+```
+
+This script creates the `inventory` schema and its associated tables, along with their columns, data types, and constraints. It serves as the implementation of the schema design for the inventory management system.
+
+### Implementation
+
+The focus of this section is `schema`, however it is impossible to implement schema in an RDBMS without the use of SQL. The way to implement a schema is to first create it, this step is dependent on the database vendor. Generally the syntax is:
+
+```sql
+CREATE SCHEMA <schema_name>;
+```
+
+After the schema has been created the data is divided in tables, which are created using the `CREATE TABLE` statement. Each table is defined with its columns, data types, and constraints. The SQL syntax for creating a table is as follows:
+
+```sql
+CREATE TABLE <table_name> (
+  <column_name> <data_type> [constraints],
+  ...
+);
+```
+
+In the context of the inventory management system, the tables are created within the `inventory` schema and include the necessary columns and constraints to enforce data integrity and relationships between the tables.
