@@ -69,3 +69,237 @@ The `SELECT` statement is the crux of DQL and is composed of clauses that define
 #### DCL
 
 DCL sublanguage is utilized to define data access permissions and control user access to the database. Here are some common DCL commands: `GRANT` and `REVOKE`. Using DCL, database administrators can manage user privileges and ensure data security.
+
+## DDL
+
+Data Definition Language (DDL) is one of the five sublanguages of SQL. It is used to define and manage the structure of database objects, such as tables, indexes, and schemas. DDL commands are responsible for creating, altering, and deleting database objects. Some common DDL commands include:
+
+- `CREATE`: Used to create new database objects.
+  - Can be used to create databases, users, tables, indexes, triggers, functions, stored procedures, and views.
+- `ALTER`: Used to modify existing database objects.
+  - This command can ultimately be used to add, drop, or modify options of existing database objects.
+- `DROP`: Used to delete database objects.
+  - Any object created using the `CREATE` command can be deleted using the `DROP` command.
+- `TRUNCATE`: Used to remove all records from a table without deleting the table itself.
+  - This command is faster than the `DELETE` command when removing all records from a table, as it does not log individual row deletions.
+- `RENAME`: Used to rename database objects.
+  - The availability of this command may vary depending on the database system being used.
+- `COMMENT`: Used to add comments to database objects.
+  - This command is often used to provide descriptions or explanations for tables, columns, and other database objects.
+  - You can also write comments in SQL scripts using `--` for single-line comments or `/* ... */` for multi-line comments.
+
+### Real World Application
+
+Database administrators use the DDL sublanguage to define complex tables and the relationships between them, the constraints on the data in the tables, search indexes, large table partitions, and other structural elements of a database.
+
+Let's envision a complex system for user-identity management.
+
+![User Identity Management System ERD](user_identity_management_system_erd.png)
+
+The script required to create this ERD is a combination of the `CREATE` and `ALTER` commands, which define the tables, columns, and relationships between the entities in the system.
+
+```sql
+CREATE DATABASE IF NOT EXISTS IAM; -- Create the IAM database if it doesn't exist
+
+USE IAM; -- Switch to the IAM database
+
+CREATE TABLE IF NOT EXISTS permission_categories (
+  id BIGINT PRIMARY KEY,
+  name VARCHAR(30) NOT NULL UNIQUE,
+  description TEXT
+);
+
+CREATE TABLE IF NOT EXISTS permissions (
+  id BIGINT PRIMARY KEY,
+  categoryId BIGINT NOT NULL,
+  name VARCHAR(30) NOT NULL UNIQUE,
+  INDEX(categoryId, name) -- Index to optimize queries on categoryId and name
+);
+
+CREATE TABLE IF NOT EXISTS roles (
+  id BIGINT PRIMARY KEY,
+  name VARCHAR(30) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS role_permissions (
+  roleId BIGINT,
+  permissionId BIGINT,
+  PRIMARY KEY (roleId, permissionId) -- Composite primary key to prevent duplicate entries
+);
+
+CREATE TABLE IF NOT EXISTS login_activities_lu (
+  id BIGINT PRIMARY KEY,
+  type VARCHAR(10) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS profiles (
+  id BIGINT PRIMARY KEY,
+  firstName VARCHAR(30) NOT NULL,
+  lastName VARCHAR(40) NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE,
+);
+
+CREATE TABLE IF NOT EXISTS users (
+  id BIGINT PRIMARY KEY,
+  username VARCHAR(20) NOT NULL UNIQUE,
+  password VARCHAR(20) NOT NULL,
+  profileId BIGINT NOT NULL,
+  isActive BOOLEAN NOT NULL DEFAULT TRUE,
+  isLocked BOOLEAN NOT NULL DEFAULT FALSE,
+);
+
+CREATE TABLE IF NOT EXISTS login_activities (
+  id BIGINT PRIMARY KEY,
+  userId BIGINT NOT NULL,
+  activityId BIGINT NOT NULL,
+  activityTimestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT  EXISTS users_roles (
+  userId BIGINT NOT NULL,
+  roleId BIGINT NOT NULL
+);
+
+ALTER TABLE permissions ADD CONSTRAINT fk_permissions_category_id FOREIGN KEY (categoryId) REFERENCES permission_categories(id);
+ALTER TABLE roles_permissions ADD CONSTRAINT fk_permissions_role_id FOREIGN KEY (roleId) REFERENCES roles(id);
+ALTER TABLE roles_permissions ADD CONSTRAINT fk_roles_permission_id FOREIGN KEY (permissionId) REFERENCES permissions(id);
+ALTER TABLE users ADD CONSTRAINT fk_users_profile_id FOREIGN KEY (profileId) REFERENCES profiles(id);
+ALTER TABLE login_activities ADD CONSTRAINT fk_login_user_id FOREIGN KEY (userId) REFERENCES users(id);
+ALTER TABLE login_activities ADD CONSTRAINT fk_login_activity_id FOREIGN KEY (activityId) REFERENCES login_activities_lu(id);
+ALTER TABLE users_roles ADD CONSTRAINT fk_ur_user_id FOREIGN KEY (userId) REFERENCES users(id);
+ALTER TABLE users_roles ADD CONSTRAINT fk_ur_role_id FOREIGN KEY (roleId) REFERENCES roles(id);
+```
+
+This script creates tables for permission categories, permissions, roles, role-permission relationships, login activities, profiles, users, user-role relationships, and sets up the necessary foreign key constraints to maintain referential integrity between the tables.
+
+Once the schema is created using DDL, the responsibility for maintaining the schema falls upon the database administrators and developers to continuously manage the structure in response to changing business requirements and to ensure optimal performance of the database. The need to add new tables, remove tables, add constraints, or columns could present themselves daily as teams coordinate their needs for a persistent data structure.
+
+### Implementation
+
+#### Create
+
+Let's start by creating a new database. The syntax for creating a database is:
+
+```sql
+CREATE {DATABASE | SCHEMA} [IF NOT EXISTS] database_name; -- Create a new database or schema
+```
+
+Let's create a database named `my_database`:
+
+```sql
+CREATE DATABASE IF NOT EXISTS my_database;
+```
+
+The same `CREATE` command can be used to create a table in the newly created database, with a slight change to the syntax:
+
+```sql
+CREATE [TEMPORARY] TABLE [IF NOT EXISTS] table_name (
+  column1 datatype [constraints],
+  column2 datatype [constraints],
+  ...
+) [table_options] [partition_options]; -- Create a new table with specified columns and constraints; [TEMPORARY] creates a temporary table that is dropped at the end of the session; [IF NOT EXISTS] prevents error if table already exists;
+```
+
+Focus on the `column1 datatype [constraints]` part of the syntax. This is where you define the columns of the table, their data types, and any constraints (like `NOT NULL`, `UNIQUE`, `PRIMARY KEY`, etc.) that should be applied to those columns.
+
+Let's now create a table called `my_table:
+
+```sql
+USE my_database; -- Switch to the newly created database
+
+CREATE TABLE my_table (
+  id INT PRIMARY KEY,
+  my VARCHAR(10) NOT NULL,
+  my_other_value FLOAT DEFAULT 10.0
+)
+```
+
+Note: In **MySQL**, it is necessary to select a database to which the table will belong using the `USE` command.
+
+Now that the database has some structure, let's use the `ALTER` command to change the structure of the table. The syntax is as following:
+
+```sql
+ALTER TABLE table_name [alter_option, [alter_option], ...] [partition_options];
+```
+
+Note: The `ALTER` command has many different options depending on what and how you want to change the table.
+
+Let's alter the table by adding a column using the syntax:
+
+```sql
+ALTER TABLE table_name
+ADD COLUMN col_name datatype [constraints] [FIRST | AFTER col_name];
+```
+
+```sql
+ALTER TABLE my_table
+ADD COLUMN my_last_value BOOLEAN DEFAULT true;
+```
+
+At this point, the database has working structure. The following is the syntax of the reaming commands, which are trivial in comparison:
+
+```sql
+DROP [TABLE] [IF EXISTS] table_name [, table_name, ...] [RESTRICT | CASCADE];
+```
+
+```sql
+RENAME TABLE old_table_name TO new_table_name;
+```
+
+```sql
+TRUNCATE [TABLE] table_name;
+```
+
+## Defining Schema
+
+A database schema is the collection of database objects, including tables, views, indexes, and stored procedures, that define the structure and organization of the data within a database. It serves as a blueprint for how data is stored, accessed, and manipulated, and is typically defined using Data Definition Language (DDL) statements.
+
+Note: Regarding MySQL, the `schema` and `database` terms are used interchangeably. For other RDBMS, multiple schemas are allowed in a database, and each schema allow the ability to grant specific access and permissions to users.
+
+#### Advantages
+
+- Allow several users per schema
+- Multiple schemas
+- Move database objects between schemas
+- Manage database object in a logical group
+
+### Real World Application
+
+When a business is working with a relational database, it leverages schemas to manage all of its information, especially related to the sales of products. The business has tables of relational data stored inside the schema for all its products and relates sales. Along with this, it has stored procedures, views, and functions associate with this sales information for repeated queries to generate analysis such as quarterly sales reports to deliver to the company, sales reports for specific products, profit margins, etc.
+
+### Implementation
+
+When working with SQL, you use the keyword `CREATE` to generate a schema, along with all the other components utilized by the schema.
+
+**Generate a new schema in SQL**
+
+```sql
+CREATE SCHEMA IF NOT EXISTS my_schema;
+GO -- Note: The `GO` command is used in some SQL environments (like SQL Server) to signal the end of a batch of SQL statements. It is not part of the SQL standard and may not be recognized in all database systems.
+```
+
+**Generate a table inside a specific schema**
+
+```sql
+CREATE TABLE employment.employees (
+  employee_id INT PRIMARY KEY,
+  first_name VARCHAR(50) NOT NULL,
+  last_name VARCHAR(50) NOT NULL,
+  department VARCHAR(50) NOT NULL
+);
+```
+
+**Generate a view inside a specific schema**
+
+```sql
+CREATE VIEW employment.hr_employees AS
+SELECT first_name, last_name
+FROM employment.employees
+WHERE department = 'HR';
+```
+
+A view is a virtual table based on the result set of an SQL statement. It contains rows and columns, just like a real table. The fields in a view are fields from one or more real tables in the database. You can use views to:
+
+- Simplify complex queries
+- Provide a layer of security by restricting access to specific data
+- Present data in a specific format without altering the underlying tables
