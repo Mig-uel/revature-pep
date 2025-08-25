@@ -134,3 +134,59 @@ SQL is used to administer SQL based RDBMS. Below is a short list of some databas
 ### Implementation
 
 SQL is developed based on the ANSI SQL Standard. However, there a lot of different vendor specific implementations available.
+
+## Consistency
+
+#### Database Consistency
+
+Database consistency is the property that ensures that a database remains in a valid state before and after a transaction. It guarantees that any changes made to the database will not violate any predefined rules or constraints, such as data types, relationships, and integrity constraints.
+
+In the context of ACID (Atomicity, Consistency, Isolation, Durability) properties, consistency ensures that:
+
+- All data must be valid according to the defined rules and constraints.
+- Any transaction that violates these rules will be rolled back, leaving the database in its previous valid state.
+- The database will always transition from one valid state to another valid state.
+
+Maintaining consistency is crucial for ensuring the reliability and integrity of the data stored in a database, especially in multi-user environments where concurrent transactions may occur.
+
+While database consistency helps ensure the appropriate format for data written to the database, it does not account for what the data actually represents or its meaning within the application context. This means that information entered may match the expected data type and format, but it may not be accurate or relevant to the application's needs.
+
+These rules applied to our data is what keeps databases working smoothly by ensuring that all data adheres to the defined structure and constraints.
+
+#### Database Inconsistency
+
+Database inconsistency occurs when the data in a database does not adhere to the defined rules, constraints, or integrity conditions.
+
+Database consistency also applies to any changes of the data within the system. If one particular object in the database is updated, but also is present in another table in the database, it can lead to inconsistencies if the changes are not propagated correctly. This can result in conflicting or outdated information being displayed to users or applications, undermining the reliability of the database.
+
+Database inconsistency can arise from various factors, including:
+
+- **Concurrent Updates**: When multiple transactions attempt to update the same data simultaneously without proper locking mechanisms, it can lead to conflicting changes.
+- **Application Bugs**: Errors in application logic can result in invalid data being written to the database, violating integrity constraints.
+- **Data Migration Issues**: During data migration or integration processes, inconsistencies can occur if the data is not transformed or mapped correctly.
+
+This mostly happens when any portion of the information in the table is updated, but the corresponding information in related tables is not updated accordingly.
+
+### Real World Application
+
+#### Database Consistency
+
+Image working at the New York DMV and you have been asked to work on the database for the new Driver's License. Due to growing population sizes, they have required a new Driver's License number to help identify individuals. Your team has determined that every individuals driver's license number must include the following:
+
+- 1 Alpha Character
+- 6 Numeric Characters
+- 1 Alpha Character
+
+All driver license numbers are now required to follow this rule, such that "P123456A" is a valid driver's license number, while "1234567A" is not. Any entry that does not fit those requirements would result in error for inconsistent data.
+
+#### Database Inconsistency
+
+Keeping the driver's license example, imagine a driver's home address changes. This update must be represented across all tables where that prior address existed. If any table is not updated, then the database is now inconsistent. This could lead to issues such as:
+
+- The individual not receiving important mail at their new address.
+- Legal documents being sent to the wrong address.
+- Inability to verify the individual's identity due to mismatched information.
+
+### Implementation
+
+Database consistency implementation, which involves specific constraints, triggers, variables, cascades, etc., will be covered in detail in the database section of this course. These elements are established based on the rules set by you as a developer. Always keep in mind, "how is this affecting my data's consistency?" when designing your database.
