@@ -526,3 +526,124 @@ CREATE TABLE <table_name> (
 ```
 
 In the context of the inventory management system, the tables are created within the `inventory` schema and include the necessary columns and constraints to enforce data integrity and relationships between the tables.
+
+## Table Structure
+
+In **MySQL**, a table stores and organizes data in columns and rows as defined by the schema.
+
+- The `CREATE TABLE` command is used to create a new table in the database.
+- The `DROP TABLE` command is used to delete an existing table from the database.
+- The `TRUNCATE TABLE` command is used to remove all rows from a table without deleting the table itself.
+- The `ALTER TABLE` command is used to modify the structure of an existing table, such as adding or dropping columns, changing data types, or adding constraints.
+
+The major differences between a database and a table are as follows:
+
+- Tables are a way to organize data within a database.
+- A database can contain multiple tables, each with its own structure and data.
+- Tables are defined by their columns and data types, while a database is defined by its overall structure and relationships between tables.
+
+A `TUPLE` refers to an ordered set of values. The number of values, or elements, in a tuple is fixed and is known as the arity (or degree) of the tuple. In the context of databases, a tuple represents a single row in a table, where each value corresponds to a specific column in that table.
+
+In the context of databases, a tuple represents a single row in a table, where each value corresponds to a specific column in that table.
+
+For example, consider a table representing employees:
+
+| EmployeeID | FirstName | LastName | Age | Salary |
+| ---------- | --------- | -------- | --- | ------ |
+| 1          | John      | Doe      | 30  | 50000  |
+| 2          | Jane      | Smith    | 25  | 60000  |
+| 3          | Bob       | Johnson  | 40  | 70000  |
+
+In this table, each row represents a unique employee, and the values within each row correspond to the employee's attributes, such as their ID, name, age, and salary. Each row is a tuple, and the entire table is a collection of these tuples.
+
+### Real World Application
+
+In the real world, tables are used to store and organize data in a structured way. For example, a company may use a table to store information about its employees, including their names, job titles, salaries, and contact information. This table can then be used to generate reports, track employee performance, and manage payroll.
+
+### Implementation
+
+The general syntax for creating a table in MySQL is:
+
+```sql
+CREATE TABLE [IF NOT EXISTS] table_name (
+  column1 datatype [constraints],
+  column2 datatype [constraints],
+  ...
+);
+```
+
+Explanation:
+
+- `CREATE TABLE [IF NOT EXISTS] table_name`: This statement creates a new table with the specified name. The `IF NOT EXISTS` clause is optional and prevents an error from occurring if the table already exists.
+- `column1 datatype [constraints]`: This defines the first column of the table, including its name, data type, and any constraints (e.g., `NOT NULL`, `UNIQUE`) that should be applied to it.
+- `column2 datatype [constraints]`: This defines the second column of the table, following the same format as the first column.
+- `...`: This indicates that additional columns can be defined in the same manner.
+
+Example:
+
+```sql
+CREATE TABLE movies (m_name VARCHAR(100) NOT NULL, m_genre VARCHAR(50) NOT NULL, m_director VARCHAR(100) NOT NULL, m_release_year INT NOT NULL, PRIMARY KEY (m_name));
+```
+
+The example above creates a table named `movies` with four columns: `m_name`, `m_genre`, `m_director`, and `m_release_year`. The `m_name` column is designated as the primary key, ensuring that each movie name is unique within the table.
+
+To add values to the newly created table:
+
+```sql
+INSERT INTO movies VALUES ('Inception', 'Sci-Fi', 'Christopher Nolan', 2010);
+```
+
+#### `DROP` vs `TRUNCATE`
+
+- `DROP TABLE`: This command is used to delete an entire table from the database, including all of its data and structure. Once a table is dropped, it cannot be recovered.
+- `TRUNCATE TABLE`: This command is used to remove all rows from a table while keeping the table structure intact. Truncating a table is generally faster than deleting rows one by one, as it does not generate individual row delete logs.
+
+The general syntax for dropping a table in MySQL is:
+
+```sql
+DROP TABLE table_name;
+```
+
+We use the `DROP` command to completely remove the table.
+
+```sql
+DROP TABLE movies;
+```
+
+The general syntax for truncating a table in MySQL is:
+
+```sql
+TRUNCATE TABLE table_name;
+```
+
+We use the `TRUNCATE` command to remove all rows from the table while keeping its structure intact.
+
+```sql
+TRUNCATE TABLE movies;
+```
+
+#### Modifying Structure
+
+To `ADD` a column to a table:
+
+```sql
+ALTER TABLE table_name ADD column_name datatype [constraints];
+```
+
+We can also use the `ALTER TABLE` statement to modify existing columns, such as changing their data type or adding constraints.
+
+```sql
+ALTER TABLE table_name MODIFY column_name new_datatype [constraints];
+```
+
+For example:
+
+```sql
+ALTER TABLE movies ADD m_rating FLOAT CHECK (m_rating >= 0 AND m_rating <= 10);
+```
+
+To `DROP` a column:
+
+```sql
+ALTER TABLE movies DROP m_rating;
+```
