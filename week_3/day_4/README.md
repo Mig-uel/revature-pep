@@ -190,3 +190,173 @@ Keeping the driver's license example, imagine a driver's home address changes. T
 ### Implementation
 
 Database consistency implementation, which involves specific constraints, triggers, variables, cascades, etc., will be covered in detail in the database section of this course. These elements are established based on the rules set by you as a developer. Always keep in mind, "how is this affecting my data's consistency?" when designing your database.
+
+## Introduction to RDBMS
+
+Relational Database Management System (RDBMS) is a type of database management system that organizes data into tables (or relations) with rows and columns. Each table represents a specific entity or concept, and the relationships between tables are established through keys.
+
+An RDBMS is based on the relational model, which was introduced by Edgar F. Codd in 1970. The relational model provides a mathematical foundation for organizing and manipulating data in a structured way.
+
+The use of RDBMS is essential in large scale application development. The use is so widespread that it would be nearly impossible to find a modern application that does not utilize some form of relational database.
+
+Below is a list of some reasons for using a RDBMS:
+
+- **Data Integrity**: RDBMSs enforce data integrity through constraints, ensuring that the data remains accurate and consistent.
+- **ACID Compliance**: RDBMSs support ACID (Atomicity, Consistency, Isolation, Durability) properties, which guarantee reliable transactions.
+- **Complex Queries**: RDBMSs provide powerful query languages (e.g., SQL) that allow for complex data retrieval and manipulation.
+- **Data Relationships**: RDBMSs are designed to handle relationships between data entities, making it easier to model real-world scenarios.
+- **Scalability**: RDBMSs can handle large volumes of data and concurrent users, making them suitable for enterprise applications.
+- **Structured Data Model**: RDBMSs use a structured data model, which makes it easier to organize and manage data.
+- **Large Scale Concurrent Access**: RDBMSs are designed to handle multiple users accessing and modifying the database simultaneously, ensuring data consistency and integrity.
+- **Fault Tolerance**: RDBMSs often include features for backup, recovery, and replication, which help protect data against loss or corruption.
+- **Distributed Data Storage**: RDBMSs can be configured to distribute data across multiple locations, improving access speed and reliability.
+
+### Real World Application
+
+Databases provide the backbone of data persistence in enterprise applications. Large business applications are designed around the idea of scalability which emphasizes stateless execution and the ability to handle large volumes of data. This means that a single application in the system won't store its own data locally, but use some other type of data storage solution, typically a centralized RDBMS, to manage and persist its data.
+
+#### Choosing Persistence
+
+System architects and project teams work to identify what type of persistence solution is best for the application. This includes evaluating the type of data being stored, the volume of data, the required performance, and the complexity of the data relationships.
+
+RDBMS is just one solution among many. Other solutions include NoSQL databases, in-memory databases, and file-based storage systems. Each solution has its own strengths and weaknesses, and the choice of which one to use depends on the specific needs of the application.
+
+So how does one choose a RDBMS persistence provider? The following list is just a few features to consider:
+
+- Distribution type (cloud, on-premise, hybrid)
+- Cost (licensing, support, maintenance)
+- Scalability (horizontal vs vertical scaling)
+- License type (open source, commercial)
+- Security features (encryption, access controls)
+- Support and community (documentation, forums, user groups)
+
+#### Distribution Type
+
+Installing the database is half of the battle and of course there a number of different ways to distribute a database.
+
+| Distribution Type | Description                                                                        |
+| ----------------- | ---------------------------------------------------------------------------------- |
+| Standalone        | A single instance of the database running on a dedicated server or machine.        |
+| Managed           | A cloud-based database service where the provider handles maintenance and scaling. |
+| Containerized     | A database instance running within a container for easy deployment and management. |
+
+Each distribution type has its own advantages and trade-offs, and the choice of which one to use depends on the specific needs of the application.
+
+#### Scalability
+
+Scalability is a critical factor to consider when choosing a database solution. It refers to the database's ability to handle increased loads, whether by adding more resources to a single instance (vertical scaling) or by distributing the load across multiple instances (horizontal scaling).
+
+| Scalability Type | Description                                                                                 |
+| ---------------- | ------------------------------------------------------------------------------------------- |
+| Vertical         | Adding more resources (CPU, RAM) to a single database instance to improve performance.      |
+| Horizontal       | Distributing the database load across multiple instances or servers to handle more traffic. |
+
+Much like the applications that use the database for persistence, the databases themselves should be scalable. The problem is, databases cannot be stateless like applications. This means that the database must maintain state information about the data it manages. This makes scaling databases more complex than scaling stateless applications.
+
+The scalability of a database is centered around clustering and replication. Clustering involves grouping multiple database instances together to work as a single unit, while replication involves copying data from one database instance to another to ensure data availability and redundancy.
+
+Clustering is a scheme where multiple nodes are orchestrated to work together as a single unit. In RDBMS clustering however, there is a slight difference, A RDBMS cluster is constructed with a single master and multiple other replicas. This means all reads and writes happen primarily on the master with data being propagated to the replicas over time. This is known as asynchronous replication.
+
+Most vendors implement some kind of clustering capability into their RDBMS offerings, but the specifics can vary widely. Some may offer built-in clustering features, while others may require third-party tools or additional configuration. The biggest decision is how much work do you want to do. The distribution type will play a big part in this with `Standalone` distributions requiring the most effort, `Managed` distributions requiring the least, and `Containerized` distributions falling somewhere in between.
+
+Each scalability type has its own advantages and trade-offs, and the choice of which one to use depends on the specific needs of the application.
+
+#### License Type
+
+The license type of a database can have a significant impact on its cost, support, and flexibility. There are two main types of licenses to consider:
+
+| License Type | Description                                                               |
+| ------------ | ------------------------------------------------------------------------- |
+| Open Source  | The database software is freely available and can be modified by anyone.  |
+| Commercial   | The database software is proprietary and requires a paid license for use. |
+
+Open source databases are often more flexible and cost-effective, but they may require more technical expertise to set up and maintain. Commercial databases typically offer more robust support and features, but at a higher cost.
+
+When choosing a database, it's important to carefully evaluate the license type and its implications for your project.
+
+#### Security Features
+
+Security is a critical aspect of any database system. It involves protecting the database from unauthorized access, ensuring data integrity, and maintaining data confidentiality. Here are some key security features to consider when evaluating a database:
+
+| Security Feature    | Description                                                                     |
+| ------------------- | ------------------------------------------------------------------------------- |
+| Authentication      | Verifying the identity of users and applications accessing the database.        |
+| Authorization       | Controlling user access to specific data and operations within the database.    |
+| Encryption          | Protecting data at rest and in transit through encryption techniques.           |
+| Auditing            | Tracking and logging database activities for compliance and security purposes.  |
+| Backup and Recovery | Implementing robust backup and recovery solutions to protect against data loss. |
+
+When choosing a database, it's essential to assess its security features and ensure they align with your organization's security policies and compliance requirements.
+
+#### Support and Community
+
+Active support and community can be invaluable when working with a database. They provide resources, assistance, and a platform for sharing knowledge and experiences. Here are some aspects to consider:
+
+| Aspect                 | Description                                                                                                          |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Documentation          | Comprehensive and up-to-date documentation can help users understand and utilize the database effectively.           |
+| Community Forums       | Active forums and discussion groups can provide quick answers to questions and foster collaboration.                 |
+| Training and Tutorials | Availability of training resources and tutorials can help users get up to speed with the database quickly.           |
+| Vendor Support         | For commercial databases, vendor support can be a critical factor in resolving issues and ensuring smooth operation. |
+
+When choosing a database, it's essential to evaluate the level of support and community engagement available to ensure you have the resources you need to succeed.
+
+### Implementation
+
+The implementation of an RDBMS is strictly dependent on the RDBMS vendor. Typically, the implementation of an RDBMS is based on the SQL standard and there are many different RDBMS vendors. Below is a non-exhaustive list of some popular RDBMS vendors:
+
+- Oracle
+- Microsoft SQL Server
+- PostgreSQL
+- MySQL
+- MariaDB
+- SQLite
+
+Since the implementation of the system is dependent on the RDBMS vendor, its architecture can vary drastically. However, most RDBMS systems share some common components:
+
+- **Client**: Provides users the ability to interact with the database through a user interface or command line.
+- **Connection Handler**: Manages connections between clients and the database server. Receives incoming client connections and creates new thread execution contexts for isolating client connections from each other.
+- **Parser**: Interprets and validates SQL commands issued by clients. Converts SQL commands into a format that can be executed by the database engine.
+- **Optimizer**: Analyzes SQL commands and determines the most efficient way to execute them.
+- **Query Cache**: Stores the results of frequently executed queries to improve performance by reducing the need to re-execute the same queries.
+- **Storage Engine**: Manages the physical storage of data on disk. Responsible for reading and writing data to and from the database files.
+
+It is important to note that not all RDBMS systems will have all of these components, and some may have additional components not listed here. The specific architecture of an RDBMS will depend on the vendor and the design choices made during its development.
+
+#### Data Structure
+
+RDBMSs use a structured data model, which makes it easier to organize and manage data. The data is organized into tables, which consist of rows and columns. Each table represents a specific entity or concept, and the relationships between tables are established through keys.
+
+The discussion of vendor choice and vendor implementation aside an RDBMS is a DBMS based on relationships. All RDBMS implementations are based on some relational concepts.
+
+#### What is a Table?
+
+One of the core components of an RDBMS is an object called a **table**. A table is a collection of related data organized into rows and columns. Each row represents a single record or instance of the entity being modeled, while each column represents a specific attribute or property of that entity.
+
+Let's look at an example table called `Employees`:
+
+| id  | firstName | lastName | department | reports To |
+| --- | --------- | -------- | ---------- | ---------- |
+| 1   | John      | Doe      | HR         | 3          |
+| 2   | Jane      | Smith    | IT         | 4          |
+| 3   | Emily     | Johnson  | HR         | NULL       |
+
+#### What is a Row?
+
+A **row** is a single record in a table, representing a specific instance of the entity being modeled. Each row contains values for each column in the table, corresponding to the attributes of the entity. In the `Employees` table example, each row represents a different employee, with their specific details filled in for each column.
+
+| 1   | John | Doe | HR  | 3   |
+| --- | ---- | --- | --- | --- |
+
+#### What is a Column?
+
+A **column** is a specific attribute or property of the entity being modeled in a table. Each column has a name and a data type, which defines the kind of data that can be stored in that column. In the `Employees` table example, the columns are `id`, `firstName`, `lastName`, `department`, and `reports To`. Each column holds a specific type of information about the employees.
+
+#### What is a Constraint?
+
+A **constraint** is a rule that restricts the values that can be stored in a column or the relationships between tables. Constraints help maintain the integrity and consistency of the data in the database. Common types of constraints include:
+
+- **Primary Key**: Uniquely identifies each row in a table.
+- **Foreign Key**: Establishes a relationship between two tables by referencing the primary key of another table.
+- **Unique**: Ensures that all values in a column are distinct.
+- **Not Null**: Prevents null values from being stored in a column.
