@@ -647,3 +647,165 @@ To `DROP` a column:
 ```sql
 ALTER TABLE movies DROP m_rating;
 ```
+
+## SQL Data Types
+
+In a database, each `table` is defined with a set of `columns`. Each `column` must have a specific data type that determines the kind of data it can hold. Common SQL data types include:
+
+- `INT`: Integer values.
+- `FLOAT`: Floating-point numbers.
+- `VARCHAR(n)`: Variable-length strings with a maximum length of `n`.
+- `DATE`: Date values.
+- `BOOLEAN`: True/false values.
+
+Each vendor can support any number of data types, and there may be variations in how these types are implemented. Below is a list of the most common types:
+
+| Category  | Sub 1               | Sub 2                     | Sub 3       |
+| --------- | ------------------- | ------------------------- | ----------- |
+| Character | Fixed-length (CHAR) | Variable-length (VARCHAR) | Text (TEXT) |
+| Numeric   | Decimal             | Integer                   | Float       |
+| Temporal  | Date                | Time                      | Timestamp   |
+
+#### Character
+
+Character types can be represent character data as either `fixed` or `variable-length`. Fixed-length types allocate a specific amount of space for each entry, while variable-length types can adjust their size based on the actual content.
+
+Example:
+
+```sql
+CREATE TABLE example_char (
+  fixed_col CHAR(10),
+  var_col VARCHAR(50),
+  text_col TEXT
+);
+
+INSERT INTO example_char VALUES ('Hello', 'Hello, World!', 'This is a text column that can hold a large amount of data.');
+```
+
+Fixed length character type store a fixed number of bytes in storage regardless of the string or number of characters stored. The fix length types can be declared as `char(n)` or `character(n)`, where `n` is the number of characters to store. If a string is shorter than the defined length, it is padded with spaces to the right. This can lead to wasted space if the stored strings are consistently shorter than the defined length.
+
+Variable length character types store a variable number of bytes, depending on the actual content. They can be declared as `varchar(n)` or `character varying(n)`, where `n` is the maximum number of characters to store. Unlike fixed-length types, variable-length types do not pad shorter strings with spaces, making them more efficient for storing data with varying lengths.
+
+#### Numeric
+
+Numeric types store types of numbers that are either whole (integer) or fractional (decimal). Common numeric types include:
+
+- `BIT(n)`: A bit-field type that can store a bit value (0 or 1) or a fixed-length string of bits.
+- `BIT VARY(n)`: A variable-length bit-field type that can store a string of bits up to a specified length.
+- `INTEGER`: A whole number, typically 4 bytes in size.
+- `SMALLINT`: A smaller whole number, typically 2 bytes in size.
+- `BIGINT`: A larger whole number, typically 8 bytes in size.
+- `REAL`: A floating-point number, typically 4 bytes in size.
+- `FLOAT`: A floating-point number, typically 8 bytes in size.
+- `DOUBLE`: A double-precision floating-point number, typically 8 bytes in size.
+- `DECIMAL(p, s)`: A fixed-point number with a specified precision (`p`) and scale (`s`).
+
+#### Decimal
+
+Decimal types are used to store exact fractional number values like money, where precision is important. The `DECIMAL` type is defined with two parameters: precision and scale.
+
+`annual_income DECIMAL(10, 2);`
+
+The `decimal` data types: `decimal`, `float`, `double` have a syntax that includes `type(p,s)`, where:
+
+- `p` is the total number of digits (precision).
+- `s` is the number of digits to the right of the decimal point (scale).
+
+In the example above, `annual_income` will have a maximum of 10 digits, with 2 digits after the decimal point, allowing for values like `12345678.90`.
+
+#### Integer
+
+Integer data types store signed and unsigned whole numbers.
+
+`age INT;`
+
+The `integer` data types: `int`, `smallint`, `bigint` have a syntax that includes `type[(n)]`, where:
+
+- `n` is the number of bits used to store the integer.
+
+#### Floating Point
+
+Floating point types store approximate numeric values with fractional components. The precision and scale of floating point numbers are variable and can lead to rounding errors in calculations.
+
+`avg_temp float(10)`
+
+The `floating point` data types: `float`, `real`, `double` have a syntax that includes `type(p)`, where:
+
+- `p` is the number of bits used to store the floating point number.
+
+#### Temporal
+
+Temporal types store date and time values. They can be divided into two categories: date/time types and interval types.
+
+- Date/Time Types: These types store specific points in time, such as dates and timestamps.
+- Interval Types: These types store durations or periods of time.
+
+#### Date
+
+The `date` type represents a specific date (year, month, day) without a time component. It is typically stored as a fixed-length string or a numeric value representing the number of days since a specific epoch (e.g., January 1, 1970).
+
+```sql
+CREATE TABLE example_date (
+  birth_date DATE
+);
+
+INSERT INTO example_date VALUES ('1990-01-01');
+```
+
+#### Time
+
+The `time` type represents a specific time of day (hours, minutes, seconds) without a date component. It is typically stored as a fixed-length string or a numeric value representing the number of seconds since midnight.
+
+```sql
+CREATE TABLE example_time (
+  start_time TIME
+);
+
+INSERT INTO example_time VALUES ('12:30:00');
+```
+
+The `time` type has a format of `HH:MM:SS`, where `HH` is hours, `MM` is minutes, and `SS` is seconds.
+
+#### Timestamp
+
+The `timestamp` type represents a specific point in time, including both date and time components. It is typically stored as a fixed-length string or a numeric value representing the number of seconds since a specific epoch (e.g., January 1, 1970).
+
+```sql
+CREATE TABLE example_timestamp (
+  created_at TIMESTAMP
+);
+
+INSERT INTO example_timestamp VALUES ('2023-01-01 12:30:00');
+```
+
+On top of these very common data types, a database vendor can add any number of other data types to the implementation. Some vendors add `spatial`, `boolean`, `json`, `large object`, and other types to their implementation.
+
+### Implementation
+
+Here is an example SQL `CREATE TABLE` statement that demonstrates the use of various common data types:
+
+```sql
+CREATE TABLE EMPLOYEE (
+  EmployeeID INT,
+  FirstName VARCHAR(50),
+  LastName VARCHAR(50),
+  Gender CHAR(1),
+  DateOfBirth DATE,
+  Salary DECIMAL(10, 2),
+  IsManager BOOLEAN,
+  DepartmentID INT,
+  JoinDate TIMESTAMP
+);
+```
+
+Explanation:
+
+- `EmployeeID INT`: An integer column to store the employee's unique identifier.
+- `FirstName VARCHAR(50)`: A variable-length string column to store the employee's first name, with a maximum length of 50 characters.
+- `LastName VARCHAR(50)`: A variable-length string column to store the employee's last name, with a maximum length of 50 characters.
+- `Gender CHAR(1)`: A fixed-length string column to store the employee's gender, using a single character (e.g., 'M' for male, 'F' for female).
+- `DateOfBirth DATE`: A date column to store the employee's date of birth.
+- `Salary DECIMAL(10, 2)`: A decimal column to store the employee's salary, with a maximum of 10 digits and 2 decimal places.
+- `IsManager BOOLEAN`: A boolean column to indicate whether the employee is a manager (true/false).
+- `DepartmentID INT`: An integer column to store the ID of the department the employee belongs to.
+- `JoinDate TIMESTAMP`: A timestamp column to store the date and time the employee joined the company.
