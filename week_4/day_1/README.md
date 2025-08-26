@@ -604,3 +604,41 @@ VALUES ('Product A', 10.99, 100),
        ('Product B', 15.99, 200),
        ('Product C', 7.99, 300);
 ```
+
+## `UPDATE`
+
+`UPDATE` is an SQL command used to modify existing records in a database table. It is part of the DML (Data Manipulation Language) sublanguage of SQL.
+
+The `UPDATE` statement uses locks on each record while modifying it. If a record is locked by one user, other users must wait until the lock is released before they can modify the same record. This ensures data integrity and prevents conflicts when multiple users are trying to update the same record simultaneously.
+
+Note: Be mindful and careful when using the `UPDATE` statement, as it can affect multiple rows if not properly constrained with a `WHERE` clause.
+
+### Real World Application
+
+`UPDATE` commands are constantly used in applications to modify existing data. For example, if a product's price changes, an `UPDATE` command would be used to change the price in the database. Similarly, if a user's information needs to be updated, such as their email address or phone number, an `UPDATE` command would be employed.
+
+### Implementation
+
+The basic syntax for implementing `UPDATE`:
+
+```sql
+UPDATE table_name
+SET column_1 = value_1, column_2 = value_2, ...
+WHERE condition;
+```
+
+Example for a single record with an id = 12:
+
+```sql
+UPDATE employees
+SET address_street = '123 New St', address_city = 'New City'
+WHERE id = 12;
+```
+
+Example for multiple records with a department = 'Sales':
+
+```sql
+UPDATE employees
+SET address_street = '456 Another St', address_city = 'Another City'
+WHERE department = 'Sales';
+```
