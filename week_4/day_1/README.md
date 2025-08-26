@@ -576,3 +576,31 @@ The `DELETE` command is used to remove existing records from a database table. T
 DELETE FROM <table_name>
 WHERE condition;
 ```
+
+## `INSERT`
+
+`INSERT` is an SQL command used to add new records to a database table. It is part of the DML (Data Manipulation Language) sublanguage of SQL.
+
+`INSERT` statements only accept the data that follows the rules defined during the creation of your table structure. The inserted data must satisfy all constraints and match the appropriate data types; otherwise you will encounter an error. `INSERT` is always followed by the `VALUES` clause, which specifies the actual data to be inserted into the table.
+
+### Real World Application
+
+Every company requires the persistence of information. Whenever new products are added to an e-commerce website, the business will need the ability to add all of the details for each product into their database. They must maintain data consistency when applying their products to their database to capture the appropriate metrics for a successful business. These `INSERT` commands into the database are crucial for ensuring that all relevant information is stored and can be accessed when needed.
+
+### Implementation
+
+Basic `INSERT` command syntax is as follows:
+
+```sql
+INSERT INTO <table_name> (column1, column2, column3, ...)
+VALUES (value1, value2, value3, ...);
+```
+
+Example:
+
+```sql
+INSERT INTO products (product_name, price, quantity)
+VALUES ('Product A', 10.99, 100),
+       ('Product B', 15.99, 200),
+       ('Product C', 7.99, 300);
+```
