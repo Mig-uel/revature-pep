@@ -303,3 +303,114 @@ A view is a virtual table based on the result set of an SQL statement. It contai
 - Simplify complex queries
 - Provide a layer of security by restricting access to specific data
 - Present data in a specific format without altering the underlying tables
+
+## `CREATE`, `DROP`, `TRUNCATE`
+
+`CREATE`
+
+- It is part of the DDL (Data Definition Language) sublanguage of SQL.
+- It is used to create new database objects such as databases, tables, indexes, views, stored procedures, and functions.
+- Tables are used to store the data in the database with a unique name and schema.
+  - Tables also require at least one column to be valid.
+  - Each column required an associated data type.
+- Certain RDBMS (Relational Database Management Systems) have transactional DDL support, meaning that `CREATE` statements can be rolled back if they are part of a transaction that is not committed.
+  - **PostgreSQL**, **SQL Server**, and **SQLite**, among with others, support this feature.
+  - **MySQL** and **Oracle** do not support transactional DDL, meaning that once a `CREATE` statement is executed, it cannot be rolled back.
+- It is also used to define schemas.
+
+---
+
+`DROP`
+
+- It is part of the DDL (Data Definition Language) sublanguage of SQL.
+- It is used to delete existing database objects such as databases, tables, indexes, views,
+- It removes all the indexes, privileges, and rows, and frees memory space for other objects.
+- **You cannot drop a database that is currently in use or is referenced by a foreign key constraint.**
+- The objects related to the table, like views and procedures, need to be explicitly dropped before the table can be dropped.
+- No DML triggers will be fired when a table is dropped.
+- We cannot roll back a `DROP` statement, as it is a DDL command and takes effect immediately.
+
+* A **trigger** is a set of instructions that are automatically executed (or "triggered") in response to certain events on a particular table or view in a database. Triggers are used to enforce business rules, maintain data integrity, and automate system tasks.
+
+---
+
+`TRUNCATE`
+
+- It is part of the DDL (Data Definition Language) sublanguage of SQL.
+- It is used to delete all rows from a table without logging individual row deletions.
+- It also deallocates the memory space used by the table/object, and other objects will use the freed memory space.
+- The `TRUNCATE` command cannot be rolled back, as it is a DDL command and takes effect immediately.
+- We cannot use conditions in a `TRUNCATE` statement.
+
+### Real World Application
+
+`CREATE`
+
+Consider a scenario where we want to create a fresh new table of course information. When we create, we must specify all the information and the appropriate data type for each column related to the course information. You can also use the `CREATE` for schemas, procedures, views, indexes, and even databases.
+
+---
+
+`TRUNCATE`
+
+Consider a scenario where we want to delete or remove all records from a table named `students`. If we truncate the table, the table structure remains, and all the records are removed, and the memory space is freed for other objects to use.
+
+---
+
+`DROP`
+
+Consider a scenario where we want to remove a table named `courses` from the database. When we drop the table, all the data, indexes, and privileges associated with the table are removed permanently. This action cannot be rolled back, so it is essential to ensure that the table is no longer needed before dropping it.
+
+### Implementation
+
+#### `DROP`
+
+Syntax to `DROP` a table from the database:
+
+```sql
+DROP TABLE table_name;
+```
+
+Example:
+
+```sql
+DROP TABLE courses;
+```
+
+#### CREATE
+
+Syntax to `CREATE` a table in the database:
+
+```sql
+CREATE TABLE table_name (
+  table_id INT PRIMARY KEY IDENTITY(1,1), -- IDENTITY(1,1) auto-increments the value starting from 1 and increments by 1 for each new record
+  table_value VARCHAR(50) NOT NULL, -- NOT NULL ensures that this column cannot have NULL values
+  another_table_value INT,
+  foreign_key INT,
+  FOREIGN KEY (foreign_key) REFERENCES another_table(another_table_id)
+);
+```
+
+Example:
+
+```sql
+CREATE TABLE courses (
+  course_id INT PRIMARY KEY IDENTITY(1,1),
+  course_name VARCHAR(100) NOT NULL,
+  course_description TEXT,
+  credits INT CHECK (credits > 0)
+);
+```
+
+#### TRUNCATE
+
+Syntax to `TRUNCATE` a table from the database:
+
+```sql
+TRUNCATE TABLE table_name;
+```
+
+Example:
+
+```sql
+TRUNCATE TABLE students;
+```
