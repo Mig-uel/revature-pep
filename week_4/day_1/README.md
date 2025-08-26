@@ -414,3 +414,165 @@ Example:
 ```sql
 TRUNCATE TABLE students;
 ```
+
+## DML (Data Manipulation Language)
+
+Data Modification Language (DML) is one of the five sublanguages of SQL. It is used to manipulate the data stored in the database. DML commands are responsible for retrieving, adding, modifying, and removing data from database tables. Some common DML commands include:
+
+- `SELECT`: Retrieves data from one or more tables.
+- `INSERT`: Adds new rows of data to a table.
+- `UPDATE`: Modifies existing data in a table.
+- `DELETE`: Removes rows of data from a table.
+
+In order to utilize the commands of the DML sublanguage, a database user must have the appropriate permissions on the server and on the particular parent object.
+
+### Real World Application
+
+DML is used to manipulate the data stored in a database. For example, when a user wants to update their profile information in a web application, the application will use DML commands to modify the relevant records in the database.
+
+Often, DML is used in enterprise application solutions that utilize bridging libraries like JDBC in Java or EF in .NET, but of course, it is possible to use DML directly in a SQL IDE or console.
+
+In the real world, a DBA (Database Administrator) could be responsible for adding data to bootstrap the database into a working state for the applications that will rely on the data.
+
+Let's bootstrap the permission and roles tables in the following IAM schema:
+
+```sql
+CREATE DATABASE IF NOT EXISTS IAM;
+
+USE IAM;
+
+CREATE TABLE IF NOT EXISTS permission_categories (
+        id bigint primary key,
+    name varchar(30) not null unique,
+    description text(255)
+);
+
+CREATE TABLE IF NOT EXISTS permissions (
+        id bigint primary key,
+    categoryId bigint not null,
+    name varchar(30) not null unique,
+    index(categoryId, name)
+);
+
+CREATE TABLE IF NOT EXISTS roles (
+        id bigint primary key,
+    name varchar(30) not null unique
+);
+
+CREATE TABLE IF NOT EXISTS roles_permissions(
+        roleId bigint,
+    permissionId bigint,
+    primary key(roleId, permissionId)
+);
+
+CREATE TABLE IF NOT EXISTS login_activities_lu (
+        id bigint primary key,
+    type varchar(10) not null unique
+);
+
+CREATE TABLE IF NOT EXISTS profiles (
+        id bigint primary key,
+    firstName varchar(30) not null,
+    lastName varchar(40) not null,
+    email varchar(100) not null unique
+);
+
+CREATE TABLE IF NOT EXISTS users (
+        id bigint primary key,
+    username varchar(20) not null unique,
+    password varchar(20) not null,
+    profileId bigint not null,
+    isActive boolean default true,
+    isLocked boolean default false
+);
+
+CREATE TABLE IF NOT EXISTS login_activities (
+        id bigint primary key,
+    userId bigint not null,
+    activityId bigint not null,
+    activityDate datetime default NOW()
+);
+
+CREATE TABLE IF NOT EXISTS users_roles (
+        userId bigint not null,
+    roleId bigint not null
+);
+
+ALTER TABLE permissions ADD CONSTRAINT fk_permissions_category_id FOREIGN KEY(categoryId) REFERENCES permission_categories(id);
+ALTER TABLE roles_permissions ADD CONSTRAINT fk_permissions_role_id FOREIGN KEY(roleId) REFERENCES roles(id);
+ALTER TABLE roles_permissions ADD CONSTRAINT fk_roles_permission_id FOREIGN KEY(permissionId) REFERENCES permissions(id);
+ALTER TABLE users ADD CONSTRAINT fk_users_profile_id FOREIGN KEY(profileId) REFERENCES profiles(id);
+ALTER TABLE login_activities ADD CONSTRAINT fk_login_user_id FOREIGN KEY(userId) REFERENCES users(id);
+ALTER TABLE login_activities ADD CONSTRAINT fk_login_activity_id FOREIGN KEY(activityId) REFERENCES login_activities_lu(id);
+ALTER TABLE users_roles ADD CONSTRAINT fk_ur_user_id FOREIGN KEY(userId) REFERENCES users(id);
+ALTER TABLE users_roles ADD CONSTRAINT fk_ur_role_id FOREIGN KEY(roleId) REFERENCES roles(id);
+```
+
+We'll use DML commands to add the following information or data into our tables:
+
+```sql
+INSERT INTO roles (id, name) VALUES (1, 'ADMIN'), (2, 'OWNER'), (3, 'EDITOR'), (4, 'VIEWER');
+INSERT INTO permission_categories (id, name, description) VALUES (1, 'HR', 'Permissions assigned to members of the HR team'),
+        (2, 'Accounting', 'Permissions assigned to members of the accounting team'), (3, 'Technology', 'Permissions assigned to members of the technology team');
+INSERT INTO permissions (id, categoryId, name) VALUES (1, 1, 'TIMESHEETS'), (2, 2, 'PAYROLL'), (3, 3, 'EVALUATION');
+```
+
+The actual amount of bootstrapping that could be done is dependent on the problem at hand, and of course, IAM is a complex domain with many considerations. The above demonstrates the use of insert statements of DML. Pay attention to the order of some of the statements. For instance, the `permissions` table has a relationship with `permission_categories`, so in order to insert the `categoryId` into the `permissions` table, the corresponding `id` must already exist in the `permission_categories` table.
+
+Should the need arise to modify a record in the database, like re-assigning the `PAYROLL` permission from `Accounting` to `HR`, you would need to ensure that the new `categoryId` exists in the `permission_categories` table before making the change in the `permissions` table.
+
+```sql
+UPDATE permissions SET categoryId = 1 WHERE name = 'PAYROLL';
+```
+
+Or should the need arise to remove the `VIEWER` role:
+
+```sql
+DELETE FROM roles WHERE name = 'VIEWER';
+```
+
+### Implementation
+
+#### `INSERT`
+
+The `INSERT` command is used to store new records in a database table. The syntax is as follows:
+
+```sql
+INSERT INTO <table_name> (column1, column2, column3, ...)
+VALUES (value1, value2, value3, ...);
+```
+
+The `INSERT` command can also be used to insert multiple records at once:
+
+```sql
+INSERT INTO <table_name> (column1, column2, column3, ...)
+VALUES (value1, value2, value3, ...),
+       (value4, value5, value6, ...),
+       (value7, value8, value9, ...);
+```
+
+#### `UPDATE`
+
+The `UPDATE` command can modify 0 or more records, and the results of the command are the number of rows affected
+
+```sql
+UPDATE <table_name>
+SET column1 = value1, column2 = value2, ...
+```
+
+To limit the number of rows affected by the `UPDATE` command, you can use the `WHERE` clause:
+
+```sql
+UPDATE <table_name>
+SET column1 = value1, column2 = value2, ...
+WHERE condition;
+```
+
+#### `DELETE`
+
+The `DELETE` command is used to remove existing records from a database table. The syntax is as follows:
+
+```sql
+DELETE FROM <table_name>
+WHERE condition;
+```
