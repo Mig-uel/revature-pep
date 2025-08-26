@@ -642,3 +642,38 @@ UPDATE employees
 SET address_street = '456 Another St', address_city = 'Another City'
 WHERE department = 'Sales';
 ```
+
+## `DELETE`
+
+`DELETE` is an SQL command used to remove existing records from a database table. It is part of the DML (Data Manipulation Language) sublanguage of SQL.
+
+The `DELETE` command generally includes a `WHERE` clause to specify the records for deletion. However, much like the `UPDATE` command, there is a risk that if the `WHERE` clause is not specified, it will remove all records from the table.
+
+The `DELETE` command removes one record at a time and logs each deleted row, which is why it is not considered good practice to delete all records using `DELETE` when you want to maintain the table structure. This is where `TRUNCATE` offers a better solution as it is both faster and removes the data by deallocating the data pages used to store the records. `DELETE` commands can also activate a trigger and work with indexed views.
+
+### Real World Application
+
+Deleting records from a database is common when we need to remove unwanted data, such as looking student records maintained at a college. When a student drops out of a course before the deadline, all grades and assessments related to that student may need to be deleted from the database. Therefore, they would need to use the `DELETE` command to remove those records.
+
+### Implementation
+
+The basic syntax for the `DELETE` command:
+
+```sql
+DELETE FROM table_name
+WHERE condition;
+```
+
+Example for deleting a student with an id = 'student1@uni.edu' from an `enrollment` table for course_id = 101:
+
+```sql
+DELETE FROM enrollment
+WHERE student_id = 'student1@uni.edu' AND course_id = 101;
+```
+
+Example for deleting all of the above student's grades from a `student_assessments` table:
+
+```sql
+DELETE FROM student_assessments
+WHERE student_id = 'student1@uni.edu';
+```
