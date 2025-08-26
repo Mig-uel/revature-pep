@@ -677,3 +677,566 @@ Example for deleting all of the above student's grades from a `student_assessmen
 DELETE FROM student_assessments
 WHERE student_id = 'student1@uni.edu';
 ```
+
+## DQL (Data Query Language)
+
+Data Query Language (DQL) is one of the five sublanguages of SQL. It is used to query the database and retrieve data. The primary DQL command is `SELECT`, which allows users to specify the data they want to retrieve from one or more tables. DQL is essential for data retrieval and reporting in database applications.
+
+It is the major sublanguage used by applications to search, project, filter, join, aggregate, and group data for displaying application state.
+
+Unlike other sublanguages, DQL is only associated with a single command, `SELECT`. However, the `SELECT` command is built on a complex grammar structure that allows for powerful data retrieval capabilities.
+
+### Real World Application
+
+The DQL sublanguage is the most widely used sublanguage in enterprise applications. Application developers use DQL to `SELECT` statements in combination with platform-specific features to retrieve and manipulate data efficiently. This includes using `SELECT` statements with various clauses, such as `WHERE`, `JOIN`, and `GROUP BY`, to build complex queries that meet the specific needs of their applications.
+
+Let's highlight a few enterprise application use cases of DQL:
+
+E-Tail applications like Amazon, Walmart, and Best Buy may use DQL to:
+
+- Query for the items in a user's shopping cart
+- Query for the quantity of items in stock
+- Query for a list of specials, sales, or targeted items based on user behavior
+- Query for item information to craft UI elements
+
+Content-driven applications like YouTube, Twitch, Twitter, and Facebook use DQL to:
+
+- Query for user authentication information
+- Query for content based on user feeds
+- Query for trending topics and hashtags
+- Query to deliver usage information for third-party applications
+
+Search engines like Google, Bing, and Yahoo use DQL to:
+
+- Query for URL data based on user queries
+- Query for common questions to provide search suggestions
+- Query for ads based on user behavior
+- Query for user search history
+
+The use cases go on and on. The main purpose of DQL is to enable efficient and flexible data retrieval from relational databases, allowing applications to meet their specific data access needs.
+
+### Implementation
+
+The DQL sublanguage has a simple one-dimensional purpose: to query data. However, the `SELECT` command is built on a complex grammar structure that allows for powerful data retrieval capabilities like:
+
+- Filtering results with the `WHERE` clause
+- Joining multiple tables with the `JOIN` clause
+- Grouping results with the `GROUP BY` clause
+- Aggregating data with functions like `COUNT`, `SUM`, and `AVG`
+
+These capabilities make DQL an essential tool for developers working with relational databases.
+
+#### Phrasing
+
+A basic SQL query can be divided into clauses that describe different parts of the query.
+
+```sql
+SELECT <projection> FROM <table_name>
+<filter>
+<grouping>
+<ordering>
+<offset>
+```
+
+According to official documentation, this is how a query can be structured:
+
+```sql
+SELECT [ALL | DISTINCT]
+        select_expr [, select_expr ...]
+        [into_option]
+        [FROM table_references]
+        [WHERE where_condition]
+        [GROUP BY {col_name | expr | position} [ASC | DESC], ... [HAVING having_condition]]
+        [ORDER BY {col_name | expr | position} [ASC | DESC], ...]
+        [LIMIT {number | ALL}]
+```
+
+That is a lot of information, but as an important note, most of these clauses are optional. Let's query the following simple table:
+
+```sql
+CREATE TABLE my_table (
+  id INT PRIMARY KEY,
+  my VARCHAR(10) NOT NULL,
+  my_other_Value FLOAT DEFAULT 10.0
+)
+```
+
+After creating the table, we can ruin the following query:
+
+```sql
+SELECT * FROM my_table;
+```
+
+| id  | my        | my_other_Value |
+| --- | --------- | -------------- |
+| 1   | where val | 1              |
+| 2   | new value | 2              |
+
+As you can see, the `SELECT` statement can be very simple.
+
+Let's go over some more advanced usages of a `SELECT` statement.
+
+#### Projection
+
+The `projection` clause of a `SELECT` statement specifies the columns that should be returned in the query results. By default, a `SELECT *` statement will return all columns from the specified table(s). However, you can also specify a subset of columns to return by listing them explicitly in the `SELECT` clause.
+
+For example, if you only want to retrieve the `id` and `my` columns from the `my_table`, you can use the following query:
+
+```sql
+SELECT id, my FROM my_table;
+```
+
+This will return a result set that includes only the `id` and `my` columns for all rows in the `my_table`.
+
+Columns in the `projection` clause can also have an alias, which is a temporary name that can be used to refer to the column in the result set. To create an alias, you can use the `AS` keyword followed by the desired alias name.
+
+```sql
+SELECT id AS my_id, my AS my_value FROM my_table;
+```
+
+This will return a result set with the columns renamed to `my_id` and `my_value`.
+
+#### Filtering
+
+The `filtering` clause of a `SELECT` statement is a `WHERE` clause that specifies the conditions that must be met for a row to be included in the result set. The `WHERE` clause is used to filter the rows returned by the query based on specific criteria. The `WHERE` clause uses logical operators to select records that meet specific conditions.
+
+| Operator | Meaning                  |
+| -------- | ------------------------ |
+| =        | Equal to                 |
+| <>       | Not equal to             |
+| >        | Greater than             |
+| <        | Less than                |
+| >=       | Greater than or equal to |
+| <=       | Less than or equal to    |
+| BETWEEN  | Between a range          |
+| AND      | Logical AND              |
+| IN       | Logical IN               |
+| NOT      | Logical NOT              |
+| OR       | Logical OR               |
+| LIKE     | Pattern matching         |
+
+To demonstrate some of the use of these `filter` operators, let's use the following code:
+
+```sql
+CREATE SCHEMA fruits_and_veggies;
+USE fruits_and_veggies;
+CREATE TABLE IF NOT EXISTS produce ( id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(20) NOT NULL UNIQUE, price DECIMAL(3,2), type VARCHAR(10) NOT NULL);
+INSERT INTO produce (name, price, type) VALUES ('navel orange', 1.99, 'citrus'),
+('mandarin orange', 0.75, 'citrus'),
+('tangerine', 0.50, 'citrus'),
+('red delicious', 2.00, 'apple'),
+ ('jona gold', 2.50, 'apple'),
+ ('granny smith', 1.00, 'apple'),
+ ('blueberry', 0.40, 'berry'),
+ ('raspberry', 0.35, 'berry'),
+ ('kiwi', 0.75, 'berry'),
+ ('watermelon', 3.99, 'melon'),
+ ('cantaloupe', 2.99, 'melon'),
+ ('honeydew', 2.00, 'melon'),
+ ('lettuce', 2.99, 'leafy'),
+ ('spinach', 1.99, 'leafy'),
+  ('pumpkin', 4.99, 'marrow'),
+  ('cucumber', 0.99, 'marrow'),
+  ('potato', 0.45, 'root'),
+  ('yam', 0.25, 'root'),
+   ('sweet potato', 0.50, 'root'),
+   ('onion', 0.33, 'allium'),
+    ('garlic', 0.25, 'allium'),
+    ('shallot', 0.60, 'allium');
+```
+
+Before we start, let's look at all of the records in the `produce` table:
+
+```sql
+SELECT id, name, price, type FROM produce;
+```
+
+| id  | name            | price | type   |
+| --- | --------------- | ----- | ------ |
+| 1   | navel orange    | 1.99  | citrus |
+| 2   | mandarin orange | 0.75  | citrus |
+| 3   | tangerine       | 0.50  | citrus |
+| 4   | red delicious   | 2.00  | apple  |
+| 5   | jona gold       | 2.50  | apple  |
+| 6   | granny smith    | 1.00  | apple  |
+| 7   | blueberry       | 0.40  | berry  |
+| 8   | raspberry       | 0.35  | berry  |
+| 9   | kiwi            | 0.75  | berry  |
+| 10  | watermelon      | 3.99  | melon  |
+| 11  | cantaloupe      | 2.99  | melon  |
+| 12  | honeydew        | 2.00  | melon  |
+| 13  | lettuce         | 2.99  | leafy  |
+| 14  | spinach         | 1.99  | leafy  |
+| 15  | pumpkin         | 4.99  | marrow |
+| 16  | cucumber        | 0.99  | marrow |
+| 17  | potato          | 0.45  | root   |
+| 18  | yam             | 0.25  | root   |
+| 19  | sweet potato    | 0.50  | root   |
+| 20  | onion           | 0.33  | allium |
+| 21  | garlic          | 0.25  | allium |
+| 22  | shallot         | 0.60  | allium |
+
+#### AND
+
+The `AND` operator compares two boolean expressions and returns true if both expressions are true. If either expression is false, the entire expression evaluates to false.
+
+| Expression                           | Value |
+| ------------------------------------ | ----- |
+| TRUE AND TRUE                        | TRUE  |
+| TRUE AND FALSE                       | FALSE |
+| FALSE AND TRUE                       | FALSE |
+| FALSE AND FALSE                      | FALSE |
+| (TRUE AND TRUE) AND (TRUE AND TRUE)  | TRUE  |
+| (TRUE AND TRUE) AND (TRUE AND FALSE) | FALSE |
+
+Select all records that have a type of 'apple' AND a price greater than 1.00:
+
+```sql
+SELECT id, name, price, type FROM produce WHERE type = 'apple' AND price > 1.00;
+```
+
+| id  | name          | price | type  |
+| --- | ------------- | ----- | ----- |
+| 4   | red delicious | 2.00  | apple |
+| 5   | jona gold     | 2.50  | apple |
+
+#### IN
+
+The `IN` operator compares an operand to a list and evaluates to true if the operand is equal to one of the values in the list.
+
+| Expression     | Value |
+| -------------- | ----- |
+| 1 IN (1, 2, 3) | TRUE  |
+| 4 IN (1, 2, 3) | FALSE |
+
+Select all produce that have the type 'apple', 'root', 'berry', or 'allium':
+
+```sql
+SELECT name, price, type FROM produce
+WHERE type IN ('apple', 'root', 'berry', 'allium');
+```
+
+| name          | price | type   |
+| ------------- | ----- | ------ |
+| red delicious | 2.00  | apple  |
+| jona gold     | 2.50  | apple  |
+| granny smith  | 1.00  | apple  |
+| potato        | 0.45  | root   |
+| yam           | 0.25  | root   |
+| sweet potato  | 0.50  | root   |
+| onion         | 0.33  | allium |
+| garlic        | 0.25  | allium |
+| shallot       | 0.60  | allium |
+
+#### NOT
+
+The `NOT` operator negates a boolean expression. If the expression is true, `NOT` makes it false, and if the expression is false, `NOT` makes it true.
+
+| Expression           | Value |
+| -------------------- | ----- |
+| NOT TRUE             | FALSE |
+| NOT FALSE            | TRUE  |
+| NOT (1 IN (1, 2, 3)) | FALSE |
+| NOT (4 IN (1, 2, 3)) | TRUE  |
+
+Select all produce that are NOT an 'apple' and NOT an 'allium':
+
+```sql
+SELECT name, price, type FROM produce
+WHERE NOT type = 'apple' AND NOT type = 'allium';
+```
+
+| name            | price | type   |
+| --------------- | ----- | ------ |
+| navel orange    | 1.99  | citrus |
+| mandarin orange | 0.75  | citrus |
+| tangerine       | 0.50  | citrus |
+| blueberry       | 0.40  | berry  |
+| raspberry       | 0.35  | berry  |
+| kiwi            | 0.75  | berry  |
+| watermelon      | 3.99  | melon  |
+| cantaloupe      | 2.99  | melon  |
+| honeydew        | 2.00  | melon  |
+| lettuce         | 2.99  | leafy  |
+| spinach         | 1.99  | leafy  |
+| pumpkin         | 4.99  | marrow |
+| cucumber        | 0.99  | marrow |
+| potato          | 0.45  | root   |
+| yam             | 0.25  | root   |
+| sweet potato    | 0.50  | root   |
+
+#### OR
+
+The `OR` operator compares two boolean expressions and returns true if either expression is true. If both expressions are false, the entire expression evaluates to false.
+
+| Expression                        | Value |
+| --------------------------------- | ----- |
+| TRUE OR TRUE                      | TRUE  |
+| TRUE OR FALSE                     | TRUE  |
+| FALSE OR TRUE                     | TRUE  |
+| FALSE OR FALSE                    | FALSE |
+| (TRUE OR TRUE) OR (TRUE OR TRUE)  | TRUE  |
+| (TRUE OR TRUE) OR (TRUE OR FALSE) | TRUE  |
+
+Select all records that have a type of 'citrus' OR a type of 'berry':
+
+```sql
+SELECT name, price, type FROM produce WHERE type = 'citrus' OR type = 'berry';
+```
+
+| id  | name            | price | type   |
+| --- | --------------- | ----- | ------ |
+| 7   | navel orange    | 1.99  | citrus |
+| 8   | mandarin orange | 0.75  | citrus |
+| 9   | tangerine       | 0.50  | citrus |
+| 20  | blueberry       | 0.40  | berry  |
+| 21  | raspberry       | 0.35  | berry  |
+| 22  | kiwi            | 0.75  | berry  |
+
+#### LIKE
+
+The `LIKE` operator is used in a `WHERE` clause to search for a specified pattern in a column. It is often used with wildcard characters to match a range of values. `LIKE` can be used for fuzzy logic where a given value either fully or partially matches the pattern. Patterns in SQL can be zero or more character and include zero or more valid wildcard characters.
+
+| Wildcard | Use                                                                                                            |
+| -------- | -------------------------------------------------------------------------------------------------------------- |
+| %        | Represents zero or more characters. For example, `LIKE 'blue%'` will match any string that starts with 'blue'. |
+| \_       | Represents a single character. For example, `LIKE 'b_ue'` will match 'blue', 'b1ue', 'b2ue', etc.              |
+
+Select all product with a type that starts with 'a':
+
+```sql
+SELECT name, price, type FROM produce where type LIKE 'a%';
+```
+
+| name          | price | type   |
+| ------------- | ----- | ------ |
+| red delicious | 2.00  | apple  |
+| jona gold     | 2.50  | apple  |
+| granny smith  | 1.00  | apple  |
+| onion         | 0.33  | allium |
+| garlic        | 0.25  | allium |
+| shallot       | 0.60  | allium |
+
+Select all produce that have a type that is exactly 5 characters long:
+
+```sql
+SELECT name, price, type FROM produce where type LIKE '_____';
+```
+
+| name          | price | type  |
+| ------------- | ----- | ----- |
+| red delicious | 2.00  | apple |
+| jona gold     | 2.50  | apple |
+| granny smith  | 1.00  | apple |
+| blueberry     | 0.40  | berry |
+| raspberry     | 0.35  | berry |
+| kiwi          | 0.75  | berry |
+| watermelon    | 3.99  | melon |
+| cantaloupe    | 2.99  | melon |
+| honeydew      | 2.00  | melon |
+| lettuce       | 2.99  | leafy |
+| spinach       | 1.99  | leafy |
+
+#### BETWEEN
+
+The `BETWEEN` operator is used in a `WHERE` clause to filter the result set within a certain range. The values can be numbers, text, or dates. The `BETWEEN` operator is inclusive, meaning that it includes the boundary values specified in the range.
+
+Select all produce with a price between 0.50 and 1.00:
+
+```sql
+SELECT name, price, type FROM produce
+WHERE price BETWEEN 0.50 AND 1.00;
+```
+
+| name            | price | type   |
+| --------------- | ----- | ------ |
+| mandarin orange | 0.75  | citrus |
+| tangerine       | 0.50  | citrus |
+| granny smith    | 1.00  | apple  |
+| kiwi            | 0.75  | berry  |
+| cucumber        | 0.99  | marrow |
+| sweet potato    | 0.50  | root   |
+| shallot         | 0.60  | allium |
+
+SELECT all produce that have a name between 'o' and 'y':
+
+```sql
+SELECT name, price, type FROM produce
+WHERE name BETWEEN 'o' AND 'y';
+```
+
+| name          | price | type   |
+| ------------- | ----- | ------ |
+| onion         | 0.33  | allium |
+| potato        | 0.45  | root   |
+| pumpkin       | 4.99  | marrow |
+| raspberry     | 0.35  | berry  |
+| red delicious | 2.00  | apple  |
+| shallot       | 0.60  | allium |
+| spinach       | 1.99  | leafy  |
+| sweet potato  | 0.50  | root   |
+| tangerine     | 0.50  | citrus |
+| watermelon    | 3.99  | melon  |
+
+#### GROUPING (part 1)
+
+The `GROUP BY` clause of the `SELECT` statement groups rows that have the same values in specified columns into summary rows. `GROUP BY` is often used with aggregate functions like `COUNT`, `SUM`, `AVG`, `MAX`, and `MIN` to perform calculations on each group of rows.
+
+Note: most databases require that the `GROUP BY` clause contain all projected columns. This may affect the results of the query.
+
+Select the types and average price of each type of produce:
+
+```sql
+SELECT type, AVG(price) AS average_price FROM produce
+GROUP BY type;
+```
+
+| type   | average_price |
+| ------ | ------------- |
+| allium | 0.40          |
+| apple  | 1.83          |
+| berry  | 0.50          |
+| citrus | 1.08          |
+| leafy  | 2.49          |
+| melon  | 2.99          |
+| marrow | 2.99          |
+| root   | 0.40          |
+
+#### GROUPING (part 2)
+
+The `HAVING` clause is used in conjunction with the `GROUP BY` clause to filter groups based on a specified condition. It is similar to the `WHERE` clause, but it operates on groups rather than individual rows.
+
+Select the types of produce that have an average cost higher than the average of all produce:
+
+```sql
+SELECT type, AVG(price) AS group_avg, (SELECT AVG(price) FROM produce) as gross_avg FROM produce
+GROUP BY type
+HAVING group_avg > gross_avg;
+```
+
+| type   | group_avg | gross_avg |
+| ------ | --------- | --------- |
+| apple  | 1.83      | 1.48      |
+| melon  | 2.99      | 1.48      |
+| leafy  | 2.49      | 1.48      |
+| marrow | 2.99      | 1.48      |
+
+#### ORDERING
+
+The `ORDER BY` clause of the `SELECT` statement sorts the result set based on one or more columns. By default, the sorting is done in ascending order (from lowest to highest). However, you can also specify descending order (from highest to lowest) by using the `DESC` keyword.
+
+Select all produce ordered alphabetically ascending by name:
+
+```sql
+SELECT name, price, type FROM produce
+ORDER BY name ASC;
+```
+
+| name            | price | type   |
+| --------------- | ----- | ------ |
+| blueberry       | 0.40  | berry  |
+| cantaloupe      | 2.99  | melon  |
+| cucumber        | 0.99  | marrow |
+| garlic          | 0.25  | allium |
+| granny smith    | 1.00  | apple  |
+| honeydew        | 2.00  | melon  |
+| jona gold       | 2.50  | apple  |
+| kiwi            | 0.75  | berry  |
+| lettuce         | 2.99  | leafy  |
+| mandarin orange | 0.75  | citrus |
+| navel orange    | 1.99  | citrus |
+| onion           | 0.33  | allium |
+| potato          | 0.45  | root   |
+| pumpkin         | 4.99  | marrow |
+| raspberry       | 0.35  | berry  |
+| red delicious   | 2.00  | apple  |
+| shallot         | 0.60  | allium |
+| spinach         | 1.99  | leafy  |
+| sweet potato    | 0.50  | root   |
+| tangerine       | 0.50  | citrus |
+| watermelon      | 3.99  | melon  |
+| yam             | 0.25  | root   |
+
+Do the same but in reverse:
+
+```sql
+SELECT name, price, type FROM produce
+ORDER BY name DESC;
+```
+
+| name            | price | type   |
+| --------------- | ----- | ------ |
+| yam             | 0.25  | root   |
+| watermelon      | 3.99  | melon  |
+| tangerine       | 0.50  | citrus |
+| sweet potato    | 0.50  | root   |
+| spinach         | 1.99  | leafy  |
+| shallot         | 0.60  | allium |
+| red delicious   | 2.00  | apple  |
+| raspberry       | 0.35  | berry  |
+| pumpkin         | 4.99  | marrow |
+| potato          | 0.45  | root   |
+| onion           | 0.33  | allium |
+| navel orange    | 1.99  | citrus |
+| mandarin orange | 0.75  | citrus |
+| lettuce         | 2.99  | leafy  |
+| kiwi            | 0.75  | berry  |
+| jona gold       | 2.50  | apple  |
+| honeydew        | 2.00  | melon  |
+| granny smith    | 1.00  | apple  |
+| garlic          | 0.25  | allium |
+| cucumber        | 0.99  | marrow |
+| cantaloupe      | 2.99  | melon  |
+| blueberry       | 0.40  | berry  |
+
+#### OFFSET (part 1)
+
+The `LIMIT` clause is used in conjunction with the `SELECT` statement to limit the number of rows returned in the result set. It is often used for pagination, where a large result set is divided into smaller, more manageable chunks.
+
+Select the first 5 produce records after ordering alphabetically:
+
+```sql
+SELECT name, price, type FROM produce
+ORDER BY name
+LIMIT 5;
+```
+
+| name         | price | type   |
+| ------------ | ----- | ------ |
+| blueberry    | 0.40  | berry  |
+| cantaloupe   | 2.99  | melon  |
+| cucumber     | 0.99  | marrow |
+| garlic       | 0.25  | allium |
+| granny smith | 1.00  | apple  |
+
+#### OFFSET (part 2)
+
+The `OFFSET` clause specifies the number of rows to skip before starting to return rows from the query. It is often used in conjunction with the `LIMIT` clause for pagination.
+
+Note: Some databases use the `SKIP` keyword instead of `OFFSET`.
+
+Given the array [1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ], the following are facts in the context of `LIMIT` and `OFFSET`:
+
+| Clause             | Fact                            |
+| ------------------ | ------------------------------- |
+|                    | [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] |
+| `OFFSET 0`         | [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] |
+| `LIMIT 5 OFFSET 0` | [1, 2, 3, 4, 5]                 |
+| `OFFSET 2`         | [3, 4, 5, 6, 7, 8, 9, 10]       |
+| `LIMIT 5 OFFSET 2` | [3, 4, 5, 6, 7]                 |
+
+Select the second 5 produce records after ordering alphabetically:
+
+```sql
+SELECT name, price, type FROM produce
+ORDER BY name
+LIMIT 5 OFFSET 5;
+```
+
+| name            | price | type   |
+| --------------- | ----- | ------ |
+| honeydew        | 2.00  | melon  |
+| jona gold       | 2.50  | apple  |
+| kiwi            | 0.75  | berry  |
+| lettuce         | 2.99  | leafy  |
+| mandarin orange | 0.75  | citrus |
