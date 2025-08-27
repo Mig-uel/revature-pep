@@ -359,3 +359,111 @@ Result:
 | email        | varchar(100) | NO   | UNI | NULL    |       |
 +--------------+--------------+------+-----+---------+-------+
 ```
+
+## Referential Integrity
+
+Referential integrity is a property of data stating that all its references are valid. In the context of relational databases, it ensures that relationships between tables remain consistent. When one table (the child table) references another table (the parent table) through a foreign key, referential integrity ensures that the foreign key value in the child table always corresponds to a valid primary key value in the parent table.
+
+When a primary key from one table appears in another table, it is called a foreign key. The foreign key establishes a link between the data in the two tables.
+
+Referential integrity does not allow the addition of any record in a table that contains a foreign key unless the record containing the primary key being referred to exists. It also does not allow the deletion of a record containing a primary key if there are matching foreign key records in another table.
+
+To delete a record in the parent table, you must first delete any corresponding records in the child table that reference the primary key in the parent table. To solve this problem, you can use cascading actions like `ON DELETE CASCADE` or `ON UPDATE CASCADE` when defining foreign key constraints. These actions automatically propagate changes from the parent table to the child table, ensuring referential integrity is maintained without manual intervention.
+
+Other options are to set the `FOREIGN KEY` to `NULL` or to a default value when the referenced primary key is deleted or updated. This can be done using `ON DELETE SET NULL` or `ON UPDATE SET DEFAULT`.
+
+### Real World Application
+
+Consider a database with two tables: `Orders` and `Customers`. The `Orders` table has a foreign key that references the primary key in the `Customers` table. Referential integrity ensures that every order is associated with a valid customer.
+
+```sql
+CREATE TABLE Customers (
+  customerId INT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE Orders (
+  orderId INT PRIMARY KEY,
+  orderDate DATE NOT NULL,
+  customerId INT,
+  FOREIGN KEY (customerId) REFERENCES Customers(customerId)
+);
+```
+
+Any changes made to the `Customers` table will be reflected in the `Orders` table, ensuring that all orders always reference valid customers. If a customer is deleted from the `Customers` table, any associated orders in the `Orders` table will also be deleted if `ON DELETE CASCADE` is specified.
+
+### Implementation
+
+Step 1: Create a table named `Student`
+
+```sql
+CREATE TABLE Student (
+  student_id INT PRIMARY KEY,
+  first_name VARCHAR(20),
+  last_name VARCHAR(20),
+  major VARCHAR(20)
+)
+```
+
+---
+
+Step 2: Create a table named `InternationalStudent`
+
+```sql
+CREATE TABLE InternationalStudent (
+  country_id INT PRIMARY KEY,
+  name VARCHAR(20),
+  student_id INT REFERENCES Student(student_id) ON DELETE CASCADE -- Foreign Key referencing Student table
+)
+```
+
+The above example demonstrates referential integrity by ensuring that the `student_id` in the `InternationalStudent` table references a valid `student_id` in the `Student` table. The `ON DELETE CASCADE` option ensures that if a student is deleted from the `Student` table, any corresponding records in the `InternationalStudent` table will also be automatically deleted, maintaining data consistency across both tables.
+
+---
+
+Step 3: Insert values into `Student` table and `InternationalStudent` table
+
+```sql
+INSERT INTO Student VALUES (1, "Taylor", "Swift", "English Literature"), (2, "Stephen", "Hawking", "Physics");
+
+INSERT INTO InternationalStudent VALUES (1, "USA", 1), (2, "UK", 2);
+```
+
+```sql
+SELECT * FROM InternationalStudent;
+```
+
+Result:
+
+```
++------------+--------+------------+
+| country_id | name   | student_id |
++------------+--------+------------+
+| 1          | USA    | 1          |
+| 2          | UK     | 2          |
++------------+--------+------------+
+```
+
+---
+
+Step 4: Delete a record from the `Student` table
+
+```sql
+DELETE FROM Student WHERE major = "English Literature";
+```
+
+Now the record in the child table `InternationalStudent` is also deleted because of the `ON DELETE CASCADE` option.
+
+```sql
+SELECT * FROM InternationalStudent;
+```
+
+Result:
+
+```
++------------+--------+------------+
+| country_id | name   | student_id |
++------------+--------+------------+
+| 2          | UK     | 2          |
++------------+--------+------------+
+```
