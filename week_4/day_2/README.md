@@ -71,3 +71,106 @@ CREATE TABLE <table_name> (
 -- Adding constraints after creating a table
 ALTER TABLE <table_name> ADD CONSTRAINT constraint_name CHECK (condition);
 ```
+
+## Auto Incrementing
+
+`AUTO INCREMENT`
+
+- Used to generate a unique number when a new record is inserted into a table.
+
+---
+
+`SERIAL`
+
+- A data type in PostgreSQL that auto-increments integer values.
+
+---
+
+`IDENTITY`
+
+- A property in SQL Server that auto-increments integer values.
+
+---
+
+Most often, `AUTO INCREMENT` or `SERIAL` acts as a primary key field that is created automatically every time a new record is inserted.
+
+The dialect of SQL you are using will determine if you use the `AUTO INCREMENT` or `SERIAL` keyword.
+
+While the concepts are the same, different databases may have different syntax or keywords for implementing auto-incrementing fields. It is important to refer to the documentation of the specific database system you are using to understand the correct syntax and options available for auto-incrementing fields.
+
+- **PostgreSQL**: Use `SERIAL` or `BIGSERIAL` data types.
+  - Implicitly creates a sequence object to generate unique values.
+- **MySQL**: Use `AUTO_INCREMENT` attribute.
+  - Automatically increments the value for each new row.
+- **SQL Server**: Use `IDENTITY` property.
+  - Automatically increments the value for each new row.
+
+### Real World Application
+
+Consider a table where we want to keep track of users. Users should not have the same identifier, so as a new user is added to the database, we want to auto-increment their ID.
+
+```sql
+CREATE TABLE users (
+  user_id SERIAL PRIMARY KEY, -- Auto-incrementing user ID
+  first_name VARCHAR(30),
+  last_name VARCHAR(30),
+  address VARCHAR(100),
+  city VARCHAR(50),
+  state CHAR(2),
+  zip CHAR(5),
+  social_security CHAR(11),
+  username VARCHAR(20),
+  password VARCHAR(20),
+  email VARCHAR(50)
+)
+```
+
+### Implementation
+
+Syntax to create a table with `employee_id` as an auto-incrementing primary key:
+
+```sql
+CREATE TABLE table_name(
+variable_name variable_datatype AUTO_INCREMENT
+);
+```
+
+Example:
+
+```sql
+CREATE TABLE employees (
+    employee_id INT AUTO_INCREMENT PRIMARY KEY,
+    employee_name VARCHAR(50),
+    department_id INT
+);
+```
+
+This same table written using `SERIAL` would look like this:
+
+```sql
+CREATE TABLE table_name (
+    variable_name SERIAL PRIMARY KEY
+);
+```
+
+Example:
+
+```sql
+CREATE TABLE employees (
+    employee_id SERIAL PRIMARY KEY,
+    employee_name VARCHAR(50),
+    department_id INT
+);
+```
+
+Notice that the syntax for defining an auto-incrementing primary key differs between MySQL and PostgreSQL. In MySQL, we use `AUTO_INCREMENT`, while in PostgreSQL, we use `SERIAL`. Always refer to the documentation for the specific SQL dialect you are using to ensure correct syntax.
+
+You can modify auto-incremented values, but it is generally not recommended as it can lead to data integrity issues. If you need to reset or change the auto-increment value, use the appropriate command for your database system.
+
+```sql
+-- MySQL
+ALTER TABLE employees AUTO_INCREMENT = 100;
+
+-- PostgreSQL
+ALTER SEQUENCE employees_employee_id_seq RESTART WITH 100;
+```
