@@ -174,3 +174,142 @@ ALTER TABLE employees AUTO_INCREMENT = 100;
 -- PostgreSQL
 ALTER SEQUENCE employees_employee_id_seq RESTART WITH 100;
 ```
+
+## CHECK
+
+The `CHECK` constraint is used to limit the value range that can be placed in a column. If you define a `CHECK` constraint on a single column, it allows only certain values for this column.
+
+It determines whether the value associated with the column is valid or not based on the given condition. And, it helps to check what types of values are to be stored in a table's column.
+
+### Real World Application
+
+The `CHECK` constraint in SQL is use to enforce specific conditions on the data being inserted or updated in a table. This constraint ensures that values in a column meet a certain condition, helping to maintain data integrity and accuracy by preventing invalid data entries.
+
+- **Data Validation**: Developers might use `CHECK` to validate values that can be entered into a column. For example, ensuring that an age column only contains values greater than 0.
+
+- **Date and Time Constraints**: Developers can use `CHECK` constraints to ensure that date and time values fall within a specific range. For example, a `CHECK` constraint could be used to ensure that a `start_date` is always before an `end_date`.
+
+- **Enum-like Behavior**: While SQL does not have a built-in enum type, developers can use `CHECK` constraints to simulate this behavior. For example, a `CHECK` constraint could be used to ensure that a `status` column only contains specific values like 'active', 'inactive', or 'pending'.
+
+An aquarium database may use the `CHECK` constraint to ensure that the tank size and temperature values for a fish tank are within acceptable ranges.
+
+```sql
+CREATE TABLE FishTank (
+  FishID INT PRIMARY KEY,
+  Species VARCHAR(50),
+  -- Ensure tank size is positive and not too large
+  TankSize DECIMAL CHECK(TankSize > 0 AND TankSize <= 100),
+  -- Ensure temperature is within a suitable range for most fish
+  Temperature DECIMAL CHECK(Temperature >= 0 AND Temperature <= 30)
+)
+```
+
+In this example, the `CHECK` constraints ensure that the `TankSize` is a positive value and does not exceed 100, and that the `Temperature` is within a range suitable for most fish (0 to 30 degrees Celsius). This helps maintain the integrity of the data in the `FishTank` table by preventing invalid entries.
+
+### Implementation
+
+An example table for the `CHECK` constraint is as follows:
+
+```sql
+CREATE TABLE products (
+  productId INT PRIMARY KEY,
+  productPrice DECIMAL CHECK (productPrice >= 0
+)
+```
+
+In this example, the `CHECK` constraint ensures that the `productPrice` is always a non-negative value, preventing the insertion of negative prices into the `products` table.
+
+## DEFAULT
+
+The `DEFAULT` constraint is used to provide a default value for a column when no value is specified during an insert operation. This ensures that the column will always have a valid value, even if the user does not provide one.
+
+The `DEFAULT` values are typically literal constants; however an exception for timestamps and datetime can be made to use the current date and time. Many databases allow the use of functions like `NOW()` or `CURRENT_TIMESTAMP` to set the default value to the current date and time. This feature is commonly used for columns that track creation or modification timestamps.
+
+To create a `DEFAULT` constraint for an existing column in a table:
+
+```sql
+ALTER TABLE table_name
+ALTER COLUMN column_name SET DEFAULT default_value;
+```
+
+To delete a `DEFAULT` constraint from an existing column in a table:
+
+```sql
+ALTER TABLE table_name
+ALTER COLUMN column_name DROP DEFAULT;
+```
+
+### Real World Application
+
+The `DEFAULT` keyword in SQL can apply to scenarios where you want to ensure that a certain column always has a value, even if it is not explicitly provided during an insert operation. This is particularly useful for maintaining data integrity and consistency. For example, you might use a `DEFAULT` value for timestamp columns to automatically record the creation or modification time of a record.
+
+Some examples of when you may want to use `DEFAULT` include:
+
+- **Timestamps for Record Creation**: When creating a table to store user information, you might want to automatically record the date and time when each user was created. You can use the `DEFAULT` keyword to set the default value of a `created_at` column to the current timestamp.
+
+```sql
+CREATE TABLE users (
+  user_id SERIAL PRIMARY KEY,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+- **Boolean Values**: In some cases, you may want to ensure that a boolean column has a default value. For example, when creating a table to store user preferences, you might want to set a default value for a `notifications_enabled` column to `true`.
+
+```sql
+CREATE TABLE user_preferences (
+  user_id SERIAL PRIMARY KEY,
+  notifications_enabled BOOLEAN DEFAULT TRUE
+);
+```
+
+- **Numeric Defaults**: When creating a table to store product information, you might want to set a default value for a `stock_quantity` column to ensure that new products start with a certain stock level.
+
+```sql
+CREATE TABLE products (
+  product_id SERIAL PRIMARY KEY,
+  stock_quantity INT DEFAULT 0
+);
+```
+
+- **Categorization or Status**: When creating a table to store orders, you might want to set a default value for a `status` column to ensure that new orders start with a specific status.
+
+```sql
+CREATE TABLE orders (
+  order_id SERIAL PRIMARY KEY,
+  status VARCHAR(20) DEFAULT 'pending'
+);
+```
+
+- **Default Text Values**: When creating a table to store blog posts, you might want to set a default value for a `visibility` column to ensure that new posts are public by default.
+
+```sql
+CREATE TABLE blog_posts (
+  post_id SERIAL PRIMARY KEY,
+  visibility VARCHAR(20) DEFAULT 'public'
+);
+```
+
+### Implementation
+
+It is important to refer to the documentation of the specific database management system (DBMS) you are using, as the syntax and capabilities for defining constraints can vary between systems. However, the general principles outlined in this guide should apply to most relational databases.
+
+```sql
+CREATE TABLE UserOnline(
+  ID INT PRIMARY KEY,
+  UserName VARCHAR(100) NOT NULL,
+  IsOnline BOOLEAN DEFAULT FALSE
+)
+```
+
+```sql
+-- Inserting a user with online status not specified (defaults to FALSE)
+INSERT INTO UserOnline (ID, UserName) VALUES (1, 'Alice');
+```
+
+```sql
+-- Inserting a user with online status specified (overrides default)
+INSERT INTO UserOnline (ID, UserName, IsOnline) VALUES (2, 'Bob', TRUE);
+```
+
+In the first example, when inserting a user without specifying the `IsOnline` status, it defaults to `FALSE`. In the second example, the `IsOnline` status is explicitly set to `TRUE`, overriding the default value. This demonstrates how the `DEFAULT` constraint works in practice.
