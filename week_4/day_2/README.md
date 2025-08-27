@@ -612,3 +612,50 @@ CREATE TABLE enrollments(
 ```
 
 The above example demonstrates the use of `CASCADE` in a college enrollment scenario. The `enrollments` table has foreign keys referencing both the `courses` and `students` tables. The `ON DELETE CASCADE` option ensures that if a course or student is deleted, all corresponding records in the `enrollments` table are also automatically deleted. The `ON UPDATE CASCADE` option ensures that if a student's ID is updated, all corresponding records in the `enrollments` table are also automatically updated to reflect the new student ID. This maintains referential integrity across the related tables.
+
+## Unique Key
+
+The `UNIQUE` constraint is used to ensure that every value in a column is different and unique. This means that each row must have a distinct value in the specified column.
+
+The `UNIQUE` key interacts with `NULL` values somewhat unintuitively.
+
+- A `UNIQUE` key allows for `NULL` column values in records.
+
+There is often confusion around how many `NULL` values a `UNIQUE` constraint can have in a column. Each database may have slight differences in the number of `NULL` values that are allows with a `UNIQUE` constraint. Some databases allow only a single `NULL` value; however, many databases allow multiple of them.
+
+In other words, when a column is declared as `UNIQUE` and allows `NULL`, the `UNIQUE` constraint applies only to the non-null values. Rows with `NULL` values in that column are not considered duplicates in terms of the `UNIQUE` constraint.
+This is because `NULL` represents the absence of a value. However, keep in ming that each non-null value must still be unique across all rows.
+
+It's essential to consult the documentation of the specific database system you are using to understand its behavior regarding UNIQUE constraints and NULL values. Always consider the unique constraints enforced by your database to ensure the correct behavior based on your requirements.
+
+Keep in mind that a column can have multiple constraints applied to it. The `UNIQUE` constraint ensures that all values in the column are distinct. However, in most databases, `UNIQUE` does not prevent multiple `NULL` values since `NULL` is treated as an unknown value. To ensure that no `NULL` values exist in a column, use the `NOT NULL` constraint in combination with `UNIQUE`.
+
+### Real World Application
+
+- **Primary Keys**: The primary key of a table is often enforced using a `UNIQUE` constraint to ensure that each record can be uniquely identified. This ensures that each record in the table has a unique identifier, helping to maintain data integrity and providing a reliable way to reference and link records across different tables.
+- **Email Addresses and Usernames**: In user management systems, it is common to enforce `UNIQUE` constraints on email addresses and usernames to prevent duplicate entries. This ensures that each user has a distinct email address and username, which is crucial for authentication and communication purposes.
+- **Product Codes or SKUs**: In inventory management systems, product codes or SKUs (Stock Keeping Units) are often enforced with `UNIQUE` constraints to ensure that each product can be uniquely identified. This helps prevent confusion and errors in inventory tracking and management.
+- **Reference Codes in Relationships**: In relational databases, foreign keys often reference primary keys in other tables. Enforcing `UNIQUE` constraints on these reference codes ensures that each reference is valid and corresponds to a unique record in the related table, maintaining referential integrity.
+- **Phone Numbers (if used as identifiers)**: In some systems, phone numbers may be used as unique identifiers for users or contacts. Enforcing a `UNIQUE` constraint on phone numbers ensures that each phone number is associated with only one user or contact, preventing duplicate entries and ensuring accurate communication.
+- **URLs or Website Addresses**: In content management systems or web applications, URLs or website addresses may be enforced with `UNIQUE` constraints to ensure that each URL is distinct. This prevents duplicate entries and ensures that each webpage or resource can be uniquely identified and accessed.
+- **License Plates**: In vehicle registration systems, license plates are often enforced with `UNIQUE` constraints to ensure that each vehicle has a distinct license plate number. This helps prevent confusion and errors in vehicle identification and registration.
+
+There are just a few examples of why developers may want to use the `UNIQUE` constraint in their database schema. The `UNIQUE` constraint is a powerful tool for maintaining data integrity and ensuring that each record in a table can be uniquely identified. It prevents duplicate or conflicting information, which is crucial for reliable and effective database management.
+
+### Implementation
+
+```sql
+-- Create a table with a UNIQUE constraint allowing NULL values
+CREATE TABLE students (
+  studentId INT UNIQUE,
+  firstName VARCHAR(255),
+  lastName VARCHAR(255)
+)
+
+-- Insert rows with unique non-null values and multiple NULLs
+INSERT INTO students (studentId, firstName, lastName)
+VALUES (1, 'John', 'Doe'), (2, 'Jane', 'Smith'), (NULL, 'Alice', 'Johnson'), (NULL, 'Bob', 'Brown');
+-- This is valid because NULLs are not considered duplicates
+```
+
+In the example above, we can see the use of the `UNIQUE` constraint on the `studentId` column. The table allows multiple `NULL` values, but all non-null values must be unique. The insertion of two rows with `NULL` values is valid, while any attempt to insert a duplicate non-null value would result in an error.
