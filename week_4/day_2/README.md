@@ -467,3 +467,77 @@ Result:
 | 2          | UK     | 2          |
 +------------+--------+------------+
 ```
+
+## FOREIGN KEY
+
+A `FOREIGN KEY` is a field (or collection of fields) in one table that uniquely identifies a row of another table. In other words, it is a reference to the primary key in another table, establishing a link between the two tables. This relationship helps maintain referential integrity within the database.
+
+### Real World Application
+
+Consider a company database with two tables: `Employees` and `Departments`. Each employee belongs to a department, and this relationship can be represented using a foreign key.
+
+```sql
+CREATE TABLE Departments (
+  departmentId INT PRIMARY KEY,
+  departmentName VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE Employees (
+  employeeId INT PRIMARY KEY,
+  employeeName VARCHAR(100) NOT NULL,
+  departmentId INT,
+  FOREIGN KEY (departmentId) REFERENCES Departments(departmentId)
+);
+```
+
+In this example, the `departmentId` column in the `Employees` table is a foreign key that references the `departmentId` column in the `Departments` table. This ensures that every employee is associated with a valid department, maintaining referential integrity between the two tables.
+
+### Implementation
+
+Step 1: Create a `Branch` and `Employee` table.
+
+```sql
+CREATE TABLE Branch(
+    id INT PRIMARY KEY,
+    name VARCHAR(20)
+);
+
+CREATE TABLE Employee(
+    id INT PRIMARY KEY,
+    name VARCHAR(20),
+    address VARCHAR(50)
+);
+```
+
+---
+
+Step 2: Add `branch_id` as a `FOREIGN KEY` in the `Employee` table.
+
+```sql
+-- Adding branch_id column to Employee table
+ALTER TABLE Employee
+ADD branch_id INT;
+
+-- Adding FOREIGN KEY constraint to branch_id column
+ALTER TABLE Employee
+ADD FOREIGN KEY (branch_id) REFERENCES Branch(id);
+```
+
+```sql
+DESC Employee; -- To describe the structure of the Employee table
+```
+
+Result:
+
+```
++------------+--------------+------+-----+---------+-------+
+| Field      | Type         | Null | Key | Default | Extra |
++------------+--------------+------+-----+---------+-------+
+| id         | int(11)     | NO   | PRI | NULL    |       |
+| name       | varchar(20) | NO   |     | NULL    |       |
+| address    | varchar(50) | NO   |     | NULL    |       |
+| branch_id  | int(11)     | YES  | MUL | NULL    |       |
++------------+--------------+------+-----+---------+-------+
+```
+
+The `id` column in the `branch` table is the primary key, and the `branch_id` column in the `Employee` table is a foreign key that references the `id` column in the `Branch` table. This establishes a relationship between the two tables, ensuring that each employee is associated with a valid branch.
