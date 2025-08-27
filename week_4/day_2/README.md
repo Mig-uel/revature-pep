@@ -313,3 +313,49 @@ INSERT INTO UserOnline (ID, UserName, IsOnline) VALUES (2, 'Bob', TRUE);
 ```
 
 In the first example, when inserting a user without specifying the `IsOnline` status, it defaults to `FALSE`. In the second example, the `IsOnline` status is explicitly set to `TRUE`, overriding the default value. This demonstrates how the `DEFAULT` constraint works in practice.
+
+## PRIMARY KEY
+
+The `PRIMARY KEY` constraint is used to uniquely identify each record in a table. A primary key must contain unique values and cannot contain NULL values. Each table can have only one primary key, which may consist of single or multiple columns (fields).
+
+Note: Primary keys should not contain sensitive information such as Social Security Numbers or email addresses, as this can lead to security and privacy concerns.
+
+### Real World Application
+
+Almost every table has a `PRIMARY KEY` constraint. A few examples are:
+
+- Employee ID in an Employee table
+- Student ID in a Student table
+- Branch ID of any company with multiple branches
+
+All these are used to uniquely identify a record in the table.
+
+### Implementation
+
+Below in an example of creating a table named `employee` with `employee_id` as the primary key:
+
+```sql
+CREATE TABLE employee (
+  employeeId INT PRIMARY KEY,
+  first_name VARCHAR(100) NOT NULL,
+  last_name VARCHAR(100) NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE
+);
+```
+
+```sql
+DESC employee; -- To describe the structure of the employee table
+```
+
+Result:
+
+```
++--------------+--------------+------+-----+---------+-------+
+| Field        | Type         | Null | Key | Default | Extra |
++--------------+--------------+------+-----+---------+-------+
+| employeeId   | int          | NO   | PRI | NULL    |       |
+| first_name   | varchar(100) | NO   |     | NULL    |       |
+| last_name    | varchar(100) | NO   |     | NULL    |       |
+| email        | varchar(100) | NO   | UNI | NULL    |       |
++--------------+--------------+------+-----+---------+-------+
+```
