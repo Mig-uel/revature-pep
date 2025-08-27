@@ -1500,3 +1500,70 @@ This is useful for comparing compensation across departments or identifying depa
 The key difference is the level of detail and the type of analysis you're performing:
 The Example 1 query gives you a granular view of individual salaries.
 The Example 2 query provides an aggregated view, summarizing salary data by department.
+
+## CRUD Operations
+
+CRUD operations are the foundation of any computer programming language that is based on data manipulation. CRUD stands for **Create**, **Read**, **Update**, and **Delete**, which are the four basic functions of persistent storage.
+These operations are not strictly for SQL but can also be utilized by NoSQL.
+
+CRUD stands for:
+
+- **Create**: Inserting new records into a database.
+  - `CREATE TABLE` - Creates a new table.
+  - `INSERT INTO` - Adds new rows to a table.
+- **Read**: Retrieving existing records from a database.
+  - `SELECT` - Queries data from a table.
+- **Update**: Modifying existing records in a database.
+  - `UPDATE` - Changes existing data in a table.
+- **Delete**: Removing records from a database.
+  - `DELETE FROM` - Removes rows from a table.
+
+### Real World Implementation
+
+You cannot interact with database without using CRUD operations as they are essential for anything requiring persistent storage. Even web developers would not be able to use REST, a superset of CRUD, to access HTTP resources. CRUD is also crucial for end-user applications, as it allows users to create, read, update, and delete data as needed. CRUD operations help businesses facilitate control of security by satisfying various access requirements and simplify design to allow for more scalability and better performance.
+
+### Implementation
+
+Basic syntax for Create operations you've seen previously:
+
+```sql
+CREATE TABLE TABLE_NAME (
+col_1 INT PRIMARY KEY,
+col_2 VARCHAR(20),
+col_N INT
+);
+
+INSERT INTO TABLE_NAME (column1, column2, columnN)
+VALUES (value1, value2, valueN);
+```
+
+---
+
+Basic syntax for Read operations you've seen previously:
+
+```sql
+SELECT * FROM TABLE_NAME;
+
+SELECT col_1, col_N
+FROM TABLE_NAME
+WHERE id = 1;
+```
+
+---
+
+Basic syntax for Update operations you've seen previously:
+
+```sql
+UPDATE TABLE_NAME
+SET column1 = value1, column2 = value2, columnN = valueN
+WHERE [condition];
+```
+
+---
+
+Basic syntax for Delete operations you've seen previously:
+
+```sql
+DELETE FROM TABLE_NAME
+WHERE [condition];
+```
