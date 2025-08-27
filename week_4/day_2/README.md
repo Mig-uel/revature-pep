@@ -541,3 +541,74 @@ Result:
 ```
 
 The `id` column in the `branch` table is the primary key, and the `branch_id` column in the `Employee` table is a foreign key that references the `id` column in the `Branch` table. This establishes a relationship between the two tables, ensuring that each employee is associated with a valid branch.
+
+## CASCADE
+
+In SQL, `CASCADE` is a keyword used in conjunction with foreign key constraints to define how changes to the parent table should be propagated to the child table. It is commonly used with `ON DELETE` and `ON UPDATE` actions.
+
+`CASCADE` is appended to the foreign key definition to specify that when a record in the parent table is deleted or updated, the corresponding records in the child table should also be automatically deleted or updated.
+
+---
+
+`ON DELETE`
+
+Appending `ON DELETE CASCADE` to the foreign key definition ensures that when a record in the parent table (e.g., `Branch`) is deleted, all corresponding records in the child table (e.g., `Employee`) are also automatically deleted. Otherwise, due to referential integrity, the deletion would be prevented if there are dependent records in the child table.
+
+---
+
+`ON UPDATE`
+
+Appending `ON UPDATE CASCADE` to the foreign key definition ensures that when a record in the parent table (e.g., `Branch`) is updated, all corresponding records in the child table (e.g., `Employee`) are also automatically updated. This is useful in scenarios where the primary key in the parent table may change, and you want to ensure that all related records in the child table reflect this change.
+
+### Real World Application
+
+Imagine students enrolled in courses at college, but some students drop out mid-way through the semester, and the school is not required to keep records of students who drop out. In this example, we would want to structure our tables such that the foreign keys have an `ON DELETE CASCADE` to maintain referential integrity when removing those students' records from the `Enrollments` table.
+
+Continuing with the student examples, imagine the students in the database need their primary key IDs reset to account for the students that dropped out and make room for the freshmen. This could be achieved by by adding `ON UPDATE CASCADE` to the foreign key constraint in the `Enrollments` table. This way, when the primary key in the `Students` table is updated, all corresponding records in the `Enrollments` table are automatically updated to reflect the new student IDs.
+
+### Implementation
+
+Sticking with the college student theme, let us look at students in a college course and use `CASCADE` to handle deletions and updates.
+
+---
+
+**Define the table for students**
+
+```sql
+CREATE TABLE students(
+    student_id INT PRIMARY KEY,
+    student_name VARCHAR(40),
+    email VARCHAR(20) UNIQUE
+);
+```
+
+---
+
+**Define the table for courses**
+
+```sql
+CREATE TABLE courses(
+    course_id INT PRIMARY KEY,
+    course_name VARCHAR(20),
+    course_length_weeks INT,
+    credits INT
+);
+```
+
+---
+
+**Finally, let's define a junction table to handle enrollment and use `CASCADE`**
+
+```sql
+CREATE TABLE enrollments(
+    course_id INT,
+    student_id INT,
+    grade INT,
+    completion_status BOOLEAN,
+    PRIMARY KEY(course_id, student_id), -- Composite Primary Key
+    FOREIGN KEY(course_id) REFERENCES courses(course_id) ON DELETE CASCADE, -- If a course is deleted, remove all enrollments for that course
+    FOREIGN KEY(student_id) REFERENCES students(student_id) ON DELETE CASCADE ON UPDATE CASCADE -- If a student is deleted, remove all enrollments for that student; if a student ID is updated, update all corresponding enrollments
+);
+```
+
+The above example demonstrates the use of `CASCADE` in a college enrollment scenario. The `enrollments` table has foreign keys referencing both the `courses` and `students` tables. The `ON DELETE CASCADE` option ensures that if a course or student is deleted, all corresponding records in the `enrollments` table are also automatically deleted. The `ON UPDATE CASCADE` option ensures that if a student's ID is updated, all corresponding records in the `enrollments` table are also automatically updated to reflect the new student ID. This maintains referential integrity across the related tables.
