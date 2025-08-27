@@ -659,3 +659,42 @@ VALUES (1, 'John', 'Doe'), (2, 'Jane', 'Smith'), (NULL, 'Alice', 'Johnson'), (NU
 ```
 
 In the example above, we can see the use of the `UNIQUE` constraint on the `studentId` column. The table allows multiple `NULL` values, but all non-null values must be unique. The insertion of two rows with `NULL` values is valid, while any attempt to insert a duplicate non-null value would result in an error.
+
+## Second Alternate Key
+
+A `SECONDARY KEY` (or alternate key) is a column or a set of columns in a table that can be used to uniquely identify a record, but it is not the primary key. While a table can have only one primary key, it can have multiple secondary keys. These keys are often used for indexing and searching purposes.
+
+A candidate key is a column, or a combination of columns, that can uniquely identify a record in a table. A table can have multiple candidate keys, but only one of them can be chosen as the primary key. The remaining candidate keys are referred to as alternate keys or secondary keys.
+
+Keep in mind that a `SECONDARY KEY` and a `FOREIGN KEY` are NOT related or the same. A `FOREIGN KEY` is a field (or collection of fields) in one table that uniquely identifies a row of another table, establishing a link between the two tables. In contrast, a `SECONDARY KEY` is used within the same table to provide an additional way to uniquely identify records.
+
+### Real World Application
+
+Understanding the concept of secondary keys is important for database design and management. Here are some real-world applications of secondary keys:
+
+- **Data Integrity**: Secondary keys can be used to enforce data integrity by ensuring the uniqueness of certain columns in a table. For example, in a `Users` table, both `email` and `username` could be secondary keys to ensure that no two users can have the same email address or username. But would this not be a composite key? No, because a composite key is a combination of two or more columns that together uniquely identify a record. In this case, `email` and `username` are separate columns that can each uniquely identify a record on their own.
+
+- **Indexing and Performance**: Secondary keys can be used to create indexes on columns that are frequently queried. This can improve the performance of database operations by allowing faster lookups based on these secondary keys. For example, in a `Products` table, a secondary key on the `product_code` column could be used to quickly find products based on their unique codes.
+
+- **Query Flexibility**: Secondary keys provide additional ways to query and retrieve data from a table. For example, in a `Books` table, both `ISBN` and `title` could be secondary keys, allowing users to search for books using either the unique ISBN or the book title.
+
+In summary, understanding secondary keys helps database administrators, developers, and users leverage the full capabilities of relational databases, ensuring data integrity, improving performance, and providing flexibility in data retrieval.
+
+### Implementation
+
+The following table has a secondary key:
+
+```sql
+CREATE TABLE Product (
+  ProductID INT PRIMARY KEY,
+  Barcode VARCHAR(50) UNIQUE, -- Secondary Key
+  Name VARCHAR(100),
+  Description TEXT,
+  Price DECIMAL(10, 2)
+)
+```
+
+In this example:
+
+- `ProductID` is the primary key, uniquely identifying each product.
+- `Barcode` is a secondary key, also uniquely identifying each product but not serving as the primary means of identification.
