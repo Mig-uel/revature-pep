@@ -1240,3 +1240,113 @@ LIMIT 5 OFFSET 5;
 | kiwi            | 0.75  | berry  |
 | lettuce         | 2.99  | leafy  |
 | mandarin orange | 0.75  | citrus |
+
+## Queries
+
+Basic queries are important for working with many websites and applications and are at the core of how data is stored and transferred across the internet. In RDBMS, queries are used to interact with the database and perform various operations such as retrieving, inserting, updating, and deleting data.
+
+Queries are almost always made using the `SELECT` statement.
+
+IN this module, we will discuss basic syntax of SQL queries. We will also practice some important SQL queries using simple examples.
+
+A list of the most widely used MySQL queries includes:
+
+1. `SELECT`: Retrieve data from one or more tables.
+2. `INSERT`: Add new rows of data to a table.
+3. `UPDATE`: Modify existing data in a table.
+4. `DELETE`: Remove rows of data from a table.
+5. `CREATE TABLE`: Define a new table and its structure.
+6. `ALTER TABLE`: Modify the structure of an existing table.
+7. `DROP TABLE`: Delete a table and its data.
+
+### Real World Application
+
+The ability to write SQL queries is crucial for various reasons:
+
+- **Data Retrieval**: SQL queries allow users to retrieve specific data from large datasets, making it easier to analyze and make informed decisions.
+- **Data Manipulation**: SQL queries enable users to manipulate data, such as updating records or deleting unnecessary information. With SQL queries, users can insert, update, or delete data in a database table.
+- **Data Analysis**: SQL queries are essential for analyzing data, allowing users to perform complex calculations, aggregations, and data transformations to gain insights and support decision-making. SQL queries enable you to perform calculations, aggregations, filtering, and sorting of data.
+- **Database Administration**: SQL queries are used by database administrators to manage and maintain databases, including tasks such as creating tables, defining relationships, and optimizing performance.
+
+In summary, the ability to write SQL queries is crucial for effectively managing and utilizing data in various applications, from business intelligence to web development.
+
+### Implementation
+
+Syntax to create a database:
+
+```sql
+CREATE DATABASE WORK;
+```
+
+---
+
+Syntax to select/use a database:
+
+```sql
+USE WORK;
+```
+
+---
+
+Syntax to create a table:
+
+```sql
+CREATE TABLE EMP (id INT, NAME VARCHAR(25), AGE INT, PRIMARY KEY(id));
+```
+
+---
+
+Syntax to alter a table:
+
+```sql
+ALTER TABLE EMP
+ADD SALARY DOUBLE;
+```
+
+---
+
+Syntax to insert values:
+
+```sql
+INSERT INTO EMP VALUES(111, "Ryan", 24, 5000);
+```
+
+---
+
+Syntax to update a record:
+
+```sql
+UPDATE EMP SET AGE = 23 WHERE id = 111;
+```
+
+---
+
+Syntax to delete a record:
+
+```sql
+DELETE FROM EMP WHERE id = 111;
+```
+
+---
+
+Syntax to select a record:
+
+```sql
+SELECT * FROM EMP;
+```
+
+---
+
+Syntax to truncate a table:
+
+```sql
+TRUNCATE TABLE EMP;
+```
+
+---
+
+Syntax to drop a table:
+
+```sql
+DROP TABLE EMP;
+```
