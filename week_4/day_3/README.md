@@ -1,0 +1,186 @@
+# SQL Basics and JDBC - Day 3
+
+## What is a Subquery?
+
+A subquery is a query nested inside another SQL query. It is used to retrieve data that will be used in the main query as a condition to further restrict the data to be retrieved.
+
+A subquery can occur in various subsections of a query:
+
+- `SELECT` clause (inner query)
+- `WHERE` clause (nested query)
+- `FROM` clause (inline view)
+
+Subqueries can be nested in a `SELECT`, `INSERT`, `UPDATE`, `DELETE`, or even inside another subquery.
+
+Logical operators can be used to compare the results of a subquery with other values in the main query.
+
+- Nested queries can return a single or multiple values, depending on how they are used in the main query.
+
+- Inline views create temporary result sets that can be treated as tables within the main query.
+
+- Inner queries create temporary columns in the result set of the main query.
+
+  - The column created by an inner query has a value equal to the result of the inner query for each row in the main query.
+
+- The subquery can also be called an `inner query` or `inner select`, while the container query is called the `outer query` or `outer select`.
+
+The `inner query` is executed first, and its result is used by the `outer query`.
+
+Subqueries are convenient but can be less efficient than joins, especially for large datasets.
+
+### Real World Application
+
+Subqueries can be a convenient way of gathering information between related tables. However, in many cases, the same data can be queried using a `JOIN`, which may be more efficient. It is better practice to `JOIN` a table rather than using a subquery when possible.
+
+It is rare to find a situation where a subquery is the only option for retrieving the desired data, especially since a `JOIN` could perform the same task more efficiently.
+
+### Implementation
+
+For the following demonstrations, use the table below:
+
+```sql
+CREATE TABLE IF NOT EXISTS students (
+  id INT PRIMARY KEY,
+  name VARCHAR(40) NOT NULL UNIQUE
+)
+
+CREATE TABLE IF NOT EXISTS evals (
+  id INT PRIMARY KEY,
+  studentId INT NOT NULL FOREIGN KEY REFERENCES students(id),
+  evalName VARCHAR(10) NOT NULL,
+  mark INT DEFAULT 0 CHECK(mark >= 0 AND mark <= 100)
+)
+
+INSERT INTO students (id, name) VALUES (1, 'Steve'), (2, 'Jane'), (3, 'Casey');
+INSERT INTO evals (id, studentId, evalName, mark) VALUES (1, 1, 'quiz 1', 98),
+ (2, 2, 'quiz 1', 80),
+ (3, 3, 'quiz 1', 95),
+ (4, 1, 'test 1', 72),
+ (5, 2, 'test 1', 100),
+ (6, 3, 'test 1', 68);
+```
+
+#### Nested Queries
+
+A nested query is a subquery found in the `WHERE` clause of the main/outer query. It is used to filter the results of the outer query based on the results of the inner query.
+
+```sql
+SELECT col1, ... FROM table_name
+WHERE (subquery);
+```
+
+Using the students schema, find all students who scored higher than Jane (2) on quiz 1. The problem is that we do not know Jane's score, so we will use a nested query to find it.
+
+```sql
+SELECT studentId, evalName, mark FROM evals
+WHERE studentId = 2 AND evalName = 'quiz 1';
+```
+
+| studentId | evalName | mark |
+| --------- | -------- | ---- |
+| 2         | quiz 1   | 80   |
+
+Knowing this information, we could write a simple query to obtain the other information.
+
+```sql
+SELECT studentId, evalName, mark FROM evals
+WHERE evalName = 'quiz 1' AND mark > 80;
+```
+
+| studentId | evalName | mark |
+| --------- | -------- | ---- |
+| 1         | quiz 1   | 98   |
+| 3         | quiz 1   | 95   |
+
+There is a problem with this approach. If Jane's score changes, we would have to change our query. Instead, we can use a nested query to find Jane's score dynamically.
+
+```sql
+SELECT studentId, evalName, mark, FROM evals
+WHERE evalName = 'quiz1'
+AND mark > (
+  SELECT mark FROM evals
+  WHERE studentId = 2 AND evalName = 'quiz 1'
+)
+```
+
+| studentId | evalName | mark |
+| --------- | -------- | ---- |
+| 1         | quiz 1   | 98   |
+| 3         | quiz 1   | 95   |
+
+The subquery `(SELECT mark FROM evals WHERE studentId = 2 AND evalName = 'quiz 1')` is executed first, returning Jane's score of 80. The outer query then uses this value to filter the results, returning all students who scored higher than Jane on quiz 1.
+
+#### Inline View
+
+Inline views are subqueries found in the `FROM` clause of the main/outer query. They create a temporary result set that can be treated as a table within the main query.
+
+Let's write an inline view where any mark is greater than 90 on any evaluation.
+
+```sql
+SELECT student.name, evals.evalName, evals.mark FROM students,
+(
+  SELECT studentId, evalName, mark FROM evals
+  WHERE mark > 90
+)
+evals
+WHERE students.id = evals.studentId;
+```
+
+| name  | evalName | mark |
+| ----- | -------- | ---- |
+| Steve | quiz 1   | 98   |
+| Casey | quiz 1   | 95   |
+| Jane  | test 1   | 100  |
+
+The subquery `(SELECT studentId, evalName, mark FROM evals WHERE mark > 90)` is executed first, returning a temporary result set of evaluations with marks greater than 90. The outer query then joins this result set with the `students` table to retrieve the names of the students who achieved these marks.
+
+#### Inner Query
+
+An inner query is a subquery found in the `SELECT` clause of the main/outer query. It creates a temporary column in the result set of the main query.
+
+```sql
+SELECT student.id, student.name,
+(
+  SELECT AVG(mark) FROM evals
+  WHERE evals.studentId = students.id
+  GROUP BY evals.studentId
+) AS avg -- AS can be omitted but is recommended for clarity
+FROM students;
+```
+
+| student.id | student.name | avg     |
+| ---------- | ------------ | ------- |
+| 1          | Steve        | 81.5000 |
+| 2          | Jane         | 90.0000 |
+| 3          | Casey        | 85.0000 |
+
+---
+
+Each of these types of queries serves a different purpose and can be used in various scenarios to retrieve and manipulate data effectively. Understanding when and how to use each type of subquery is essential for efficient SQL querying.
+
+## What is a Join?
+
+In relational databases, data stored in multiple tables is related to one another through foreign keys. A `JOIN` is a SQL operation that combines rows from two or more tables based on a related column between them.
+
+The `JOIN` clause is a part of DQL (Data Query Language) and is used in queries to access multiple tables based on their relationships. Several different types of SQL `JOIN` clauses will be discussed in the following sections.
+
+### Real World Application
+
+In businesses, when they are looking to analyze data from multiple sources, `JOIN` operations become essential. For example, a company may want to combine customer information from a `customers` table with their order history from an `orders` table. By using `JOIN` clauses, they can create comprehensive reports that provide insights into customer behavior, sales trends, and more. There is nearly endless number of use cases for `JOIN` operations, including:
+
+- Combining employee data from an `employees` table with their department information from a `departments` table.
+- Merging product details from a `products` table with their sales data from an `order_items` table.
+- Integrating user profiles from a `users` table with their activity logs from a `user_activity` table.
+
+These examples illustrate the versatility and power of `JOIN` operations in SQL.
+
+### Implementation
+
+Basic SQL `JOIN` clause syntax using `INNER JOIN` (default `JOIN` type):
+
+```sql
+SELECT table_name_1.column_name, table_name_2.column_name
+FROM table_name_1
+JOIN table_name_2
+ON table_name_1.common_column = table_name_2.common_column;
+```
