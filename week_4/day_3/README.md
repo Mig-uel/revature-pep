@@ -335,3 +335,81 @@ RIGHT JOIN Orders ON Customers.customerId = Orders.customerId;
 ```
 
 Here, we are using a `RIGHT JOIN` to retrieve all orders along with their associated customer information. If an order does not have a corresponding customer (which is unlikely in this case due to the foreign key constraint), the customer fields will be `NULL`.
+
+## Outer Join
+
+An `OUTER JOIN` is a type of join that returns all records when there is a match in either left (table1) or right (table2) table records. depending on the type of `OUTER JOIN`, it can be classified into three types: `LEFT OUTER JOIN`, `RIGHT OUTER JOIN`, and `FULL OUTER JOIN`.
+
+In simpler terms, an `OUTER JOIN` retrieves all records from both tables even if there is no match.
+![outer-join](outer-join.jpg)
+
+Note: MySQL does not support `OUTER JOIN`; you must use a `LEFT JOIN` or `RIGHT JOIN` to get the behavior of an `OUTER JOIN`.
+
+In some other dialects of SQL, you can use a `FULL OUTER JOIN` or `FULL JOIN` to achieve the same result.
+
+### Real World Implementation
+
+In a real-world scenario, consider a database with two tables: `Employees` and `Departments`. You want to retrieve a list of all employees along with their department information, even if some employees are not assigned to any department.
+
+Other use cases include:
+
+- Used to fetch data from different tables
+- Handling incomplete data scenarios
+- Analyzing discrepancies between related datasets
+- Combining data from multiple sources
+- Aggregating data for reporting purposes
+
+### Implementation
+
+Consider the following tables `PartyGuests` and `PartyAttendees`:
+
+```sql
+CREATE TABLE IF NOT EXISTS PartyGuests (
+  guestId SERIAL PRIMARY KEY,
+  guestName VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS PartyAttendees (
+  attendeeId SERIAL PRIMARY KEY,
+  attendeeName VARCHAR(100) NOT NULL
+);
+
+INSERT INTO PartyGuests (guestName) VALUES
+  ('Alice'),
+  ('Bob'),
+  ('Charlie'),
+  ('David');
+
+INSERT INTO PartyAttendees (attendeeName) VALUES
+  ('Alice'),
+  ('Charlie'),
+  ('Eve'),
+```
+
+Let;s consider a scenario where you have two tables: one containing a list of people invited to a part, `PartyGuests`, and another containing a list of people who actually attended the party, `PartyAttendees`. You want to find out who was invited but did not attend, as well as who attended without being invited. We will use a `FULL OUTER JOIN` to combine these tables and as the complete picture.
+
+```sql
+SELECT PartyGuests.guestId, PartyAttendees.attendeeId, PartyGuests.guestName, PartyAttendees.attendeeName
+FROM PartyGuests
+FULL OUTER JOIN PartyAttendees ON PartyGuests.guestName = PartyAttendees.attendeeName;
+```
+
+This could also be written by omitting the `OUTER` and yield the same result:
+
+```sql
+SELECT PartyGuests.guestId, PartyAttendees.attendeeId, PartyGuests.guestName, PartyAttendees.attendeeName
+FROM PartyGuests
+FULL JOIN PartyAttendees ON PartyGuests.guestName = PartyAttendees.attendeeName;
+```
+
+This is because `FULL JOIN` is shorthand for `FULL OUTER JOIN`.
+
+Output:
+
+| guestId | attendeeId | guestName | attendeeName |
+| ------- | ---------- | --------- | ------------ |
+| 1       | 1          | Alice     | Alice        |
+| 2       | 2          | Bob       | Charlie      |
+| 3       | NULL       | Charlie   | NULL         |
+| 4       | 3          | David     | NULL         |
+| NULL    | 4          | NULL      | Eve          |
