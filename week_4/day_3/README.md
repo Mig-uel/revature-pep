@@ -413,3 +413,138 @@ Output:
 | 3       | NULL       | Charlie   | NULL         |
 | 4       | 3          | David     | NULL         |
 | NULL    | 4          | NULL      | Eve          |
+
+## Equi and Theta Joins
+
+A `THETA JOIN` is a type of join that combines rows from two or more tables based on a condition that is not necessarily an equality condition. In other words, a `THETA JOIN` allows you to use comparison operators other than the equal sign (`=`) to match rows between tables.
+
+For a `THETA JOIN`, we make associations on columns that have the same datatype but may represent different values. For example, we could join a `Products` table with a `Sales` table based on a condition that the `price` in the `Products` table is greater than the `salePrice` in the `Sales` table.
+
+The general case of the `JOIN` operation is called a `THETA JOIN`, which allows for any comparison operator (e.g., `<`, `>`, `<=`, `>=`, `!=`) to be used in the join condition.
+
+Syntax for `THETA JOIN`:
+
+```sql
+SELECT columns
+FROM table1
+JOIN table2 ON table1.column operator table2.column;
+```
+
+---
+
+An `EQUI JOIN` is a specific type of `THETA JOIN` that uses only equality conditions to match rows between tables. In other words, an `EQUI JOIN` combines rows from two or more tables based on a condition that the values in specified columns are equal.
+
+- `EQUI JOIN` is the most common type of join used in SQL.
+- `EQUI JOIN` performs a join based on equality or matching conditions.
+
+Syntax for `EQUI JOIN`:
+
+```sql
+SELECT columns
+FROM table1
+JOIN table2 ON table1.column = table2.column;
+
+---
+
+![equi-join](equi-join.jpg)
+```
+
+### Real World Application
+
+Real world use cases for `EQUI JOIN`:
+
+- `EQUI JOINS` are suitable for scenarios where you need to match records based on the equality of specific columns (e.g., joining `Users` and `Orders` tables based on `userId`).
+  - Matching Data for Analysis: you may have data spread across multiple tables and need to combine it for analysis (e.g., joining `Sales` and `Products` tables to analyze sales performance by product).
+
+Real world use cases for `THETA JOIN`:
+
+- `THETA JOINS` offer more flexibility by allowing a broader range of conditions (e.g., joining `Products` and `Sales` tables based on a price range).
+  - Pattern Matching: Finding all customers whose names contain a particular substring (e.g., joining `Customers` and `Orders` tables where customer names match a specific pattern).
+  - Date Range Matching: Retrieving records that fall within a specific date range (e.g., joining `Events` and `Attendees` tables where event dates fall within a certain period).
+  - Numeric Range Matching: Joining tables based on a range of numeric values (e.g., joining `Products` and `Inventory` tables where product prices fall within a specific range).
+
+### Implementation
+
+Consider these two tables `Authors` and `Books`:
+
+```sql
+CREATE TABLE IF NOT EXISTS Authors (
+  authorId INT PRIMARY KEY,
+  author_first_name VARCHAR(100) NOT NULL,
+  author_last_name VARCHAR(100) NOT NULL
+  birthYear INT
+);
+
+INSERT INTO Authors (authorId, author_first_name, author_last_name, birthYear)
+VALUES
+    (101, 'F. Scott', 'Fitzgerald', 1896),
+    (102, 'Harper', 'Lee', 1926),
+    (103, 'J.R.R.', 'Tolkien', 1892),
+    (104, 'George', 'Orwell', 1903);
+
+CREATE TABLE IF NOT EXISTS Books (
+  bookId INT PRIMARY KEY,
+  title VARCHAR(200) NOT NULL,
+  genre VARCHAR(50) NOT NULL,
+  price DECIMAL(10, 2) NOT NULL,
+  authorId INT NOT NULL FOREIGN KEY REFERENCES Authors(authorId)
+);
+
+INSERT INTO Books (bookId, title, genre, price, authorId)
+VALUES
+    (1, 'The Great Gatsby', 'Fiction', 14.50, 101),
+    (2, 'To Kill a Mockingbird', 'Fiction', 12.75, 102),
+    (3, 'The Hobbit', 'Fantasy', 19.50, 103),
+    (4, '1984', 'Dystopian', 16.25, 104);
+```
+
+#### Equi Join Example
+
+Perform an `EQUI JOIN` to retrieve information about books and their corresponding author details based on the equality of the `authorId` column in both tables.
+
+```sql
+SELECT bookId, title, genre, price, author_first_name, author_last_name, birthYear
+FROM BOOKS
+JOIN Authors ON Books.authorId = Authors.authorId;
+```
+
+Output:
+
+| bookId | title                 | genre     | price | author_first_name | author_last_name | birthYear |
+| ------ | --------------------- | --------- | ----- | ----------------- | ---------------- | --------- |
+| 1      | The Great Gatsby      | Fiction   | 14.50 | F. Scott          | Fitzgerald       | 1896      |
+| 2      | To Kill a Mockingbird | Fiction   | 12.75 | Harper            | Lee              | 1926      |
+| 3      | The Hobbit            | Fantasy   | 19.50 | J.R.R.            | Tolkien          | 1892      |
+| 4      | 1984                  | Dystopian | 16.25 | George            | Orwell           | 1903      |
+
+### True Theta Join Example
+
+Use a `THETA JOIN` to retrieve book and author information based on a `JOIN` condition that involves a comparison operator other than equality.
+
+```sql
+SELECT bookId, title, genre, price, author_first_name, author_last_name, birthYear
+FROM Books
+JOIN Authors
+ON Books.price > Authors.birthYear;
+```
+
+This query retrieves book and author information where the book's price is greater than the author's birth year. This is a less common use case but demonstrates the flexibility of `THETA JOIN`.
+
+---
+
+Retrieve books with price conditions as a part of the `JOIN` itself (beyond equality):
+
+```sql
+SELECT bookId, title, genre, price, author_first_name, author_last_name, birthYear
+FROM Books
+JOIN Authors
+ON Books.authorId = Authors.authorId
+WHERE price > 15.00;
+```
+
+Output:
+
+| bookId | title      | genre     | price | author_first_name | author_last_name | birthYear |
+| ------ | ---------- | --------- | ----- | ----------------- | ---------------- | --------- |
+| 3      | The Hobbit | Fantasy   | 19.50 | J.R.R.            | Tolkien          | 1892      |
+| 4      | 1984       | Dystopian | 16.25 | George            | Orwell           | 1903      |
