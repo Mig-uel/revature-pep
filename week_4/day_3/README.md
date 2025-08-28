@@ -251,3 +251,87 @@ WHERE users.userId = account.userId;
 ```
 
 This implicitly creates a Cartesian product of the two tables and then filters the results based on the `WHERE` clause. While this approach can work, it is generally less efficient and less readable than using explicit `JOIN` syntax. The `INNER JOIN` syntax clearly expresses the intention to combine related data from multiple tables, making the query easier to understand and maintain.
+
+## Left and Right Joins
+
+`LEFT JOIN`
+
+A `LEFT JOIN` returns all records from the left table (table1), and the matched records from the right table (table2). If there is no match, the result is `NULL` on the side of the right table.
+
+![left-join](left-join.jpg)
+
+Syntax:
+
+```sql
+SELECT column_name(s)
+FROM table1
+LEFT JOIN table2
+ON table1.common_column = table2.common_column;
+```
+
+---
+
+`RIGHT JOIN`
+
+A `RIGHT JOIN` returns all records from the right table (table2), and the matched records from the left table (table1). If there is no match, the result is `NULL` on the side of the left table.
+
+![right-join](right-join.jpg)
+
+Syntax:
+
+```sql
+SELECT column_name(s)
+FROM table1
+RIGHT JOIN table2
+ON table1.common_column = table2.common_column;
+```
+
+---
+
+Note: The terms `LEFT` and `RIGHT` do not refer to actual tables in a database but rather to the order in which the tables are listed in the SQL query. The first table mentioned is considered the "left" table, and the second table is considered the "right" table.
+
+### Real World Application
+
+`LEFT JOIN` and `RIGHT JOIN` are particularly useful in scenarios where you want to retrieve all records from one table, regardless of whether there is a matching record in the other table. For example, consider a database with two tables: `customers` and `orders`. If you want to get a list of all customers along with their orders, even if some customers have not placed any orders, you would use a `LEFT JOIN`. This way, you can see all customers and their associated orders, with `NULL` values for customers without orders.
+
+### Implementation
+
+Consider these two tables `Customers` and `Orders`:
+
+```sql
+CREATE TABLE IF NOT EXISTS Customers (
+  customerId INT PRIMARY KEY,
+  firstName VARCHAR(30) NOT NULL,
+  lastName VARCHAR(30) NOT NULL,
+  country CHAR(2) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS Orders (
+  orderId INT PRIMARY KEY,
+  customerId INT NOT NULL FOREIGN KEY REFERENCES Customers(customerId),
+  orderDate DATE NOT NULL DEFAULT CURRENT_DATE,
+  totalAmount DECIMAL(10, 2) DEFAULT 0.00
+);
+```
+
+In this example, we have two tables `Customers` and `Orders`. The `Customers` table contains information about customers, while the `Orders` table contains information about their orders, linked by the `customerId` foreign key establishing a relationship between the two tables. This allows us to retrieve customer information along with their order details using `JOIN` operations.
+
+You want to see a list of all customers and their orders, even if some customers have not placed any orders.
+
+```sql
+SELECT Customers.customerId, Customers.firstName, Customers.lastName, Orders.orderId
+FROM Customers
+LEFT JOIN Orders ON Customers.customerId = Orders.customerId;
+```
+
+This SQL query performs a `LEFT JOIN` between the `Customers` and `Orders` tables based on the `customerId` column. It retrieves the `customerId`, `firstName`, `lastName`, and `orderId` for each customer. If a customer has not placed any orders, the `orderId` will be `NULL`.
+
+Supposed you want to see all the orders and their corresponding customer information:
+
+```sql
+SELECT Customers.customerId, Customers.firstName, Customers.lastName, Customers.country, Orders.orderId, Orders.orderDate, Orders.totalAmount
+FROM Customers
+RIGHT JOIN Orders ON Customers.customerId = Orders.customerId;
+```
+
+Here, we are using a `RIGHT JOIN` to retrieve all orders along with their associated customer information. If an order does not have a corresponding customer (which is unlikely in this case due to the foreign key constraint), the customer fields will be `NULL`.
