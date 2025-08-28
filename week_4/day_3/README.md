@@ -184,3 +184,70 @@ FROM table_name_1
 JOIN table_name_2
 ON table_name_1.common_column = table_name_2.common_column;
 ```
+
+## Inner Join
+
+An `INNER JOIN` selects records that have matching values in both tables. If there is no match, the row is not included in the result set.
+
+![Inner Join Diagram](inner-join.jpg)
+
+Syntax:
+
+```sql
+SELECT column_name(s)
+FROM table1
+INNER JOIN table2
+ON table1.common_column = table2.common_column;
+```
+
+### Real World Application
+
+An `INNER JOIN` is commonly used in scenarios where you want to retrieve related data from two tables. For example, consider a database with two tables: `employees` and `departments`. The `employees` table contains information about employees, including a foreign key that references the `departments` table. If you want to get a list of employees along with their department names, you would use an `INNER JOIN` to combine the two tables based on the department ID.
+
+### Implementation
+
+Consider these two tables `users` and `account`:
+
+```sql
+CREATE TABLE IF NOT EXISTS users (
+  userId INT PRIMARY KEY,
+  username VARCHAR(30) NOT NULL UNIQUE,
+  email VARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS account (
+  accountId INT PRIMARY KEY,
+  userId INT NOT NULL FOREIGN KEY REFERENCES users(userId),
+  accountNumber VARCHAR(20) NOT NULL UNIQUE,
+  balance DECIMAL(10, 2) DEFAULT 0.00
+);
+```
+
+In this example, we have two tables `users` and `account`. The `users` table contains information about users, while the `account` table contains information about their accounts, linked by the `userId` foreign key establishing a relationship between the two tables. This allows us to retrieve user information along with their account details using `JOIN` operations.
+
+Now, let's say you want to perform an `INNER JOIN` to get information about users and their corresponding accounts:
+
+```sql
+SELECT users.userId, users.username, users.email, account.accountNumber, account.balance
+FROM users
+INNER JOIN account ON users.userId = account.userId;
+```
+
+This query retrieves the `userId`, `username`, `email`, `accountNumber`, and `balance` for each user who has an associated account. If a user does not have an account, they will not be included in the result set. This is a typical use case for `INNER JOIN`, where you want to combine related data from multiple tables while excluding non-matching rows.
+
+Output:
+
+| userId | username | email            | accountNumber | balance |
+| ------ | -------- | ---------------- | ------------- | ------- |
+| 1      | john_doe | john@example.com | 1234567890    | 1000.00 |
+| 2      | jane_doe | jane@example.com | 0987654321    | 2000.00 |
+
+We could have achieved the same result without a `JOIN` by doing the following query:
+
+```sql
+SELECT users.userId, users.username, users.email, account.accountNumber, account.balance
+FROM users, account
+WHERE users.userId = account.userId;
+```
+
+This implicitly creates a Cartesian product of the two tables and then filters the results based on the `WHERE` clause. While this approach can work, it is generally less efficient and less readable than using explicit `JOIN` syntax. The `INNER JOIN` syntax clearly expresses the intention to combine related data from multiple tables, making the query easier to understand and maintain.
