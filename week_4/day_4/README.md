@@ -806,5 +806,92 @@ public class MemberImplementation implements MemberDAO{
     }
   }
 }
+```
 
+## Navigating `ResultSet` Rows
+
+When working with JDBC (Java Database Connectivity) and retrieving data from a database using a `ResultSet`, it is essential to understand how to navigate through the rows of the result set. Navigating the result set rows allows you to access and process individual records returned by a SQL query.
+
+The `ResultSet` provides methods to move the cursor within the result set, allowing for sequential traversal of rows in different directions. By understanding how to navigate the result set, you can effectively retrieve and manipulate data from your database queries.
+
+#### Methods Available on `ResultSet` to Navigate Rows
+
+- `next()`: Moves the cursor to the next row in the result set. Returns `true` if there is a next row, otherwise returns `false`. This method is typically used in a loop to iterate through all rows in the result set.
+- `previous()`: Moves the cursor to the previous row in the result set. Returns `true` if there is a previous row, otherwise returns `false`. This method is useful for backward traversal of the result set.
+- `first()`: Moves the cursor to the first row in the result set. Returns `true` if the result set is not empty, otherwise returns `false`. This method is useful for quickly accessing the first record.
+- `last()`: Moves the cursor to the last row in the result set. Returns `true` if the result set is not empty, otherwise returns `false`. This method is useful for quickly accessing the last record.
+- `absolute(int row)`: Moves the cursor to the specified row number in the result set. Returns `true` if the cursor is now positioned on a valid row, otherwise returns `false`. This method is useful for random access to specific rows.
+- `relative(int rows)`: Moves the cursor a specified number of rows forward (positive value) or backward (negative value) in the result set. Returns `true` if the cursor is now positioned on a valid row, otherwise returns `false`. This method is useful for navigating to a row relative to the current position.
+- `beforeFirst()`: Moves the cursor to a position before the first row in the result set. This method is useful for resetting the cursor to the beginning of the result set.
+- `afterLast()`: Moves the cursor to a position after the last row in the result set. This method is useful for resetting the cursor to the end of the result set.
+- `isFirst()`: Checks if the cursor is positioned on the first row of the result set. Returns `true` if it is, otherwise returns `false`.
+- `isLast()`: Checks if the cursor is positioned on the last row of the result set. Returns `true` if it is, otherwise returns `false`.
+
+### Real World Application
+
+Navigating `ResultSet` rows is a common requirement in various Java applications that interact with databases. Some real world scenarios where navigating result set rows include:
+
+- Data Display: In web applications, navigating result set rows is essential for displaying data in tables or lists. Users can navigate through pages of results, view details of individual records, and perform actions on specific rows.
+- Data Processing: In data processing applications, navigating result set rows is crucial for performing operations on individual records. This includes tasks such as data transformation, aggregation, and analysis.
+- Data Export: When exporting data from a database to external formats (e.g., CSV, Excel), navigating result set rows allows for iterating through records and writing them to the desired format.
+
+### Implementation
+
+```java
+// ...
+try(Connection conn = DriverManager.getConnection(db_url, db_user, db_pass)) {
+  // Create Statement or PreparedStatement
+  Statement stmt = conn.createStatement();
+
+  // Execute SQL query
+  ResultSet rs = stmt.executeQuery("SELECT * FROM employees");
+
+  // Move the cursor to the next row
+  while (rs.next()) {
+    // Retrieve column values from the current row
+    int id = rs.getInt("id");
+    String name = rs.getString("name");
+    int age = rs.getInt("age");
+
+    // Process or display the retrieved data
+    Member member = new Member(id, name, age);
+
+    System.out.println(member);
+    // Move to the next row
+  }
+
+  // Move the cursor to the previous row
+  rs.afterLast(); // Move to after the last row
+
+  while(rs.previous()) {
+    // Retrieve column values from the current row
+    // Process or display the retrieved data
+    // Move to the previous row
+  }
+
+  // Move the cursor to the first row
+  resultSet.first();
+  if (!resultSet.isBeforeFirst()) {
+        // Retrieve column values from the first row
+        // Process or display the retrieved data
+    }
+
+  // Move the cursor to the last row
+  resultSet.last();
+  if (!resultSet.isAfterLast()) {
+        // Retrieve column values from the last row
+        // Process or display the retrieved data
+  }
+
+  // Move the cursor to a specific row
+  resultSet.absolute(5); // Move to the 5th row
+  if (resultSet.isBeforeFirst() || resultSet.isAfterLast()) {
+        // The specified row is invalid
+  } else {
+        // Retrieve column values from the specified row
+        // Process or display the retrieved data
+  }
+} catch (SQLException e) {
+  e.printStackTrace();
+}
 ```
