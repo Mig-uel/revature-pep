@@ -548,3 +548,82 @@ Output:
 | ------ | ---------- | --------- | ----- | ----------------- | ---------------- | --------- |
 | 3      | The Hobbit | Fantasy   | 19.50 | J.R.R.            | Tolkien          | 1892      |
 | 4      | 1984       | Dystopian | 16.25 | George            | Orwell           | 1903      |
+
+## Aliases
+
+In SQL, an alias is a temporary name given to a table or column for the duration of a query. Aliases are often used to make column names more readable or to shorten long table names, especially when dealing with multiple tables in a `JOIN` operation.
+
+#### Advantages of Aliases
+
+- It provides a very useful way to make column names more readable.
+- It allows us to combine two or more tables that have columns with the same name.
+- It makes the table more user friendly.
+
+### Real World Application
+
+Using aliases has a number of benefits for your application, such as:
+
+- **Resolving Naming Conflicts**: When joining tables that have columns with the same name, aliases help differentiate between them.
+- **Enhancing User Interface View**: Aliases can make column names more user-friendly, which is especially useful in reports or user interfaces.
+- **Code Refactoring**: Aliases can simplify complex queries, making them easier to read and maintain.
+- **Self-Joins or Complex Joins**: Aliases can be used to distinguish between different instances of the same table in a `SELF JOIN` or to simplify complex joins.
+- **Column Renaming**: Aliases help in giving more meaningful names to columns, thereby making the output more understandable.
+- **Table Renaming**: Aliases can shorten long table names, making queries more concise and easier to read.
+
+### Implementation
+
+Consider the following tables `Plants` and `Customers`:
+
+```sql
+CREATE TABLE IF NOT EXISTS Plants (
+  plantId SERIAL PRIMARY KEY,
+  plantName VARCHAR(100) NOT NULL,
+  species VARCHAR(100) NOT NULL,
+  price DECIMAL(10, 2) NOT NULL
+);
+
+INSERT INTO Plants (plantName, species, price) VALUES
+  ('Venus Flytrap', 'Dionaea muscipula', 19.99),
+  ('Pitcher Plant', 'Nepenthes', 29.99),
+  ('Sundew', 'Drosera', 14.99),
+  ('Cobra Plant', 'Darlingtonia californica', 24.99);
+
+CREATE TABLE IF NOT EXISTS Customers (
+  customerId SERIAL PRIMARY KEY,
+  firstName VARCHAR(50) NOT NULL,
+  lastName VARCHAR(50) NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  purchased_plantId INT REFERENCES Plants(plantId)
+);
+
+INSERT INTO Customers (firstName, lastName, email, purchased_plantId) VALUES
+  ('John', 'Wheeler', 'john@example.com', 1),
+  ('Jane', 'Smith', 'jane@example.com', 2),
+  ('Sussie', 'Halloween', 'sussie@example.com', 3);
+```
+
+In this example, we have two tables: `Plants` and `Customers`. The `Plants` table contains information about different plant species, while the `Customers` table holds data about customers who have purchased these plants. The `purchased_plantId` column in the `Customers` table establishes a foreign key relationship with the `plantId` column in the `Plants` table, allowing us to associate each customer with the specific plant they bought.
+
+In SQL, column aliases are used to provide a different name for a column in the result set. This can be useful for improving readability or when the original column name is not descriptive enough. In our case, we will use a column alias to associate purchased plants with customers in the query result.
+
+```sql
+SELECT customerId, firstName, lastName, email, plantName as purchasedPlant
+FROM Customers
+JOIN Plants ON Customers.purchased_plantId = Plants.plantId;
+```
+
+They keyword `AS` is optional but recommended for clarity. The alias `purchasedPlant` makes it clear that this column represents the plant that the customer purchased.
+
+Another method for creating an alias is on the table itself. The same query as above can be written as:
+
+```sql
+SELECT c.customerId, c.firstName, c.lastName, c.email, p.plantName as purchasedPlant
+FROM Customers as c
+JOIN Plants as p ON c.purchased_plantId = p.plantId;
+```
+
+Something to keep in mind is that `plantName` is a column in the table with the alias of `purchasedPlant`, while `Customers` has an alias of `c` and `Plants` has an alias of `p`.
+
+It is extremely common to see aliases used in SQL queries as they help prevent ambiguity, especially in larger databases where the same data may exist in multiple tables. By providing aliases for tables and columns, developers make their queries more readable and easier to maintain.
+
+Aliases are especially useful when dealing with complex `JOINS` or subqueries involving multiple tables, as they help distinguish between different instances of the same table or column. In some cases, aliases are required; otherwise, the query may not execute correctly or may return unexpected results.
