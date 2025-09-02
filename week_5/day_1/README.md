@@ -157,3 +157,165 @@ public class PreparedStatementDemo
   }
 }
 ```
+
+## Reading from a Properties File
+
+#### JDBC Properties Files
+
+When making a JDBC connection to a database, you may have noticed the code typically looks like this:
+
+```java
+DriverManager.getConnection(URL, USERNAME, PASSWORD);
+```
+
+But hardcoding the URL, username, and password in your code is not a good practice. To solve this problem, developers began to use properties files. Instead, you can store these values in a properties file and read them at runtime.
+
+We need to implement the following steps to use a properties files to store our credentials:
+
+- Create a properties file (e.g., `db.properties`) that contains key-value pairs, where the values are the database connection details.
+- In our data access class, we can extract the credentials from the properties file using a `Properties` object and use them to establish the database connection.
+
+To have our credential be even more secure, we can use our system's environment variables to store sensitive information like database passwords and have our properties file reference those environment variables. This will ensure that the credentials are not hardcoded in the source code.
+
+We need to implement the following steps to use environment variables in our properties file:
+
+- Create environment variables that contain the information our application will need to connect to the database (e.g., `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`).
+- Create a properties file that contain key-value pairs, where the values reference the environment variables (e.g., `DB_URL=${env:DB_URL}`).
+- In our data access class, we can extract the credentials from the properties file using a `Properties` object and use them to establish the database connection.
+
+### Real World Application
+
+Knowing how to use a properties file for storing database credentials is important for several reasons:
+
+- **Security**: Storing credentials in a properties file (especially when combined with environment variables) helps to keep sensitive information out of the source code, reducing the risk of accidental exposure. It prevents credentials from being hardcoded in the application, making it easier to change them without modifying the code.
+- **Ease of Maintenance**: Using a properties file makes it easier to manage and update database credentials. Instead of searching through the codebase to find and change hardcoded values, developers can simply update the properties file. This is especially useful in large applications or when working with multiple environments (e.g., development, testing, production).
+- **Flexibility**: Properties files allow for easy configuration changes without requiring code changes. This means that different configurations can be used for different environments (e.g., using a different database for testing vs. production) simply by changing the properties file.
+- **Separation of Concerns**: Using a properties file helps to separate configuration from code. This makes the codebase cleaner and more focused on business logic, while configuration details are kept in a dedicated location.
+
+Overall, knowing how to use a properties file for storing database credentials is crucial in application development for ensuring security, maintainability, and flexibility.
+
+### Implementation
+
+The following is an example of how we can use a properties file without using environment variables.
+
+#### Step 1: Create a `.properties` File
+
+A properties file stores information as key-value pairs, each on its own line, and has a `.properties` file extension. For instance, you might have the following content in a properties file named `application.properties`:
+
+```
+URL=jdbc:postgresql://localhost:5432/mydb
+CONNECTION_USERNAME=user
+CONNECTION_PASSWORD=password
+```
+
+#### Step 2: Extract Credentials from the Properties File
+
+In our data access class, we can extract the credentials from the properties file using the `Properties` class and `FileInputStream` class to read the file.
+
+```java
+// create a stream from properties file so we can read from it
+FileInputStream fileStream = new FileInputStream("path/to/application.properties");
+
+// create a Properties object and get the information from it
+Properties props = new Properties();
+props.load(fileStream);
+
+// extract values from the Properties object
+String URL = props.getProperty("URL");
+String CONNECTION_USERNAME = props.getProperty("CONNECTION_USERNAME");
+String CONNECTION_PASSWORD = props.getProperty("CONNECTION_PASSWORD");
+```
+
+Great! Now we have successfully extracted the database connection details from the properties file. But, we are still saving our information as plain text.
+
+**Aside**: If you are using this method to read properties for a web application that will be deployed on a server, you may need to use a different approach. When reading from a file, if you use a relative path, it will be relative to the working directory of the server, which may not be where your properties file is located. This can be unpredictable when it comes to servers, so instead we can use this method in those instances.
+
+You can use the `ServletContext` to read the properties file as a resource stream.
+
+```java
+Properties props = new Properties();
+
+try {
+  InputStream dbProps = getServletContext().getResourceAsStream("/WEB-INF/application.properties");
+  props.load(dbProps);
+} catch (Exception e) {
+  e.printStackTrace();
+}
+```
+
+---
+
+The following is an example of how we can use a properties file and environment variables to store our credentials.
+
+#### Step 1: Create Your Environment Variables
+
+We can create environment variables in different ways depending on the operating system you are using.
+
+For Windows:
+
+1. Open the Start Menu and search for "Environment Variables".
+2. Click on "Edit the system environment variables".
+3. In the System Properties window, click on the "Environment Variables" button.
+4. In the Environment Variables window, you can add new user or system variables.
+
+For macOS/Linux:
+
+1. Open a terminal window.
+2. You can set an environment variable using the `export` command. For example:
+   ```bash
+   export DB_URL=jdbc:postgresql://localhost:5432/mydb
+   export DB_USERNAME=user
+   export DB_PASSWORD=password
+   ```
+3. To make these changes permanent, you can add the export commands to your shell's configuration file (e.g., `.bashrc`, `.bash_profile`, or `.zshrc`).
+
+We will name our environment variables as follows:
+
+- `url`
+- `connectionUsername`
+- `connectionPassword`
+
+#### Step 2: Reference Environment Variables in the Properties File
+
+We can reference the environment variables in the properties file using the `${}` syntax. For example:
+
+```
+URL=${url}
+CONNECTION_USERNAME=${connectionUsername}
+CONNECTION_PASSWORD=${connectionPassword}
+```
+
+When the application starts, it will replace the placeholders with the actual values of the environment variables.
+
+#### Step 3: Extract Credentials from the Properties File
+
+Then, in our Java class, we will use our properties file and the `System.getenv()` method to extract the values of the environment variables.
+
+For our `application.properties` file, we will instead store the names of the environment variables as the property values.
+
+```
+URL=url
+CONNECTION_USERNAME=connectionUsername
+CONNECTION_PASSWORD=connectionPassword
+```
+
+```java
+// create a stream from properties file so we can read from it
+FileInputStream fileStream = new FileInputStream("path/to/application.properties");
+
+// create a Properties object and get the information from it
+Properties props = new Properties();
+props.load(fileStream);
+
+// extract values from the Properties object and get the environment variable values
+String url = props.getProperty("URL"); // url
+String username = props.getProperty("CONNECTION_USERNAME"); // connectionUsername
+String password = props.getProperty("CONNECTION_PASSWORD"); // connectionPassword
+
+// now that we have the names of the environment variables, we can get their values
+String URL = System.getenv(url);
+String CONNECTION_USERNAME = System.getenv(username);
+String CONNECTION_PASSWORD = System.getenv(password);
+```
+
+And there you have it! We have successfully extracted the database connection details from a properties file that references environment variables, and we are not storing any sensitive information in our source code or properties file.
