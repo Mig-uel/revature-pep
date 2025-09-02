@@ -319,3 +319,108 @@ String CONNECTION_PASSWORD = System.getenv(password);
 ```
 
 And there you have it! We have successfully extracted the database connection details from a properties file that references environment variables, and we are not storing any sensitive information in our source code or properties file.
+
+## Setting Up the Utility Class
+
+Within our Java application, we can leverage a Utility class to handle the distribution of `connectionFactory` objects to other classes that require connections and requests to our database. This approach promotes code reusability and simplifies the management of database connections.
+
+- This allows for ease of use when establishing connections to the database by providing a centralized method for obtaining connections.
+- Our `db.properties` file will be used to store our database connection details, which will be read by the Utility class to establish connections.
+- This produces a single instance of the Utility class, also known as the Singleton pattern, which ensures that only one instance of the class is created and used throughout the application.
+
+### Real World Application
+
+Having a connection Utility class in a Java application offers several benefits:
+
+- **Centralized Configuration**: A connection Utility class provides a centralized location for managing database connection settings, such as the database URL, username, and password. This makes it easier to update and maintain these settings in one place rather than scattering them throughout the codebase.
+- **Abstraction of Connection Logic**: The Utility class abstracts the connection logic, allowing other parts of the application to obtain connections without needing to know the details of how they are created or managed. This simplifies the code and reduces the risk of errors. This abstraction shields the rest of the application from the complexities of connection management, making the codebase cleaner and more maintainable.
+- **Facilitation of Testing**: The Utility class can be easily mocked or stubbed during unit testing, allowing for more straightforward testing of components that depend on database connections. This leads to more reliable tests and a better overall development experience.
+- **Security**: By centralizing the connection logic and credentials management, the Utility class can help enforce security best practices, such as using secure connections and managing sensitive information more effectively. This reduces the risk of exposing sensitive data throughout the application.
+
+Overall, a connection Utility provides a structured and efficient way to manage database connections in a Java application, leading to improved maintainability, testability, and security.
+
+### Implementation
+
+To set up a Utility class for managing database connections, we can follow these steps:
+
+First, we must establish a `db.properties` file inside our `src/main/resources` directory. This file will contain our database connection details.
+
+```
+url=postgresql://localhost:5432/postgres
+username=postgresql
+password=password
+```
+
+Note: It is important to include this file in the `.gitignore` file to prevent it from being pushed to a public repository, as it contains sensitive information.
+
+Next, we will create our Utility class, which we will name `ConnectionFactory`. This class will be responsible for reading the properties file and providing a method to obtain database connections.
+
+```java
+import java.io.FileReader;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Properties;
+
+public class ConnectionFactory {
+  /**
+   * There are two class variables included within our ConnectionFactory
+   * utility class.
+   *
+   * First, the single connectionFactory object itself. This will be passed
+   * along to any layer that will make requests to the database.
+   *
+   * Second, the props object of the Properties class that will allow us
+   * to access our db.properties and obtain our sensitive information.
+   */
+  private static final ConnectionFactory connectionFactory = new ConnectionFactory(); // Singleton instance
+  private Properties props = new Properties(); // To hold db.properties info
+
+  /**
+   * We include a private constructor here to ensure that there is only
+   * one instance that can be created ever. Along with this, during the
+   * construction of our ConnectionFactory object, we make sure we can load
+   * in our db.properties file, handling any potential exceptions thrown.
+   */
+  private ConnectionFactory() { // Private constructor for singleton
+    try {
+      props.load(new FileReader("src/main/resources/db.properties")); // Load properties file
+    } catch (IOException e) {
+      // Handle potential IOException
+      e.printStackTrace();
+    }
+  }
+
+  /**
+   * Next, we must also include a static method to obtain the single instance
+   * of our connectionFactory, allowing it to be accessible within other
+   * classes. This way we can provide the connectionFactory which can
+   * invoke the getConnection() method when we need to make requests to
+   * our database.
+   */
+  public static ConnectionFactory getConnectionFactory() { // Static method to get the singleton instance
+    return connectionFactory; // Return the singleton instance
+  }
+
+  /**
+   * This method provides the ability for classes to utilize the
+   * getConnection() method from our Utility class and establish a
+   * connection with out database that be used to execute SQL
+   * statements through the Statement or PreparedStatement interfaces.
+   * This will also check for any SQLException in case the information
+   * provided in the db.properties is incorrect.
+   */
+  public Connection getConnection() { // Method to establish and return a database connection
+    try {
+      return DriverManager.getConnection(props.getProperty("url"), props.getProperty("username"),
+          props.getProperty("password"));
+    } catch (SQLException e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+}
+```
+
+The code above defines a `ConnectionFactory` class that follows the Singleton design pattern to manage database connections. It loads database connection properties from a `db.properties` file and provides a method to obtain a `Connection` object for interacting with the database. This ensures that all database interactions are centralized and managed through a single instance of the `ConnectionFactory`.
