@@ -424,3 +424,331 @@ public class ConnectionFactory {
 ```
 
 The code above defines a `ConnectionFactory` class that follows the Singleton design pattern to manage database connections. It loads database connection properties from a `db.properties` file and provides a method to obtain a `Connection` object for interacting with the database. This ensures that all database interactions are centralized and managed through a single instance of the `ConnectionFactory`.
+
+## Preventing SQL Injection
+
+We will explore common coding mistakes in Java that lead to a vulnerable application and how to avoid them using the APIs available in the JVM's standard runtime library.
+
+#### How Do Applications Become Vulnerable to SQL Injection?
+
+SQL injection attacks occur when an attacker is able to manipulate the SQL queries that an application sends to its database. This can happen when user input is not properly sanitized or validated before being included in SQL statements.
+
+For many applications, the only way to execute a given computation is to dynamically generate code that is in turn run by another system or component. If, in the process of generating this code, we use untrusted user input without proper sanitization, we open ourselves up to code injection attacks.
+
+This statement may sound a bit abstract, so let's look at a concrete example in the context of SQL injection.
+
+```java
+public List<AccountDTO> unsafeFindAccountByCustomerId(String customerId) throws SQLException {
+  // THIS IS UNSAFE - DO NOT DO THIS BECAUSE IT IS VULNERABLE TO SQL INJECTION
+  String sql = "SELECT " + "customer_id, acc_number, branch_id, balance " +
+     "FROM Accounts where customer_id = '" + customerId + "'";
+
+  Connection conn = dataSource.getConnection();
+  ResultSet rs = conn.createStatement().executeQuery(sql);
+  // ...
+}
+```
+
+The problem with the code above is obvious: we directly concatenate user input into our SQL statement. If an attacker were to provide a specially crafted `customerId` value, they could manipulate the SQL query to execute arbitrary commands on the database. Nothing bad will happen if we are sure that this `customerId` value will only come from trusted sources, but can we really be sure of that?
+
+Let's imagine that this function is used in a REST API implementation for an account resource. Exploiting this code is trivial: all we have to do is send a value that, when concatenated with the fixed part of the query, changes its intended behavior.
+
+```bash
+curl -X GET "http://localhost:8080/accounts?customerId=abc%27%20OR%20%271%27=%271" \
+```
+
+The value of the `customerId` sent by the request is:
+
+```
+abc' OR '1'='1
+```
+
+When we join this value with the fixed part, we get the final SQL statement that will be executed:
+
+```sql
+SELECT customer_id, acc_number, branch_id, balance FROM Accounts where customer_id = 'abc' OR '1'='1'
+```
+
+The expression `1 = 1` will always evaluate to true, and as a result, the query will return all accounts in the database, not just those belonging to customer `abc`.
+
+A smart developer (aren't we all?) would now be thinking: "That's silly! I'd never use string concatenation to build SQL queries." Not so fast...This canonical example is silly indeed, but there are situations where we might still need to do it:
+
+- Complex queries with dynamic search criteria: adding `UNION` clauses depending on user input.
+- Dynamic grouping or ordering: REST APIs used as a backend to a data table UI component that allows users to choose which columns to sort by.
+
+#### Prevention Techniques
+
+Now that we know what SQL injection is, let us see how we can protect our code from this kind of attack. Here we are focusing on a couple of very effective techniques available in Java and other JVM languages, but similar concepts are available in other environments, such as PHP, .NET, Ruby, and so on.
+
+#### Parameterized Queries
+
+This technique consists of using prepared statement with the question mark placeholder ("?") in our queries whenever we need to insert a user supplied value. This is very effective and, unless there is a bug in the JDBC driver's implementation, it will protect us from SQL injection attacks.
+
+Let's rewrite out example function using a parameterized query:
+
+```java
+public List<AccountDTO> safeFindAccountByCustomerId(String customerId) throws
+SQLException {
+  String sql = "SELECT customer_id, acc_number, branch_id, balance FROM Accounts WHERE customer_id = ?"
+
+  Connection conn = dataSource.getConnection()
+  PreparedStatement ps = conn.prepareStatement(sql);
+  ps.setString(1, customerId);
+  ResultSet rs = ps.executeQuery();
+  // omitted - process rows and return list of AccountDTO
+}
+```
+
+In the code above, we have used the `prepareStatement()` method available in the `Connection` interface to create a `PreparedStatement` object. This interface extends the regular `Statement` interface and adds methods for setting the values of the parameters in the query. These methods allow use to safely bind user input to the query, preventing SQL injection attacks.
+
+As expected, the ORM (Object-Relational Mapping) layer creates a prepared statement using a placeholder ("?") for the user-supplied value. The actual value is then bound to the placeholder using the `setString()` method. This ensures that the value is properly escaped and treated as a literal value, rather than part of the SQL code.
+
+As a bonus, this approach usually results in a better performance, as the database can cache the execution plan for the prepared statement and reuse it for subsequent calls with different parameter values.
+
+Please note that this approach only works for placeholders used as values. For instance, we cannot use placeholders to dynamically change the name of a table or a column in the query
+
+```java
+// THIS WILL NOT WORK!
+PreparedStatement ps = conn.prepareStatement("SELECT COUNT(*) FROM ?");
+ps.setString(1, tableName); // INVALID - will throw SQLException
+```
+
+#### User Data Sanitization
+
+Data sanitization is a technique that consists of cleaning user input to remove potentially dangerous characters or patterns. This technique is less effective than parameterized queries, but it can be useful in certain situations, such as when we need to dynamically build parts of a query that cannot be parameterized (e.g., table or column names).
+
+With data sanitization, you apply a filter to user supplied data so it can be sagely used by other parts of our application. A filter's implementation may vary, but we can generally classify them into two types: whitelists and blacklists.
+
+Blacklists, which consist of a list of disallowed characters or patterns, are usually of little value in the context of SQL injection prevention - but not for detection!
+
+Whitelists, on the other hand, work well when we can define exactly what is considered valid input. For instance, if we expect a username to be alphanumeric and between 3 and 20 characters long, we can use a regular expression to validate the input:
+
+Let's enhance our `safeFindAccountsByCustomerId` method so now the caller can also specify the column to sort the result set. Since we know the set of possible columns, we can implement a whitelist using a simple set and use it to sanitize the received parameter:
+
+```java
+private static final Set<String> VALID_COLUMNS_FOR_ORDER_BY = Collections.unmodifiableSet(Stream.of("acc_number", "branch_id", "balance").collect(Collectors.toCollection(HashSet::new)));
+
+public List<AccountDTO> safeFindAccountByCustomerId(String customerId, String orderBy) throws Exception {
+  String sql = "SELECT customer_id, acc_number, branch_id, balance FROM Accounts WHERE customer_id = ?";
+
+  if (VALID_COLUMNS_FOR_ORDER_BY.contains(orderBy)) {
+    sql = sql + " ORDER BY " + orderBy;
+  } else {
+    throw new IllegalArgumentException("Nice try!")
+  }
+
+  Connection conn = dataSource.getConnection();
+  PreparedStatement ps = conn.prepareStatement(sql);
+
+  p.setString(1, customerId);
+  // ... ResultSet processing omitted
+}
+```
+
+In the above code, we are combining the prepared method approach and a whitelist to sanitize the `orderBy` argument. The final result is a safe string concatenation that cannot be exploited by an attacker. In this simple example, we are using a static set, but we could also have used the database metadata functions to create it.
+
+#### Are We Safe Now?
+
+Let's assume that we have used parameterized queries and/or whitelists everywhere. Can we now go to our manager and guarantee we are safe?
+
+Well...not so fast; there are other aspects we must consider:
+
+- **Stored Procedures**: These are also prone to SQL injection; whenever possible, please apply sanitization even to values that will be sent to the database via prepared statements.
+- **Triggers**: These are also prone to SQL injection, but even more insidious because sometimes we have no idea they exist. If you are using a third-party database or a legacy system, please make sure you know what triggers are defined in the database.
+- **Insecure Direct Object References**: Even if our application is SQL injection-free, there is still a risk associated with this vulnerability. The main point is that an attacker may be able to access data they should not be able to see, even if they cannot manipulate the SQL queries. For instance, if our application allows users to access their bank accounts by specifying the account number, an attacker could try to access other users' accounts by guessing or enumerating account numbers. To prevent this, we must always enforce proper authorization checks in our application. There is a good cheat sheet on this topic available at OWASP: https://cheatsheetseries.owasp.org/cheatsheets/Access_Control_Cheat_Sheet.html.
+
+In short, our best option here is caution. Many organizations nowadays use a "red team" exactly for this purpose: to try to break into their systems and find vulnerabilities before the bad guys do. If your organization does not have a red team, you can hire external consultants to perform penetration testing on your applications.
+
+#### Damage Control Techniques
+
+As a good security practice, we should always implement multiple defense layers, a concept known as defense in depth. The main idea is that even if we are unable to find all possible vulnerabilities in our code (a common scenario when dealing with legacy systems), we can still mitigate the impact of any potential attacks. Some common damage control techniques include:
+
+- **Least Privilege**: Ensure that the database user used by the application has only the necessary permissions. For instance, if the application only needs to read data, do not grant it write permissions. Restrict as much as possible.
+- **Database-Specific Methods**: Some databases provide specific methods to sanitize user input. For instance, in PostgreSQL, we can use the `quote_literal()` function to safely escape string values. Please refer to your database documentation for more information.
+- **Short-Lived Credentials**: If possible, use short-lived credentials for the database user. This way, even if an attacker manages to steal the credentials, they will only be valid for a limited time.
+- **Monitoring and Logging**: Implement monitoring and logging to detect any suspicious activity. This can help us identify potential attacks and respond quickly.
+- **Web Application Firewall (WAF)**: Consider using a WAF to filter out malicious traffic before it reaches your application. A WAF can help block common attack patterns and provide an additional layer of security. Some include in-JVM agents that can detect intrusions by applying instrumentation techniques.
+
+### Real World Application
+
+SQL injection is a serious security vulnerability that can have devastating consequences for organizations. SQL injection vulnerabilities can be found in various Java applications that use JDBC to interact with databases. Some real-world scenarios where SQL injection attacks can occur include:
+
+- Web Applications
+  - Web applications that accept user input for generating dynamic SQL queries, such as search forms, user authentication, or data filtering, are particularly vulnerable to SQL injection attacks. Attackers can exploit these vulnerabilities to gain unauthorized access to sensitive data or perform malicious actions on the database.
+- E-commerce Systems
+  - Online stores that handle customer data, process transactions, or manage inventory should carefully validate and sanitize user input to prevent SQL injection attacks that could compromise sensitive information.
+- Content Management Systems
+  - CMS platforms that allow users to create, edit, or delete content may be vulnerable to SQL injection if user input is not properly sanitized. Attackers could exploit these vulnerabilities to manipulate content or gain unauthorized access to the system.
+
+#### Real World SQL Injection Examples
+
+- In 2008, payment processor Heartland Payment Systems suffered a massive data breach due to a SQL injection attack. The attackers exploited a vulnerability in the company's web application to gain access to sensitive customer data, including credit card information. This resulted in one of the largest data breaches in history, affecting millions of customers and costing the company over $140 million in damages.
+- In 2014, a hacker gang collected over 1.2 billion unique IDs and password combinations from over 420,000 websites across the internet. The Russian cybercriminals used SQL injection techniques to exploit vulnerabilities in various web applications, leading to one of the largest data breaches ever recorded.
+- UK telecom giant TalkTalk suffered a significant data breach in 2015 due to a SQL injection attack. The attackers exploited a vulnerability in the company's website to gain access to sensitive customer information, including names, addresses, dates of birth, and financial details. The breach affected approximately 157,000 customers and resulted in a £400,000 fine for TalkTalk by the UK's Information Commissioner's Office (ICO) for failing to implement adequate security measures.
+- Epic Games, the company behind the popular game Fortnite, experienced a data breach in 2016 due to a SQL injection attack. The attackers exploited a vulnerability in the company's website to gain access to sensitive user information, including usernames, email addresses, and encrypted passwords. The breach affected approximately 800,000 users and highlighted the importance of securing web applications against SQL injection attacks.
+
+#### Breaches Enabled by SQL Injection
+
+- GhostShell attack (2015): hackers from the APT group Team GhostShell targeted 53 universities and organizations, exploiting SQL injection vulnerabilities to gain access to sensitive data, including personal information of students and staff. They stole and published 36,000 personal records belonging to students and staff from various universities.
+- Turkish government: another APT group, the RedHack collective, exploited SQL injection vulnerabilities in Turkish government websites to gain access to sensitive information. They leaked personal data of thousands of citizens, including names, addresses, and national identification numbers.
+- 7-Eleven (2017): attackers used SQL injection techniques to exploit vulnerabilities in the 7-Eleven website, gaining access to customer data, including names, email addresses, and purchase history. The breach affected thousands of customers and raised concerns about the security of online retail platforms.
+- HBGary (2018): a hacker group exploited SQL injection vulnerabilities in the HBGary website to gain access to sensitive information, including email addresses and hashed passwords of users. The breach highlighted the importance of securing web applications against SQL injection attacks, even for cybersecurity firms. This attack was a response to HBGary's involvement in tracking and exposing hacktivist groups.
+
+#### Notable SQL Injection Vulnerabilities
+
+- Tesla (2014): A security researcher discovered a SQL injection vulnerability in Tesla's website that allowed unauthorized access to customer data. The vulnerability was reported to Tesla, which promptly fixed the issue and rewarded the researcher with a bug bounty.
+- Cisco (2018): A SQL injection vulnerability was discovered in Cisco Prime License Manager, which could allow attackers to execute arbitrary SQL commands and gain unauthorized access to sensitive data. Cisco released a security advisory and provided patches to address the vulnerability.
+- Fortnite (2019): A SQL injection vulnerability was discovered in the Fortnite website, which could allow attackers to access sensitive user information. Epic Games, the company behind Fortnite, quickly addressed the issue and implemented additional security measures to protect user data.
+
+#### Implementation
+
+#### Overview of Prepared Statements
+
+Prepared statements are a feature of JDBC that allows developers to create SQL statements with placeholders for parameters. These placeholders are represented by question marks ("?") in the SQL statement. When the prepared statement is executed, the parameters are bound to the placeholders, ensuring that user input is treated as data rather than executable code.
+
+If you want to execute a `Statement` object many times, it is more efficient to use a `PreparedStatement` object. The database can optimize the execution plan for the prepared statement and reuse it for subsequent executions with different parameter values.
+
+The main feature of a `PreparedStatement` is that, unlike a `Statement`, it is given a SQL statement when it is created. The advantage of this is that in most cases, this SQL statement is sent to the DBMS right away, where it is compiled. As a result, the `PreparedStatement` object contains not just a SQL statement but a SQL statement that has been precompiled. This means that when we execute a `PreparedStatement`, the DBMS does not have to compile the SQL statement again, which can save time, especially if we are executing the same statement multiple times.
+
+Although you can use `PreparedStatement` objects to execute static SQL statements, you will probably use them primarily to execute dynamic SQL statements. The advantage of using `PreparedStatement` for dynamic SQL is that you can reuse the same prepared statement with different parameter values, without having to recompile the SQL statement each time.
+
+However, the most important advantage of prepared statements is that they help prevent SQL injection attacks. By using placeholders for user input, we ensure that the input is properly escaped and treated as a literal value, rather than part of the SQL code. SQL injection techniques all exploit a single vulnerability in the application: incorrectly validated or non-validated string literals that are concatenated into SQL statements and interpreted by the SQL engine. Prepared statements always treat client-supplied data as content of a parameter, never as part of the SQL command.
+
+The following method, CoffeesTable.updateCoffeeSales, stores the number of pounds of coffee sold in the current week in the SALES column for each type of coffee and updates the total number of pounds of coffee sold in the TOTAL column for each type of coffee:
+
+```java
+public void updateCoffeeSales(HashMap<String, Integer> salesForWeek) throws SQLException {
+    String updateString =
+      "update COFFEES set SALES = ? where COF_NAME = ?";
+    String updateStatement =
+      "update COFFEES set TOTAL = TOTAL + ? where COF_NAME = ?";
+
+    try (PreparedStatement updateSales = con.prepareStatement(updateString);
+         PreparedStatement updateTotal = con.prepareStatement(updateStatement))
+
+    {
+      con.setAutoCommit(false);
+      for (Map.Entry<String, Integer> e : salesForWeek.entrySet()) {
+        updateSales.setInt(1, e.getValue().intValue());
+        updateSales.setString(2, e.getKey());
+        updateSales.executeUpdate();
+
+        updateTotal.setInt(1, e.getValue().intValue());
+        updateTotal.setString(2, e.getKey());
+        updateTotal.executeUpdate();
+        con.commit();
+      }
+    } catch (SQLException e) {
+      JDBCTutorialUtilities.printSQLException(e);
+      if (con != null) {
+        try {
+          System.err.print("Transaction is being rolled back");
+          con.rollback();
+        } catch (SQLException excep) {
+          JDBCTutorialUtilities.printSQLException(excep);
+        }
+      }
+    }
+  }
+```
+
+#### Creating a PreparedStatement Object
+
+The following creates a `PreparedStatement` object that takes two parameters:
+
+```java
+String updateString =
+  "update COFFEES set SALES = ? where COF_NAME = ?";
+PreparedStatement updateSales = con.prepareStatement(updateString);
+```
+
+#### Supplying Values for Placeholders
+
+You must supply values in place of the placeholders (if there are any) before you can execute a prepared statement. You supply values by using the appropriate setter methods of the `PreparedStatement` interface. The following code sets the two placeholders in the preceding `updateSales` prepared statement:
+
+```java
+updateSales.setInt(1, e.getValue().intValue());
+updateSales.setString(2, e.getKey());
+```
+
+The first argument for each of these setter methods is the number of the placeholder to be set, which is not zero-based but one-based. This means that the first placeholder is represented by 1, the second by 2, and so on.
+
+The second argument is the value to be set for the placeholder. The appropriate setter method must be used for the data type of the placeholder. For example, if the placeholder represents an integer value, you must use the `setInt` method; if it represents a string value, you must use the `setString` method.
+
+After a placeholder has been set with a value, it retains that value until it is reset to another value or the method `clearParameters()` is called.
+
+Using the `PreparedStatement` object `updateSales`, the following code illustrates reusing a prepared statement after resetting the value of its placeholders and keeping the other placeholder values unchanged:
+
+```java
+// changes SALES column of French Roast to 100
+updateSales.setInt(1, 100);
+updateSales.setString(2, "French Roast");
+updateSales.executeUpdate();
+
+// changes SALES column of Espresso row to 100
+// the first placeholder unchanged
+// updateSales.setInt(1, 100);
+// second placeholder reset to 'Espresso'
+updateSales.setString(2, "Espresso");
+updateSales.executeUpdate();
+```
+
+#### Using Loops to Set Values
+
+You can often make coding easier by using a for-loop or a while loop to set the values for the placeholders in a prepared statement.
+
+The `CoffeesTable.updateCoffeeSales` method uses a for-each loop to repeatedly set the values for the two placeholders in the `updateSales` prepared statement and execute it.
+
+```java
+for (Map.Entry<String, Integer> e : salesForWeek.entrySet()) {
+  updateSales.setInt(1, e.getValue().intValue());
+  updateSales.setString(2, e.getKey());
+  updateSales.executeUpdate();
+}
+```
+
+The method `updateCoffeeSales()` takes one argument, a `HashMap`. Each element in the `HashMap` argument contains the name of one type of coffee and the number of pounds of that type of coffee sold during the current week. The for-each loop iterates through each element of the `HashMap` argument and sets the appropriate values for the placeholders in the `updateSales` prepared statement.
+
+#### Executing `PreparedStatement` Objects
+
+As with `Statement` objects, to execute a `PreparedStatement` object, call an execute statement method such as `executeQuery()`: if the query returns only one `ResultSet` object (such as a SELECT statement), `executeUpdate()`: if the query is an INSERT, UPDATE, or DELETE statement or an SQL statement that returns nothing (such as a DDL statement), or `execute()`: if the query may return multiple results.
+Both `PreparedStatement` and `Statement` objects can be used to execute SQL queries, but `PreparedStatement` objects offer several advantages, including precompiled SQL statements, the ability to set parameter values, and improved performance for repeated executions. Both `PreparedStatement` objects in `CoffeesTable.updateCoffeeSales(HashMap<String, Integer>)` contain `UPDATE` SQL statements, so both are executed by `executeUpdate()`.
+
+```java
+updateSales.setInt(1, e.getValue().intValue());
+updateSales.setString(2, e.getKey());
+updateSales.executeUpdate();
+
+updateTotal.setInt(1, e.getValue().intValue());
+updateTotal.setString(2, e.getKey());
+updateTotal.executeUpdate();
+
+con.commit();
+```
+
+No arguments are supplied to `executeUpdate()`. The method returns an integer value that indicates the number of rows affected by the execution of the SQL statement. If the return value is 0, no rows were affected.
+
+Note: At the beginning of `CoffeesTable.updateCoffeeSales(HashMap<String, Integer>)`, the connection is set to not auto-commit changes. This means that changes made by the `UPDATE` statements are not immediately saved to the database. Instead, the changes are held in a transaction until the `commit()` method is called on the connection object. If an error occurs during the execution of the `UPDATE` statements, the changes can be rolled back to maintain data integrity.
+
+Return values for the `executeUpdate()` method whereas `executeQuery()` returns a `ResultSet` object containing the results of the query sent to the database, the return value for `executeUpdate()` is an integer indicating the number of rows affected by the SQL statement. This return value is useful for determining how many rows were inserted, updated, or deleted by the execution of the SQL statement.
+
+The following code shows the return value of `executeUpdate()` being stored in an integer variable named `n`:
+
+```java
+updateSales.setInt(1, 50);
+updateSales.setString(2, "Espresso");
+int n = updateSales.executeUpdate(); // n is the number of rows affected
+// n = 1; because one row was updated
+```
+
+When the method `executeUpdate()` is used to execute a DDL (Data Definition Language) statement, such as creating a table, it returns the `int` value of 0. For example, the following code creates a table named `COFFEES` and stores the return value of `executeUpdate()` in an integer variable named `n`:
+
+```java
+// n = 0
+int n = executeUpdate(createTableCoffees);
+```
+
+NNote that when the return value for `executeUpdate()` is 0, it indicates one of two things:
+
+- The statement was executed successfully, but it did not affect any rows. This can happen with `UPDATE` or `DELETE` statements that do not match any rows in the database.
+- The statement executed was a DDL statement, such as `CREATE TABLE` or `DROP TABLE`, which does not affect any rows.
