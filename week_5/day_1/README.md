@@ -752,3 +752,90 @@ NNote that when the return value for `executeUpdate()` is 0, it indicates one of
 
 - The statement was executed successfully, but it did not affect any rows. This can happen with `UPDATE` or `DELETE` statements that do not match any rows in the database.
 - The statement executed was a DDL statement, such as `CREATE TABLE` or `DROP TABLE`, which does not affect any rows.
+
+## SQL Injection
+
+#### Description for SQL Injection
+
+SQL injection is a common security vulnerability that occurs when untrusted user input is directly included in SQL queries without proper validation or sanitization. This can allow attackers to manipulate the SQL queries executed by the application, potentially leading to unauthorized access to sensitive data, data corruption, or even complete compromise of the database.
+
+When using JDBC (Java Database Connectivity) to interact with databases, it is crucial to be aware of and mitigate the risk of SQL injection attacks. This can be done by using prepared statements with parameterized queries, which separate SQL code from data and ensure that user input is properly escaped and validated.
+
+### Real World Application
+
+#### Mitigation of SQL Vulnerabilities
+
+- Parameterized Queries: Instead of concatenating user input directly into SQL statements, use parameterized queries with prepared statements. This ensures that user input is treated as data and not executable code.
+- Validation and Sanitization: Always validate and sanitize user input before using it in SQL queries. This can include whitelisting, length checks, and format validation.
+- Stored Procedures: Use stored procedures for database operations, as they can help encapsulate SQL logic and reduce the risk of SQL injection.
+- Least Privilege Principle: Ensure that the database user used by the application has the minimum necessary permissions. This limits the potential damage in case of a successful SQL injection attack.
+- Regular Updates and Security Patches: Keep your database management system (DBMS) and JDBC drivers up to date with the latest security patches to protect against known vulnerabilities.
+
+### Implementation
+
+```java
+public class MemberDaoImpl implements MemberDao {
+
+    @Override
+    public Member createMember(Member newMember) {
+        try (Connection conn = ConnectionFactory.getConnectionFactory().getConnection()){
+
+            // Thanks to our use of PreparedStatement and parameterized queries, we can ensure user input is treated as data rather than executable code. We could take this a step further with Input Validation and Sanitization within the business logic of the Services.
+            String sql = "insert into members (email, password, full_name, experience_months, registration_date) values (?,?,?,?,?)";
+
+            // PreparedStatement requires a parameterized query
+            PreparedStatement ps = conn.prepareStatement(sql);
+
+            ps.setString(2, newMember.getPassword());
+            ps.setString(1, newMember.getEmail());
+            ps.setString(3, newMember.getFullName());
+            ps.setInt(4, newMember.getExperienceMonths());
+            ps.setDate(5, newMember.getRegistrationDate());
+
+            int checkInsert = ps.executeUpdate();
+
+            if (checkInsert == 0) {
+                throw new ResourcePersistenceException("Member was not entered into the database.");
+            }
+
+            return newMember;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public List<Member> findAllMembers() {
+        try (Connection conn = ConnectionFactory.getConnectionFactory().getConnection()) {
+            List<Member> members = new LinkedList<>();
+
+            // Luckily, there is no user input given to the following code, so it's safe to execute the following SQL query through the use of a simple Statement. However, it is still important to be mindful of the information that these queries can reveal and who should have access to them.
+            String sql = "select * from members";
+
+            Statement s = conn.createStatement();
+            ResultSet rs = s.executeQuery(sql);
+
+            while (rs.next()) {
+                Member member = new Member();
+
+                member.setEmail(rs.getString("email"));
+                member.setFullName(rs.getString("full_name"));
+                member.setExperienceMonths(rs.getInt("experience_months"));
+                member.setRegistrationDate(rs.getDate("registration_date"));
+                member.setPassword(rs.getString("password"));
+
+                members.add(member);
+            }
+
+            return members;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    // remaining code left out...
+}
+```
