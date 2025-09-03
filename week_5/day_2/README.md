@@ -200,3 +200,116 @@ CREATE TABLE position_titles(
 ```
 
 Lastly, we needed to remove the transitive dependency so we can move our `zookeepers` table into 3NF. The two columns `salary` and `position_title` do describe the `zookeeper` entity; however, if a change is made to the `position_title` column, it would require multiple updates to the `zookeepers` table. For example, if one was promoted from `junior zookeeper` to `senior zookeeper`, we would need to update the `position_title` column for every zookeeper with that title as well as the `salary` column. To resolve this, we created a new table called `position_titles` that contains the `position_title_name` and `salary`. The `zookeepers` table now references the `position_titles` table using a foreign key. This design is now in 3NF because all non-key attributes are functionally dependent only on the primary key.
+
+## Multiplicity
+
+Multiplicity, also known as cardinality, refers to the number of instances of one entity that can be associated with instances of another entity in a relationship. In database design, multiplicity is used to define the relationships between tables and how they interact with each other.
+
+#### Multiplicity vs Cardinality
+
+Although these two terms, multiplicity and cardinality, are often used interchangeably, technically they are different. Generally, you can think of **multiplicity** as the possible range of instances in a relationship, while **cardinality** is the actual number of instances in a relationship.
+
+For example, in a one-to-many relationship between `customers` and `orders`, the multiplicity of the relationship is one-to-many, meaning that one customer can have many orders. The cardinality of the relationship would be the actual number of orders associated with a specific customer.
+
+In another example, let's say we have an application to manage apartment buildings and we want to model two entities, a person and a pet. We want to have a constraint that each person has at most 2 pets. In ER diagrams, the multiplicity could be expressed as 0..2, or a range of 0 to 2 associations between person and a pet. The defined cardinalities are 0 and 2. If there is no upper limit, then we can use an asterisk (\*) to represent "many." For example, the multiplicity for the relationship between a social media influencer and their followers could be expressed as 0..\*, meaning that each influencer must have at least one follower, but can have many.
+
+We often look at multiplicity in simpler terms by just referring to the type of relationship entities can have with each other. The three main types of relationships are:
+
+- **One-to-one relationship (1:1)**: In this type of relationship, a single instance of one entity is associated with a single instance of another entity. For example, each person has one unique social security number.
+  - Implementation: A one-to-one relationship can be implemented by adding a foreign key in one of the tables that references the primary key of the other table.
+- **One-to-many relationship (1:N)**: In this type of relationship, a single instance of one entity is associated with multiple instances of another entity. For example, a customer can have many orders.
+  - Implementation: A one-to-many relationship can be implemented by adding a foreign key in the "many" table that references the primary key of the "one" table.
+- **Many-to-one relationship (N:1)**: This is simply the reverse of a one-to-many relationship. In this type of relationship, multiple instances of one entity are associated with a single instance of another entity. For example, many employees can work in one department.
+  - Implementation: A many-to-one relationship can be implemented by adding a foreign key in the "many" table that references the primary key of the "one" table.
+- **Many-to-many relationship (M:N)**: In this type of relationship, multiple instances of one entity are associated with multiple instances of another entity. For example, a student can enroll in many courses, and a course can have many students enrolled.
+  - Implementation: A many-to-many relationship is typically implemented using a junction table (also known as a bridge table or associative entity) that contains foreign keys referencing the primary keys of both related tables.
+
+Note: The difference between a one-to-many relationship and a many-to-one relationship is primarily in the direction of the association or perspective. In a one-to-many relationship, the "one" side is the parent, and the "many" side is the child. In a many-to-one relationship, the "many" side is the child, and the "one" side is the parent. They are actually the same relationship viewed from different perspectives.
+
+### Real World Application
+
+A real world example of multiplicity can be seen in the relationship between entities within a school. Let's consider a simplified scenario where we have different entities: `School`, `Student`, `Course`, and `Student ID Card`. The different types of relationships are:
+
+- One school to many students:
+  - A school can have many students enrolled, but each student is associated with only one school.
+- Many courses to many students:
+  - A course can have many students enrolled, and a student can enroll in many courses.
+- One student ID card to one student:
+  - Each student has one unique student ID card, and each student ID card is associated with only one student.
+
+### Implementation
+
+#### One-to-Many Relationship
+
+A good example of one-to-many relationship could be an `albums` and `songs` table. One album can have many songs; however, one song cannot belong to many albums (excluding compilations). This is a one-to-many relationship. As stated in the previous sections, to implement a one-to-many relationship, we need to have a foreign key in the "many" table that references the "one" table. In our case, the "many" table is the `songs` table, and the "one" table is the `albums` table. We would add an `album_id` foreign key column to the `songs` table that references the `id` column in the `albums` table.
+
+**Albums Table**
+
+| album_id | album_name   |
+| -------- | ------------ |
+| 1        | 'Thriller'   |
+| 2        | 'Abbey Road' |
+
+**Songs Table**
+
+| song_id | song_title      | album_fk |
+| ------- | --------------- | -------- |
+| 1       | 'Billie Jean'   | 1        |
+| 2       | 'Beat It'       | 1        |
+| 2       | 'Come Together' | 2        |
+
+#### Many-to-Many Relationship
+
+The only difference between a one-to-many relationship and a many-to-one relationship is perspective. People generally refer to a relationship as many-to-one because they are thinking in relation to the "many" table. However, many-to-one and one-to-many are actually the same relationship viewed from different perspectives.
+
+#### Many-to-Many Relationship
+
+One example of many-to-many relationship could be a `doctors` and a `patients` table. A doctor can have many patients, and a patient can have many doctors. Since the relationship goes both ways, this is a many-to-many relationship. We achieve this by using a junction table that contains foreign keys referencing the primary keys of both related tables.
+
+**Doctors Table**
+
+| doctor_id | doctor_name |
+| --------- | ----------- |
+| 1         | 'Dr. Smith' |
+| 2         | 'Dr. Adams' |
+| 3         | 'Dr. Keen'  |
+
+**Patients Table**
+
+| patient_id | patient_name    |
+| ---------- | --------------- |
+| 1          | 'Abbey Jones'   |
+| 2          | 'Jane Stevens'  |
+| 3          | 'Devin Kennedy' |
+
+**Doctors_Patients Table (Junction Table)**
+
+| doctor_id_fk | patient_id_fk |
+| ------------ | ------------- |
+| 1            | 1             |
+| 1            | 2             |
+| 2            | 2             |
+| 2            | 3             |
+| 3            | 1             |
+
+#### One-to-one Relationship
+
+For a one-to-one relationship, let's have a table for `students` and `backpacks`. A student possesses one backpack, and each backpack is assigned to one student.
+
+**Students Table**
+
+| student_id | student_name |
+| ---------- | ------------ |
+| 1          | 'Alice'      |
+| 2          | 'Bob'        |
+| 3          | 'Charlie'    |
+
+**Backpacks Table**
+
+| backpack_id | book_count | student_id_fk |
+| ----------- | ---------- | ------------- |
+| 1           | 5          | 1             |
+| 2           | 3          | 2             |
+| 3           | 4          | 3             |
+
+This example looks very similar to a one-to-many relationship. This is because it is! The only difference in the implementation of a one-to-one relationship and a one-to-many relationship is that in a one-to-one relationship, a `UNIQUE` constraint needs to be added on the foreign key column.
