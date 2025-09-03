@@ -313,3 +313,63 @@ For a one-to-one relationship, let's have a table for `students` and `backpacks`
 | 3           | 4          | 3             |
 
 This example looks very similar to a one-to-many relationship. This is because it is! The only difference in the implementation of a one-to-one relationship and a one-to-many relationship is that in a one-to-one relationship, a `UNIQUE` constraint needs to be added on the foreign key column.
+
+## Data Modeling and ERD
+
+#### Data Modeling
+
+Data modeling is a conceptual representation of the data objects, data object relationships, and data object rules. It is used to help save costs, improve documentation, reduce time to market, and establish consistent data.
+
+Data modeling is not strictly limited to relational databases but can include a variety of data models, such as:
+
+- JSON Data Model
+- Key-Value Data Model
+- Graph Data Model
+- Wide-Column Data Model
+
+These examples of data models are good to know and feel free to research them, but for the purpose of the SQL unit, we will focus on the relational data model.
+
+#### Entity-Relationship Diagram (ERD)
+
+An Entity-Relationship Diagram (ERD) is a visual representation of the data model. It illustrates the entities (tables) in the database and the relationships between them. ERDs are useful for understanding the structure of the database and for communicating the design to stakeholders.
+
+ER models are defined as a set of symbols such as rectangles, diamonds, and ovals. They are connected to each other with lines that represent the relationships between the entities.
+
+![ERD Example](erd-example.png)
+
+Each table is titled with a name representing the entity. At the top of each table, there is a key symbol depicting our primary key, red diamonds representing foreign keys, and all others denoting the remaining entity attributes.
+
+### Real World Application
+
+#### Data Modeling
+
+Data modeling is used in practice for evaluating the data objects and their relationships to other entities used to investigate the business's data requirements for processes.
+
+For example, think about a driver's license. We can use data modeling to determine if we have enough available combinations for our unique identifiers. When generating ID identifiers, we need to make sure the data type and constraints we've established are sufficient to handle our needs, accounting for the growth of the population. Prior to implementation, we can establish the rules for our data, saving us time, money, and headaches in the future.
+
+#### Entity Relationship Diagram (ERD)
+
+Entity Relationship Diagrams (ERDs) allow us to visualize the entities, their attributes, and relationships to one another. This can be done via third-party software such as Microsoft Visio, Lucidchart, or draw.io. Inside most database IDEs, there are some form of basic ERD generation tools. As you have seen previously, the image below is an example of an ERD generated through an IDE (DBeaver):
+
+![ERD Example](erd-example.png)
+
+We can see symbols at the end of relationship lines that link the entities. These symbols indicate how many instances of one entity are related to how many instances of another entity. This is known as multiplicity, which we discussed in the previous section. In Crow's Foot notation, there are usually two symbols besides one another at the end of a relationship line. For the first symbol, it can be a crow's foot, which indicates "many" (i.e., zero or more) instances of the entity it is attached to. Or, it can be a straight line, which indicates "one and only one" instance of the entity it is attached to. For the second symbol, it can either be a single line, which indicates it is mandatory (i.e., at least one instance must exist), or it can be a circle, which indicates it is optional (i.e., zero or one instance may exist).
+
+Note: Other notations use different symbols to represent these concepts.
+
+Using the above ERD for a commerce database, you can see how stores, customers, departments, and sales information are all intertwined. This is a great way to visualize the data model and ensure that all entities and relationships are accounted for before implementation.
+
+### Implementation
+
+Data Modeling and ERDs can be generated through third-party software such as Microsoft Visio, Lucidchart, and a variety of web-based tools.
+
+We will use DBeaver to generate an ERD from our existing database:
+
+- Select your database and expand it in the Database Navigator Menu on the left-hand side.
+- Expand your Databases inside your database.
+- Expand the name of your database.
+- Expand the Schemas directory.
+- Right-click on the schema for which you wish to generate an ERD, and select "View Diagram".
+- DBeaver will open a new tab in the editor with an extremely basic version of an ERD for your tables as shown below:
+
+![DBeaver ERD](dbeaver-erd.png)
