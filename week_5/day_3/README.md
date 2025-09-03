@@ -73,3 +73,96 @@ In this example, the `Customers` table represents the store's customers, and the
 | 3          | Charlie | Chocolate | 103       | Headphones  | 79.99        |
 
 This information can be useful because now we can analyze potential sales opportunities, understand customer preferences, and generate comprehensive reports for marketing strategies.
+
+## Self Join
+
+`SELF JOIN` is a type of join in SQL where a table is joined with itself. This is useful when you want to compare rows within the same table or when you need to find relationships between records in the same table.
+
+When performing a `SELF JOIN`, you typically use table aliases to differentiate between the two instances of the same table. This allows you to reference the same table multiple times in a single query.
+
+This type of join is also known as a Unary relationship.
+
+![Self Join](self-join.jpg)
+
+**Syntax**:
+
+```sql
+SELECT a.column1, b.column2
+FROM table_name a, table_name b
+WHERE a.common_field = b.common_field;
+```
+
+### Real World Application
+
+Real world use cases include:
+
+- Finding hierarchical relationships, such as employees and their managers within an organization.
+- Comparing records within the same table, such as finding duplicate entries or related items.
+- Analyzing relationships in social networks, such as friends or followers.
+
+### Implementation
+
+In the following example, we will have one table since a `SELF JOIN` is a type of join wherein the data is coming from the same table.
+
+**Employees**
+
+| employee_id | employee_name        | manager_id |
+| ----------- | -------------------- | ---------- |
+| 1           | CEO                  | NULL       |
+| 2           | Marketing Manager    | 1          |
+| 3           | Sales Manager        | 1          |
+| 4           | Marketing Specialist | 2          |
+| 5           | Sales Representative | 3          |
+| 6           | Marketing Intern     | 2          |
+
+Using the records from this table, we would like to retrieve our employees and readable information for each employee's associated manager in the company.
+
+A `SELF JOIN` query will accomplish this task perfectly:
+
+```sql
+SELECT e.employee_name AS employee, m.employee_name AS manager
+FROM Employees e
+JOIN Employees m
+ON e.manager_id = m.employee_id
+ORDER BY  e.employee_id;
+```
+
+We can also execute the same logic but without the `JOIN` keyword:
+
+```sql
+SELECT e.employee_name as employee, m.employee_name as manager
+FROM Employees e, Employees m
+WHERE e.manager_id = m.employee_id
+ORDER BY e.employee_id;
+```
+
+**OUTPUT**
+
+| employee             | manager           |
+| -------------------- | ----------------- |
+| Marketing Manager    | CEO               |
+| Sales Manager        | CEO               |
+| Marketing Specialist | Marketing Manager |
+| Sales Representative | Sales Manager     |
+| Marketing Intern     | Marketing Manager |
+
+Both examples utilize a `SELF JOIN` to retrieve related data from the same table. However, the CEO record is not returned from the query due to the `NULL` foreign key reference and the behavior of the `SELF JOIN` or a `WHERE` clause. If we require the CEO record to be returned, we can use a `LEFT JOIN` instead of an `INNER JOIN` or a `WHERE` clause.
+
+```sql
+SELECT e.employee_name AS employee, m.employee_name AS manager
+FROM Employees e
+LEFT JOIN Employees m
+ON e.manager_id = m.employee_id
+ORDER BY e.employee_id;
+```
+
+**OUTPUT**
+
+| employee             | manager           |
+| -------------------- | ----------------- |
+| CEO                  | NULL              |
+| Marketing Manager    | CEO               |
+| Sales Manager        | CEO               |
+| Marketing Specialist | Marketing Manager |
+| Sales Representative | Sales Manager     |
+| Marketing Intern     | Marketing Manager |
