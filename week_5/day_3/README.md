@@ -166,3 +166,163 @@ ORDER BY e.employee_id;
 | Marketing Specialist | Marketing Manager |
 | Sales Representative | Sales Manager     |
 | Marketing Intern     | Marketing Manager |
+
+## Set Operators
+
+Set operators in SQL are used to combine the results of two or more `SELECT` statements into a single result set. The most commonly used set operators are:
+
+- `UNION`: Combines the results of two `SELECT` statements and removes duplicate rows from the result set.
+- `UNION ALL`: Combines the results of two `SELECT` statements and includes all rows, including duplicates.
+- `INTERSECT`: Returns only the rows that are common to both `SELECT` statements.
+- `EXCEPT` (or `MINUS` in some databases): Returns the rows from the first `SELECT` statement that are not present in the second `SELECT` statement.
+
+Two important rules to remember when using set operators:
+
+1. Each `SELECT` statement within the set operator must have the same number of columns in the result sets with similar data types.
+2. The columns in each `SELECT` statement must be in the same order.
+
+### Real World Application
+
+Set operators are commonly used by developers to perform operations on sets of data. In the context of databases and SQL, set operators are particularly useful for:
+
+- **Data Retrieval and Filtering**:
+  - **UNION**: Developers use `UNION` to combine results from multiple tables or queries, especially when they want to eliminate duplicate records. For example, when retrieving a list of unique customers from different regions.
+  - **INTERSECT**: The `INTERSECT` operator is useful for finding common records between two datasets, such as identifying customers who have made purchases in both the current and previous years.
+  - **EXCEPT (or MINUS in some databases)**: The `EXCEPT` operator(`MINUS` in some databases) is used to find records that exist in one dataset but not in another, such as identifying customers who have not made any purchases in the last month.
+- **Data Cleaning and Deduplication**: Set operators, especially `UNION`, are valuable for data cleaning tasks and deduplication. By combining datasets and removing duplicates, developers can ensure that their data is accurate and consistent.
+- **Complex Queries**: Set operators enable developers to construct complex queries by combining multiple sets of data. This is useful for generating reports, analytics, and insights from various sources.
+- **Optimizing Queries**: Set operators can be used to optimize queries by breaking down complex queries into smaller, more manageable parts. This can improve query performance and make it easier to understand and maintain the code.
+- **Logical Operations**: Set operators mimic logical operations on sets, allowing developers to express complex conditions and relationships between datasets in a clear and concise manner. For example, using `INTERSECT` to find commonalities or `EXCEPT` to identify differences between datasets.
+- **Data Analysis and Reporting**: In scenarios where developers need to analyze data from different sources or generate reports that involve merging or comparing datasets, set operators provide a convenient way to achieve this.
+
+Set operators, particularly in databases, help developers manipulate and analyze sets of data efficiently, enabling them to perform tasks such as data retrieval, filtering, cleaning, and complex querying.
+
+### Implementation
+
+Let's consider two tables, `businesses` and `sales`, to demonstrate the use of set operators.
+
+**businesses**
+
+| business_id | business_name         |
+| ----------- | --------------------- |
+| 1           | Fashion Excess Cloths |
+| 2           | High Fashion Shoes    |
+
+**sales**
+
+| sale_id | business_id | product_id | quantity | total_amount |
+| ------- | ----------- | ---------- | -------- | ------------ | ------ |
+| 1       | 1           | 101        | 3        | 300.00       |
+| 2       | 1           | 102        | 2        | 200.00       |
+| 3       | 2           | 101        | 5        | 500.00       |
+| 4       | 2           | 103        | 4        |              | 400.00 |
+
+#### UNION
+
+The SQl `UNION` operator merges the result sets of multiple `SELECT` statements into a single result set, removing duplicate rows. Ensure that the number of columns and their data types match in each `SELECT` statement. For instance, a `SELECT` with 2 columns cannot be combined with a `SELECT` that has 3 columns.
+
+```sql
+-- UNION: Get a combined list of all unique products sold across businesses
+SELECT product_id
+FROM (
+  SELECT product_id FROM sales
+  WHERE business_id IN (
+    SELECT business_id FROM businesses
+    UNION
+    SELECT product_id FROM sales
+  ) as union_results;
+)
+```
+
+A list of unique product IDs sold across all businesses is returned and duplicates are removed.
+
+The subquery before `UNION` selects the products with the `product_id` of `101`, `102`, and `103` from the `sales` table. The `UNION` operator combines these results, ensuring that each product ID appears only once in the final output.
+
+**OUTPUT**
+
+| product_id |
+| ---------- |
+| 101        |
+| 102        |
+| 103        |
+
+If you wanted to include duplicate records, you could use `UNION ALL` instead of `UNION`.
+
+```sql
+-- UNION ALL: Get a combined list of all products sold across businesses, including duplicates
+SELECT product_id
+FROM (
+  SELECT product_id FROM sales
+  WHERE business_id IN (
+    SELECT business_id FROM businesses
+    UNION ALL
+    SELECT product_id FROM sales
+  ) as union_all_results;
+)
+```
+
+`UNION ALL` differs from `UNION` in that it does not remove duplicate rows. Therefore, if a product appears multiple times in the individual `SELECT` statements, it will appear multiple times in the final result set.
+
+**OUTPUT**
+
+| product_id |
+| ---------- |
+| 101        |
+| 102        |
+| 101        |
+| 101        |
+| 102        |
+| 101        |
+| 103        |
+
+#### INTERSECT
+
+The SQL `INTERSECT` operator retrieves only the rows that are common to both `SELECT` statements. It returns the intersection of the two result sets, meaning it includes only those rows that appear in both queries. Similar to `UNION`, the number of columns and their data types must match in each `SELECT` statement.
+
+Note: MySQL **does not** support the `INTERSECT` operator. However, you can achieve similar functionality using `INNER JOIN` or `IN` clause. Always refer to your specific database documentation for supported features.
+
+```sql
+-- INTERSECT: Get a list of products sold in common by both businesses
+SELECT product_id
+FROM (
+  SELECT product_id FROM sales
+  WHERE business_id = 1
+  INTERSECT
+  SELECT product_id FROM sales
+  WHERE business_id = 2
+) AS intersect_results;
+```
+
+The query retrieves a list of product IDs that are sold by both businesses. The subquery before `INTERSECT` selects the products sold by business with `business_id` 1, and the second subquery selects the products sold by business with `business_id` 2. The `INTERSECT` operator then returns only those product IDs that are present in both result sets.
+
+**OUTPUT**
+
+| product_id |
+| ---------- |
+| 101        |
+
+#### EXCEPT (or MINUS)
+
+The SQL `EXCEPT` operator (or `MINUS` in some databases) retrieves rows from the first `SELECT` statement that are not present in the second `SELECT` statement. It returns the difference between the two result sets, meaning it includes only those rows that exist in the first query but not in the second. As with other set operators, the number of columns and their data types must match in each `SELECT` statement.
+
+Note: The `MINUS` operator, found in some databases, is functionally equivalent to `EXCEPT`. For example, in PostgreSQL or Oracle, you an replace `EXCEPT` with `MINUS` to achieve the same result. Always refer to your specific database documentation for supported features.
+
+```sql
+--  EXCEPT: Get a list of products sold by business 1 but not by business 2
+SELECT product_id
+FROM (
+  SELECT product_id FROM sales
+  WHERE business_id = 1
+  EXCEPT
+  SELECT product_id FROM sales
+  WHERE business_id = 2
+) AS except_results;
+```
+
+The query retrieves a list of product IDs that are sold by business with `business_id` 1 but not by business with `business_id` 2. The subquery before `EXCEPT` selects the products sold by business 1, and the second subquery selects the products sold by business 2. The `EXCEPT` operator then returns only those product IDs that are present in the first result set but not in the second.
+
+**OUTPUT**
+
+| product_id |
+| ---------- |
+| 102        |
