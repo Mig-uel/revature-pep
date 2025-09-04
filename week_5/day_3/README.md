@@ -326,3 +326,101 @@ The query retrieves a list of product IDs that are sold by business with `busine
 | product_id |
 | ---------- |
 | 102        |
+
+## Views
+
+In SQL, a `VIEW` is a virtual table that is based on the result set of a `SELECT` query. It does not store data itself but provides a way to present data from one or more tables in a structured format. Views can be used to simplify complex queries, enhance security by restricting access to specific columns or rows, and improve code readability.
+
+Views are created for various reasons, such as simplifying complex queries, encapsulating business logic, and providing a layer of security by restricting access to specific data.
+
+Here are key points about views in SQL:
+
+- **Definition**: A view is defined by a `SELECT` statement that specifies the columns and rows to be included in the view.
+- **Virtual Table**: A view is not a physical table; it does not store data. Instead, it dynamically retrieves data from the underlying tables whenever it is queried.
+- **Simplified Queries**: Views can simplify complex queries by encapsulating the logic in a named structure. This can make it easier to understand and maintain the code.
+- **Security**: Views can be used to restrict access to specific columns or rows in a table. Users can be granted permission to access a view without granting direct access to the underlying tables.
+- **Abstraction**: Views provide a level of abstraction by hiding the complexity of the underlying table structures. Users can interact with the view without needing to understand the details of the underlying tables.
+- **Joining Tables**: Views can be used to join multiple tables together, making it easier to work with related data.
+- **Updatable Views**: In some databases, views can be updatable, meaning that changes made to the view can be propagated back to the underlying tables. However, not all views are updatable, and there are restrictions on which views can be updated.
+
+### Real World Application
+
+The decision to use views is often driver by factors such as simplifying complex queries, enhancing security, providing a layer of abstraction, and improving overall system performance. Here are some common scenarios where views are used:
+
+- **Simplifying Complex Queries**: Views can encapsulate complex SQL logic, making it easier for developers to write and maintain queries. For example, a view can be created to join multiple tables and present a simplified interface for querying customer orders.
+- **Abstraction and Modularity**: Views provide a level of abstraction, allowing developers to work with a simplified representation of the data. This abstraction promotes modularity and code organization, making it easier to understand and maintain the database schema.
+- **Security and Access Control**: Views can be used to control access to sensitive data. By granting users access to specific views rather than direct access to underlying tables, developers can restrict which columns or rows users can see. This enhances data security and ensures that users only have access to the information they need.
+- **Performance Optimization**: Views can be used to precompute and store the results of complex queries. This can improve query performance by avoiding redundant calculations and aggregations. Additionally, views can be indexed in some databases, further enhancing performance for frequently accessed data.
+- **Data Aggregation and Transformation**: Views are valuable for aggregating and transforming data. Developers can create views that present data in a format that is more suitable for reporting and analysis. For example, a view can be created to calculate total sales by region or to summarize customer activity.
+- **Code Reusability**: Views promote code reusability by allowing developers to define common queries once and reuse them across multiple applications or reports. This reduces redundancy and ensures consistency in data retrieval.
+- **Hiding Complexity**: Views can hide the underlying complexity of the database schema from application developers. This is particularly useful when changes are made to the database structure, but the views remain unchanged, preventing the need for extensive code modifications in applications.
+- **Joining Tables**: View simplify the process of joining multiple tables. Instead of writing complex join operations in every query, developers can create a view that encapsulates the join logic, making subsequent queries more straightforward.
+- **Versioning and Migration**: Views can be sed as an abstraction layer during database versioning and migration. Developers can update the underlying tables without affecting the queries that rely on the views, minimizing disruptions to applications.
+
+### Implementation
+
+In the following example, we will work with two tables, `players` and `games_played`. The `players` table will contain information about players, and the `games_played` table will contain records of each game played by the players. The `games_played` table will have a foreign key, `player_id`, that references the `players` table to establish a relationship between the two tables.
+
+**players**
+
+| player_id | player_name | player_email              |
+| --------- | ----------- | ------------------------- |
+| 1         | Tanisi      | cantstopmenow@example.com |
+| 2         | Zelda       | mamamia@example.com       |
+| 3         | ImmaWinner  | zeldafan@example.com      |
+
+**games_played**
+
+| game_id | player_id | game_title                              | game_score                         |
+| ------- | --------- | --------------------------------------- | ---------------------------------- | --- |
+| 101     | 1         | The Legend of Zelda: Ocarina of Time    | 95                                 |
+| 102     | 1         | The Legend of Zelda: Breath of the Wild | 98                                 |
+| 103     | 2         | The Legend of Zelda: Twilight Princess  | 92                                 |
+| 104     | 2         |                                         | The Legend of Zelda: Skyward Sword | 88  |
+| 105     | 3         | The Legend of Zelda: Wind Waker         | 90                                 |
+| 106     | 3         | The Legend of Zelda: A Link to the Past | 94                                 |
+
+Let's consider a scenario where you are tasked with retrieving detailed information about each player along with the games they have played. Assuming we want a view that includes detailed information about each player and the games they have played, we can create a view, `player_games_view`, that joins the `players` and `games_played` tables.
+
+**Syntax to Create the View:**
+
+```sql
+CREATE VIEW view_name AS
+SELECT column1, column2, ...
+FROM table_name
+WHERE condition;
+```
+
+**Creating the View:**
+
+```sql
+-- Create a view to show detailed information about each player and the games they have played
+CREATE VIEW player_games_view AS
+SELECT p.player_id, p.player_name, p.player_email,
+       g.game_id, g.game_title, g.game_score
+FROM players p
+JOIN games_played g
+ON p.player_id = g.player_id;
+```
+
+This view encapsulates the logic of joining the `players` and `games_played` tables, providing a simplified interface for querying player and game information.
+
+To see the data in the view, you can perform a `SELECT` query on the view:
+
+```sql
+-- Query the view to see player and game information
+SELECT * FROM player_games_view;
+```
+
+**OUTPUT**
+
+| player_id | player_name | player_email              | game_id | game_title                              | game_score |
+| --------- | ----------- | ------------------------- | ------- | --------------------------------------- | ---------- |
+| 1         | Tanisi      | cantstopmenow@example.com | 101     | The Legend of Zelda: Ocarina of Time    | 95         |
+| 1         | Tanisi      | cantstopmenow@example.com | 102     | The Legend of Zelda: Breath of the Wild | 98         |
+| 2         | Zelda       | mamamia@example.com       | 103     | The Legend of Zelda: Twilight Princess  | 92         |
+| 2         | Zelda       | mamamia@example.com       | 104     | The Legend of Zelda: Skyward Sword      | 88         |
+| 3         | ImmaWinner  | zeldafan@example.com      | 105     | The Legend of Zelda: Wind Waker         | 90         |
+| 3         | ImmaWinner  | zeldafan@example.com      | 106     | The Legend of Zelda: A Link to the Past | 94         |
+
+This query retrieves all records from the `player_games_view`, displaying detailed information about each player along with the games they have played. The view simplifies the process of retrieving this information by encapsulating the join logic, making it easier to work with player and game data.
