@@ -351,3 +351,101 @@ The following below is a list of HTTP status codes with their meanings.
 - `508 Loop Detected`: The server detected an infinite loop while processing the request. This status code is typically used in WebDAV applications.
 - `510 Not Extended`: Further extensions to the request are required for the server to fulfill it. This status code is typically used when the server requires additional information or extensions to process the request.
 - `511 Network Authentication Required`: The client needs to authenticate to gain network access. This status code is typically used by captive portals that require users to authenticate before accessing the internet.
+
+## Introduction to HTTP
+
+#### What is HTTP?
+
+HTTP, or Hypertext Transfer Protocol, is the foundation of data communication on the World Wide Web. It is an application-layer protocol that enables the transfer of hypertext documents, such as HTML pages, between web servers and clients (typically web browsers). HTTP is a stateless protocol, meaning that each request from a client to a server is independent and does not retain any information about previous requests.
+
+Let's give a definition that is easier to understand:
+
+> A protocol of transmitting data in a particular format, primarily between a `server` and a browser (or `client`). It uses an architecture in which a `client` makes a connection to a `server` and waits for a response.
+
+The data in the "particular format" mentioned above is usually hypertext, with hypertext simply referring to text documents that have the special ability to link to one another. There are many kinds of hypertext documents, and ones that have the ability to show multiple kinds of media (like images, videos, and audio) are called hypermedia documents. HTTP is capable of transmitting hypermedia documents in addition to hypertext documents.
+
+An example of a hypertext document is an HTML document, or HyperText Markup Language document. HTML is the standard markup language used to create web pages, and it is the most common type of hypertext document transmitted over HTTP.
+
+Another concept we have been throwing around is the `server` and `client`.
+
+###### Server
+
+> A `server` is a computer or collection of computers that is the destination of the HTTP request. Commonly, ths will be a powerful collection of computers that have increased level of computing power, memory, and storage compared to the `client`. Servers are often located in data centers, which are specialized facilities designed to house and manage large numbers of servers.
+
+###### Client
+
+> A `client` is a computer or collection of computers that initiates the HTTP request. Commonly, this will be a personal computer, smartphone, or tablet that is used by an individual to access the web. Clients are often located in homes, offices, and public places such as cafes and libraries.
+
+Note that while `server` and `client` typically refer to what was mentioned above, that is not what they always are. For example, you can have a `client` with vastly more computing power than the `server`, and you can have `clients` that are normally `servers` (like a web server making a request to another web server) themselves.
+
+HTTP is a protocol that is referred to as `stateless`, meaning that each request from a `client` to a `server` is independent and does not retain any information about previous requests. However, just because HTTP is stateless does NOT mean that HTTP methods cannot change data on the `server`, or that the `server` will not track HTTP calls made to it.
+
+- A `client` makes a request to the `server` to calculate `5 + 5`.
+- The `server` takes in the data provided (`5 + 5`) in order to calculate the result.
+- The `server` returns the result (`10`) to the `client`.
+- The `server` stores in a database the user that made the request and a timestamp of when the request was made.
+- The same `client` makes a request to the `server`, again to calculate `5 + 5`.
+- Because HTTP is stateless, the `server` does not remember that the `client` made a previous request to calculate `5 + 5`, and must process the request as if it were the first time.
+- The `server` takes in the data provided (`5 + 5`) in order to calculate the result and returns the result (`10`) to the `client`.
+- The `server` stores in a database the user that made the request and a timestamp of when the request was made.
+
+Note what kind of information the `server` may store is up to the `server` itself, and is not dictated by the HTTP protocol. It may not even store any information at all.
+
+#### How Does HTTP Work?
+
+HTTP is broken down into a number of `methods` that define the action that the `server` should take when it receives a request. Even though each `method` will cause the `server` to respond in a different way, the general way that they are structures is the same.
+
+HTTP has two parts:
+
+- A `request` that is sent by the `client` to the `server`.
+- A `response` that is sent by the `server` back to the `client`.
+
+The `client` creates the `request`, and the `server` creates the `response`.
+
+The `request` will hold the following information:
+
+- The `HTTP method` being used (e.g., `GET`, `POST`, `PUT`, `DELETE`, etc.).
+- A URL specifying the location of the resource being requested.
+- Optional information to help the server process the request, such as `headers` and a `body`.
+- For some `methods`, a `body` containing data to be sent to the server.
+  - Example: Danny wants to upload a document to a `server` over the internet, so the `body` in this case would be the document itself that Danny wants to upload.
+
+The `response` will hold the following information:
+
+- What version of HTTP is being used
+- A `status code` indicating the result of the request (e.g., `200 OK`, `404 Not Found`, etc.).
+- A `status message` providing a brief description of the status code.
+- Optional information to help the `client` process the response, such as `headers` and a `body`.
+- For some `methods`, a `body` containing the requested resource or data.
+  - Example: Danny requests a document from a `server` over the internet, so the `body` in this case would be the document itself that Danny requested.
+
+HTTP (in addition to other things) can tell the `server` to make changes or store some resource, and can also retrieve resources from the `server`. We keep using the term `resource`, so let's define what that is in the context of HTTP. In this context, a `resource` is simply any piece of data. It could be a value, a photo, a text document, or commonly, a JSON object. Of course, a `resource` can be many other things as well. Any form of data can be considered a `resource`.
+
+#### Why HTTP?
+
+Let's take another look at HTTP and it's final word in the acronym: Protocol. HTTP is not the only protocol that exists, but is the most commonly used protocol for web communication. Other protocols include FTP (File Transfer Protocol), SMTP (Simple Mail Transfer Protocol), and more.
+
+An example of another protocol is SOAP (Simple Object Access Protocol). Now that we have established that there are other protocols, why choose HTTP?
+
+As mentioned earlier, HTTP is the most commonly used protocol for web communication. That in itself is a good enough reason to use HTTP, as it is widely supported and understood by developers and systems alike. Of course this begs the question: Why is HTTP the most commonly used protocol for web communication?
+
+HTTP is very easy to use. Most programming languages have built-in support for HTTP, and there are many libraries and frameworks available that make it easy to work with HTTP. All we need to do is build out the request with a `method`, endpoint, `headers`, and `body` (if needed), and the API handles the rest for us. In comparison to something like SOAP, where there are a lot more steps that we would have to do on the programming side in order to make even a simple request, HTTP is much easier to use.
+
+When we talked about a resource, we took for granted that this resource could essentially be anything. However, this is not the case for all protocols. HTTP has the flexibility to transmit just about any kind of data over the internet, which is another reason why it is the most commonly used protocol for web communication. In particular, it is able to transmit the extremely popular JSON format, which is the most commonly used format for data exchange on the web today.
+
+The final reason to use HTTP is that it is extensible. This means that as long as a `client` and `server` have the same idea of what a `header` means, you can change up the `headers` to change up how the `server` processes the request.
+
+### Real World Application
+
+#### The PokeAPI
+
+The easiest real world application of HTTP is loading up a webpage on your browser, but that is not very exciting. Let's take a look at an example that you will be more involved with in your programming journey, using HTTP to communicate with `web services`, or `REST APIs` in particular.
+
+`REST` stands for `Representational State Transfer`, and is an architectural style for designing networked applications. A `REST API` is an application programming interface (API) that adheres to the principles of `REST`. `REST APIs` are designed to be simple, scalable, and flexible, making them a popular choice for building web services.
+
+At this point, we can ignore this part and just stick with the fact that a RESTful API uses HTTP in order to transmit data over the internet. There are a large number of these services out there, but the one we will use for our example is the [PokeAPI](https://pokeapi.co/), which contains a large amount of data about the Pokemon universe.
+
+This information sits on a `server` somewhere, not on our computers. So we need HTTP in order to get the information about the Pokemon universe from the PokeAPI `server` to our computers and onto the webpage. Using JavaScript, the browser makes a request to the PokeAPI `server` asking for a particular pokemon that we input into a search bar. The PokeAPI `server` takes the `request`, processes it, and `responds` with the data about the pokemon we requested. The browser then takes that data and displays it on the webpage for us to see.
+
+This becomes very handy, because now through the power of HTTP and the internet, it does not matter where in the world the `client` is; as long as the `client` can establish a connection to the `server`, the `client` can access the data on the `server`.
+
