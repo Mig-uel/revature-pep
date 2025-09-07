@@ -121,7 +121,7 @@ Let's break down the code:
 - Lambdas implicitly return the value of the expression on the right side of the `->` if there are no curly braces `{}`. If there were curly braces, we would need to use an explicit `return` statement.
 - We then use the implementation by calling `prettierImpl.prettify(myInteger)` and passing in an `Integer` object. The lambda implementation is executed, and the result is printed.
 
-One significant difference between OOP and functional programming is that we can use much less code to omplement some standalone functionality. For example, if we wanted to create a `Prettier` implementation using OOP, we would need to create a new class that implements the `Prettier` interface:
+One significant difference between OOP and functional programming is that we can use much less code to implement some standalone functionality. For example, if we wanted to create a `Prettier` implementation using OOP, we would need to create a new class that implements the `Prettier` interface:
 
 ```java
 public class FancyPrettier implements Prettier {
@@ -142,6 +142,135 @@ public class Main {
     Integer myInteger = 5;
     String result = prettierImpl.prettify(myInteger);
     System.out.println(result); // output: "*~*~ 5 ~*~*"
+  }
+}
+```
+
+## Lambdas
+
+Lambda expressions are one of the most prominent features of Java 8 and later versions. They introduce us to some important aspects of functional programming in Java.
+
+Lambdas are a concise way to represent an instance of a functional interface. They enable us to treat functionality as a method argument or store functions in variables, making code shorter and more readable.
+
+The most basic syntax of a lambda expression is:
+
+```java
+(parameters) -> expression
+```
+
+Let's demonstrate an example that uses lambda. The `ArrayList` class defines a `forEach()` method. The method's signature is below:
+
+```java
+public void forEach(Consumer<? super E> action)
+```
+
+Notice its parameter is a functional interface called `Consumer` that has one abstract method called `accept()`.
+
+```java
+void accept(T t);
+```
+
+`accept()` takes in one parameter of type `T` and returns `void`. The `forEach()` method will call the `accept()` method on each element of the list, passing the element as an argument.
+
+A function that implements `accept()` method should take in one parameter, perform some action, and return nothing.
+
+Below is an example of creating a `List`, adding elements to it, and then using the `forEach()` method by passing in a lambda that fulfills the requirements of the `Consumer` interface which is to take in one parameter and return nothing.
+
+```java
+List<String> names = new ArrayList<>();
+names.add("Alice");
+names.add("Bob");
+names.add("Charlie");
+
+names.forEach(n -> System.out.println(n));
+```
+
+The lambda expression `n -> System.out.println(n)` takes in one parameter `n` (of type `String`, inferred from the list) and prints it to the console. The `forEach()` method will call this lambda for each element in the list, resulting in each name being printed.
+
+#### Lambda Expression Syntax
+
+A lambda expression is composed of three main parts:
+
+| Argument List  | Arrow Token | Body                        |
+| -------------- | ----------- | --------------------------- |
+| (parameters)   | `->`        | expression or block of code |
+| (int x, int y) | `->`        | (x + y)                     |
+
+- **Argument List**: This is a comma-separated list of input parameters for the lambda. The types of the parameters can be explicitly declared or inferred from the context. If there is only one parameter, the parentheses can be omitted. For example, `x -> x * x` is valid for a single parameter.
+- **Arrow Token**: The `->` symbol separates the argument list from the body of the lambda expression. It indicates that the parameters on the left are to be used in the body on the right.
+- **Body**: This is the code that defines what the lambda does. It can be a single expression or a block of code enclosed in curly braces `{}`. If the body is a single expression, it implicitly returns the result of that expression. If it's a block of code, you need to use an explicit `return` statement if you want to return a value.
+  - The `break` and `continue` statements cannot be used inside the body of a lambda expression because they are not part of the lambda's control flow. However, you can use them in a block of code if the lambda is used within a loop or switch statement.
+  - IF the body produces a result, every control path must return a value or throw an exception.
+
+Take a look at these examples:
+
+```java
+// Example 1: two parameters, single expression
+(int x, int y) -> (x + y) // takes in two integers and returns their sum
+
+// Example 2: no parameters, single expression
+() -> 42 // takes in no parameters and returns the integer 42
+
+// Example 3: one parameter, block of code
+(String s) -> {
+  System.out.println(s);
+} // takes in a String, prints it, and returns nothing
+
+// Example 4: one parameter, single expression
+s -> System.out.println(s) // takes in a String, prints it, and returns nothing
+
+// Example 5: two parameters, block of code
+(String s1, String s2) -> {
+  System.out.println(s1);
+  System.out.println(s2);
+} // takes in two Strings, prints them, and returns nothing
+```
+
+1. The first example takes in two integers and returns their sum. The types of the parameters are explicitly declared.
+2. The second example takes in no parameters and returns the integer `42`. The empty parentheses `()` indicate that there are no parameters.
+3. The third example takes in a `String`, prints it to the console, and returns nothing. The body is a block of code enclosed in curly braces `{}`.
+4. The fourth example is similar to the third but uses a single expression without curly braces. The parentheses around the parameter are omitted since there is only one parameter.
+5. The fifth example takes in two `String` parameters, prints them to the console, and returns nothing. The body is a block of code.
+
+### Real World Application
+
+Lambdas in Java bring several important benefits to the language and its ecosystem. Here are some key reasons why lambdas are important in Java:
+
+- **Conciseness and Readability**: Lambdas allow you to express instances of single-method interfaces (functional interfaces) concisely. This leads to more readable code, especially for small, self-contained functions.
+- **Reduced Boilerplate**: Lambdas reduce the amount of boilerplate code needed to create instances of functional interfaces. You don't need to create separate classes or anonymous inner classes for simple operations.
+- **Improved API Design**: Lambdas enable the design of APIs to accept behavior as parameters, promoting flexibility and extensibility. This facilitates writing APIs that are more adaptable to different use cases and allows clients to customize behavior easily.
+- **Functional Programming Style**: Lambdas enable Java to embrace functional programming principles, such as higher-order functions, immutability, and referential transparency. Referential transparency means that a function, given the same input, will always return the same output without causing side effects. This leads to more predictable and maintainable code.
+- **Enhanced Collections Framework**: Lambdas, together with the Stream API introduced in Java 8, provide a powerful and expressive way to work with collections. Operations like filtering, mapping, and reducing can be performed using a functional and declarative style, making it easier to manipulate data and leading to more elegant and efficient code.
+
+In summary, lambdas are important in Java because they enhance code readability, reduce boilerplate, improve API design, promote functional programming principles, and enhance the capabilities of the collections framework. They have become a fundamental feature of modern Java programming and are widely used in various applications and libraries.
+
+### Implementation
+
+Below is an example of a Java program that does the following:
+
+- creates a functional interface
+- creates a method that has a parameter of the functional interface type
+- calls the method and passes in a lambda expression as an argument
+
+```java
+// Functional Interface
+interface BinaryCalculator {
+  public int binaryOperation(int value1, int value2);
+}
+
+// Implementing Functional Interface
+public class Main {
+  // Method that has a parameter of the functional interface type
+  public static void printBinaryResult(int a, int b, BinaryCalculator func) {
+    // perform operation, print result
+    int result = func.binaryOperation(a, b);
+    System.out.println(result);
+  }
+
+  // calling the method and passing in lambdas
+  public static void main(String[] args) {
+    printBinaryResult(3, 4, (a, b) -> a + b); // prints 7
+    printBinaryResult(3, 4, (a, b) -> a * b); // prints 12
   }
 }
 ```
