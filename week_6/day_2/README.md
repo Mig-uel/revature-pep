@@ -107,3 +107,95 @@ Data returned from the server:
 ```
 
 This response is in JSON format, which is a common data format used in RESTful APIs. The client can then parse this JSON data and use it as needed.
+
+## Introduction to Javalin
+
+#### What is Javalin?
+
+Javalin is a lightweight web framework for Java and Kotlin that makes it easy to create RESTful APIs and web applications. It is designed to be simple, flexible, and easy to use, with a focus on developer productivity.
+
+It supports modern features such as HTTP/2, WebSockets, and asynchronous programming.
+
+Javalin is servlet-based, which means it can run on any servlet container, such as Apache Tomcat or Jetty. It also has a small footprint and minimal dependencies, making it easy to integrate into existing projects.
+
+Its main goals are simplicity, a great developer experience, and first-class interoperability between Java and Kotlin. Kotlin is a modern programming language that runs on the Java Virtual Machine (JVM) and is fully interoperable with Java. It is designed to be concise, expressive, and safe, with features such as null safety, extension functions, and coroutines.
+
+Many developers would say Javalin is a library rather than a framework because it is lightweight and does not impose a lot of structure or conventions on the application. It provides a simple and flexible API for handling HTTP requests and responses, but it does not dictate how the application should be organized or structured.
+
+### Real World Application
+
+#### Why Use Javalin?
+
+- **Simplicity**
+  - Unlike other Java and Kotlin web frameworks, Javalin is designed to be simple and easy to use. It has a minimalistic API that allows developers to quickly create RESTful APIs and web applications without a lot of boilerplate code. You never extend any classes or implement any interfaces. You just create a Javalin instance and start defining routes.
+- **Lightweight**
+  - Javalin has a small footprint and minimal dependencies, making it easy to integrate into existing projects. It is also servlet-based, which means it can run on any servlet container, such as Apache Tomcat or Jetty.
+  - Javalin is just a few thousand lines of code on top of Jetty, and its performance is comparable to using Jetty directly.
+- **Interoperability**
+  - Javalin is designed to work seamlessly with both Java and Kotlin, making it easy for developers to use their preferred language. It also supports modern features such as HTTP/2, WebSockets, and asynchronous programming.
+- **Flexibility**
+  - Javalin is a library rather than a framework, which means it does not impose a lot of structure or conventions on the application. This allows developers to organize their code in a way that makes sense for their specific use case.
+  - Javalin is designed to be simple and blocking, as this is the easiest programming model to reason about. However, if you set a `Future` as the result of a handler, Javalin will automatically handle it asynchronously.
+- **OpenAPI/Swagger Support**
+  - Many lightweight Java and Kotlin web frameworks do not have built-in support for OpenAPI/Swagger, which can make it difficult to document and test APIs. Javalin has built-in support for OpenAPI/Swagger, making it easy to generate API documentation and test APIs using tools like Swagger UI.
+- **Jetty**
+  - Javalin runs on top of Jetty, one of the most used and stable web servers on the JVM. You can configure Jetty server fully, including SSL, HTTP/2, and everything else Jetty supports.
+
+### Implementation
+
+In Javalin, there are no requirements for your application structure. In other words, we do not have any of that extra "fluff" like annotations, reflection, and the like. You can structure your application however you want.
+
+As you can see, the "Hello, world!" example below is very straightforward:
+
+```java
+package com.example;
+
+import io.javalin.Javalin;
+
+public class Main {
+    public static void main(String[] args) {
+      Javalin app = Javalin.create().start(7000);
+      app.get("/", ctx -> ctx.result("Hello, world!"));
+    }
+}
+```
+
+This code creates a Javalin instance, starts it on port 7000, and defines a single route that responds to GET requests to the root URL ("/") with the text "Hello, world!".
+
+You can build and package this application as a JAR file. If you use Maven, add this to your `pom.xml`:
+
+```xml
+<dependency>
+    <groupid>io.javalin</groupid>
+    <artifactid>javalin</artifactid>
+    <version>2.5.0</version>
+</dependency>
+```
+
+You will also needs a logger and a JSON parser.
+
+```xml
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-simple</artifactId>
+    <version>2.0.7</version>
+</dependency>
+<dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-databind</artifactId>
+    <version>2.16.0-rc1</version>
+    <type>jar</type>
+</dependency>
+```
+
+Then you an package your application with:
+
+```bash
+mvn package
+```
+
+You can then run your application with:
+
+```bash
+java -jar target/your-jar-file.jar
+```
