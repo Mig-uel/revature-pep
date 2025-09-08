@@ -274,3 +274,290 @@ public class Main {
   }
 }
 ```
+
+## Method References Syntax
+
+In Java, **method references** provide a way to refer to methods without executing them. They are a shorthand notation of a lambda expression to call a method. Method references can be used wherever a functional interface is expected.
+
+This is a new feature introduced in Java 8 that provides a shorthand way of referring to methods without explicitly invoking them.
+
+A method reference is a compact and readable way to refer to a method in cases where a lambda expression would be used to call that method. Instead of writing out a full lambda expression, you can just use the method's name along with a special syntax.
+
+There are four kind of method references:
+
+1. **Reference to a Static Method**: This type of method reference refers to a static method of a class. The syntax is `ClassName::staticMethodName`.
+
+   Example:
+
+   ```java
+   // Lambda expression
+   Function<String, Integer> stringToInteger = s -> Integer.parseInt(s);
+
+   // Method reference
+   Function<String, Integer> stringToIntegerRef = Integer::parseInt;
+   ```
+
+2. **Reference to an Instance Method of a Particular Object**: This type of method reference refers to an instance method of a specific object. The syntax is `instance::instanceMethodName`.
+
+   Example:
+
+   ```java
+   // Lambda expression
+   BiPredicate<String, String> startsWith = (s1, s2) -> s1.startsWith(s2);
+
+   // Method reference
+   BiPredicate<String, String> startsWithRef = String::startsWith;
+   ```
+
+3. **Reference to an Instance Method of an Arbitrary Object of a Particular Type**: This type of method reference refers to an instance method of an arbitrary object of a specific type. The syntax is `ClassName::instanceMethodName`.
+
+   Example:
+
+   ```java
+   // Lambda expression
+   Function<String, String> toLowerCase = s -> s.toLowerCase();
+
+   // Method reference
+   Function<String, String> toLowerCaseRef = String::toLowerCase;
+   ```
+
+4. **Reference to a Constructor**: This type of method reference refers to a constructor of a class. The syntax is `ClassName::new`.
+
+   Example:
+
+   ```java
+   // Lambda expression
+   Supplier<List<String>> listSupplier = () -> new ArrayList<>();
+
+   // Method reference
+   Supplier<List<String>> listSupplierRef = ArrayList::new;
+   ```
+
+Below is a code snippet that compares syntax of lambda expressions and the corresponding method reference:
+
+```java
+// lambda that returns a character's index in a named String object by calling indexOf()
+c -> myString.indexOf(c);
+
+// method reference that does the same thing
+myString::indexOf;
+```
+
+Notice the more concise syntax of the method reference. Method references always utilize the `::` operator to separate the method name from the class or object it belongs to.
+The left side of the `::` operator tells the JVM where to find the method, and the right side is the name of the method itself.
+
+##### Reference to a Static Method
+
+A method reference to a static method in Java is a shorthand way of referring to a static method of a class without invoking it. It is used in the context of functional programming, where you want to pass a method as an argument to a higher-order function or use it in a lambda expression.
+
+The syntax for a method reference to a static method is:
+
+```java
+ClassName::staticMethodName
+```
+
+For example, let's say we need an implementation for the `BiFunction` functional interface or a method that takes in two parameters and returns a value. We can use a method reference to the static `Math.max()` method to fulfill this requirement:
+
+```java
+Math::max
+```
+
+#### Reference to an Instance Method of a Particular Object
+
+A **method reference to an instance method of a particular object** in Java is a shorthand way of referring to an instance method of a specific/named object. A named object is an object that has been assigned to a variable. For a reference to an instance method of a particular object, the left side of the operator is the object's reference variable, and the right side is the name of the instance method itself.
+
+```java
+objectName::instanceMethodName
+```
+
+For example, let's say we need an implementation for the `Supplier` functional interface or a method that takes in no parameters and returns a value. We can refer to the String class's instance method `toUpperCase()` by first creating a String object and then using that object's reference variable on the left side of the operator:
+
+```java
+// our named object
+String myString = "hello";
+
+// referencing an instance method using our named object
+myString::toUpperCase;
+```
+
+#### Reference to an Instance Method of an Arbitrary Object of a Particular Type
+
+A **method reference to an instance method of an arbitrary object of a particular type** in Java is a shorthand way of referring to an instance method of any object or unnamed object (not assigned to a variable). A unnamed object is an object that is created during an operation and is not assigned to a reference variable. It is typically used right away without being stored for later use. For example, when we create an object and immediately call a method on it without assigning it to a variable, we are using an unnamed object.
+For this type of reference, the left side of the operator is the class name or object type, and the right side is the name of the instance method itself.
+
+```java
+ClassName::methodName
+```
+
+Notice that this syntax is exactly the same as a reference to a static method. However, behind the scenes is different. The JVM knows that the method is an instance method because of the context in which it is used. The JVM will create an unnamed object of the specified type and call the instance method on that object.
+
+For example, let's say we need an implementation for the `Predicate` functional interface or a method that takes in one parameter and returns a boolean value. We can refer to the String class's instance method `startsWith()` by using the String class name on the left side of the operator:
+
+```java
+String::startsWith;
+```
+
+#### Reference to a Constructor
+
+A **method reference to a constructor** in Java is a shorthand way of referring to a class constructor without invoking it. It is used in the context of functional programming, where you want to pass a constructor as an argument to a higher-order function or use it in a lambda expression. For this type of reference, the left side of the operator is the class name, and the right side is the keyword `new`.
+
+```java
+ClassName::new;
+```
+
+For example, let's say we need another implementation for the `Supplier` functional interface or a method that takes in no parameters and returns a value. Since a no-args constructor takes in no parameters and returns a new object, we can use a constructor reference to fulfill this requirement:
+
+```java
+String::new;
+```
+
+### Real World Application
+
+Method references in Java provide a concise way to refer to methods or constructors without explicitly invoking them or defining a lambda expression. They are important for several reasons:
+
+- **Readability and Conciseness**: Method references allow you to express code more concisely by referring to existing methods or constructors directly. This leads to clearer and more readable code, especially when working with functional interfaces and lambda expressions.
+- **Functional Programming Paradigm**: Method references align with the functional programming paradigm by treating methods as first-class citizens. They allow you to pass behavior (methods) as parameters to methods, enabling functional styles of programming in Java.
+- **Integration with Existing APIs**: Many existing APIs in Java, such as the Stream API and the Comparator interface, support method references. Using method references allows you to seamlessly integrate with these APIs and leverage their functionality.
+- **Reduced Boilerplate Code**: Method references can help reduce boilerplate code by eliminating the need for explicit lambda expressions in certain scenarios. This can lead to more concise and maintainable code.
+
+Overall, method references enhance the expressiveness and maintainability of Java code, making it easier to work with functional programming concepts and integrate with existing APIs.
+
+### Implementation
+
+Below are examples of each type of method reference.
+
+#### Reference to a Static Method
+
+Below is an example of a lambda expression that implements the `Function` functional interface by calling a static method called `triple()`.
+
+```java
+import java.util.function.Function;
+
+public class LambdaExample {
+  // a static method to reference
+  public static int triple(int num) {
+    return num * 3;
+  }
+
+  public static void main(String[] args) {
+    // using a lambda to implement the Function function interface
+    Function<Integer, Integer> computation = num -> triple(num);
+  }
+}
+```
+
+We can replace the lambda expression with a method reference to the static method `triple()`:
+
+```java
+import java.util.function.Function;
+
+public class MethodExample {
+  // a static method to reference
+  public static int triple(int num) {
+    return num * 3;
+  }
+
+  public static void main(String[] args) {
+    // reference to a static method
+    Function<Integer, Integer> computation = MethodExample::triple;
+
+    // use the implementation, print out the result
+    int res = computation.apply(-3);
+    System.out.println(res);
+
+    // another example of referencing a static method
+    computation = Math::abs;
+
+    // printing out the new result
+    res = computation.apply(-3);
+    System.out.println(res);
+  }
+}
+```
+
+#### Reference to an Instance Method of a Particular Object
+
+```java
+package week_6.day_1.ParticularRef;
+
+import java.util.function.Predicate;
+
+public class Main {
+  public static void main(String[] args) {
+      // provide an object to use as a reference
+      String str = "hello world";
+
+      // reference to a particular object's instance method
+      Predicate<String> evaluation = str::startsWith;
+
+      // use the predicate's test() method and print the result
+      boolean res = evaluation.test("he");
+      System.out.println("Result 1: " + res);
+
+      evaluation = str::equalsIgnoreCase;
+      res = evaluation.test("HeLlo WoRlD");
+      System.out.println("Result 2: " + res);
+  }
+}
+```
+
+In the above example, we create a `String` object called `str` and then use that object's reference variable on the left side of the operator to refer to the instance method `startsWith()`. We then call the `test()` method on the `Predicate` functional interface, which will execute the `startsWith()` method on the `str` object.
+
+#### Reference to an Instance Method of an Arbitrary Object of a Particular Type
+
+```java
+package week_6.day_1.ArbitraryRef;
+
+import java.util.function.BiPredicate;
+
+public class Main {
+  public static void main(String[] args) {
+    // reference to an arbitrary object of the String type
+    BiPredicate<String, String> eval = String::startsWith;
+
+    // use the BiPredicate's test() method and print the results
+    boolean res = eval.test("hello world", "he");
+    System.out.println("Result 1: " + res);
+
+    // another example
+    eval = String::equalsIgnoreCase;
+    res = eval.test("goodbye!", "gOoDbYe!");
+    System.out.println("Result 2: " + res);
+  }
+}
+```
+
+In the above example, we use the `String` class name on the left side of the operator to refer to the instance method `startsWith()`. The JVM will create an unnamed `String` object and call the `startsWith()` method on that object when we call the `test()` method on the `BiPredicate` functional interface.
+
+#### Reference to a Constructor
+
+```java
+package week_6.day_1.ConstructorRef;
+
+import java.util.function.Supplier;
+
+class Dog {
+  String name;
+  int age;
+
+  @Override
+  public String toString() {
+    return "Dog[name: " + this.name + " age: " + age + ']';
+  }
+}
+
+public class Main {
+  public static void main(String[] args) {
+    // reference to a constructor
+    Supplier<Dog> dogGetter = Dog::new;
+
+    // use Supplier's get() method to retrieve and use an object
+    Dog d = dogGetter.get();
+    d.age = 3;
+    d.name = "Charlie";
+    System.out.println(d);
+  }
+}
+```
+
+In the above example, we use the `Dog` class name on the left side of the operator and the keyword `new` on the right side to refer to the no-args constructor of the `Dog` class. When we call the `get()` method on the `Supplier` functional interface, the JVM will create a new `Dog` object by calling the constructor.
