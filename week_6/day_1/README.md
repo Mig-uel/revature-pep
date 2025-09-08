@@ -561,3 +561,24 @@ public class Main {
 ```
 
 In the above example, we use the `Dog` class name on the left side of the operator and the keyword `new` on the right side to refer to the no-args constructor of the `Dog` class. When we call the `get()` method on the `Supplier` functional interface, the JVM will create a new `Dog` object by calling the constructor.
+
+### Extra Notes
+
+#### Built-in Functional Interfaces
+
+- `Runnable`: Represents a task that can be executed without any input or output. It has a single method `run()` that takes no arguments and returns no value. It is often used for creating threads or executing code asynchronously.
+- `Comparable<T>`: Represents an object that can be compared to another object of the same type. It has a single method `compareTo(T o)` that compares the current object with the specified object and returns an integer indicating their relative order.
+- `Comparator<T>`: Represents a comparison function that can be used to compare two objects of the same type. It has a single method `compare(T o1, T o2)` that compares the two objects and returns an integer indicating their relative order.
+- `Predicate<T>`: Represents a boolean-valued function that takes in one argument of type `T`. It has a single method `test(T t)` that evaluates the predicate on the given argument and returns `true` or `false`.
+- `Supplier<T>`: Represents a supplier of results. It has a single method `get()` that takes no arguments and returns a value of type `T`. It is often used for lazy evaluation or generating values on demand.
+- `Consumer<T>`: Represents an operation that takes in one argument of type `T` and returns no result. It has a single method `accept(T t)` that performs the operation on the given argument. It is often used for performing side effects or processing data.
+- `Function<T, R>`: Represents a function that takes in one argument of type `T` and produces a result of type `R`. It has a single method `apply(T t)` that applies the function to the given argument and returns the result. It is often used for transforming data or performing calculations.
+
+#### Lambdas
+
+- Lambdas utilize "arrow notation" syntax: `->`
+
+#### Method References
+
+- Method references further simplify lambda expressions by eliminating the need to explicitly define the parameters and the body of the lambda when they simply call an existing method.
+- Method references utilize the `::` operator to separate the method name from the class or object it belongs to.
