@@ -199,3 +199,169 @@ You can then run your application with:
 ```bash
 java -jar target/your-jar-file.jar
 ```
+
+## Configuration
+
+Javalin can be configured using the `JavalinConfig` class. You can set various options such as the port number, context path, and more.
+
+```java
+Javalin app = Javalin.create(config -> {
+    config.defaultContentType = "application/json";
+    config.enableCorsForAllOrigins();
+}).start(7000);
+```
+
+Some information about Javalin configuration:
+
+- Javalin runs on an embedded Jetty server, which means you can configure it using Jetty's configuration options.
+- The architecture for adding other embedded servers (e.g., Netty, Undertow) is in place, and pull requests are welcome.
+- Javalin can be used to start and stop the server programmatically, which is useful for testing and development.
+- If you don't need any custom configuration, you can quick start Javalin with `Javalin.create().start(7000);`.
+- You can customize the embedded server in Javalin by providing a custom `Server` instance.
+- You can configure your embedded Jetty server and Javalin will attach its own handlers to the end of the handler chain.
+
+### Real World Application
+
+Advantages of Remote Server Configuration:
+
+- Easy to turn on and off on the server without changing code.
+- Easy to monitor resource usage and performance.
+- Easy to monitor security and access logs.
+- Lower maintenance costs.
+
+### Implementation
+
+#### Starting and Stopping the Server
+
+To start and stop the server programmatically, you can use the `start()` and `stop()` methods:
+
+```java
+Javalin app = Javalin.create()
+              .start() // starts the server (sync/blocking)
+              .stop(); // stops the server (sync/blocking)
+```
+
+#### Quick Start
+
+If you don't need any custom configuration, you can quick start Javalin with:
+
+```java
+Javalin app = Javalin.start(7000);
+```
+
+This creates a new server which listens on the specified port (7000 in this case), and starts it immediately.
+
+#### Configuration
+
+The following snippet shows all the configuration options currently available in Javalin:
+
+```java
+Javalin.create() // creates a new Javalin instance with default configuration
+    .contextPath("/api") // sets the context path for the application aka base URL
+    .dontIgnoreTrailingSlashes() // makes "/path" and "/path/" different endpoints
+    .defaultContentType("application/json") // sets the default content type for responses
+    .defaultCharacterEncoding("utf-8") // sets the default character encoding for responses
+    .disableStartupBanner() // disables the startup banner in the console
+    .enableDevLogging() // enables development logging
+    .enableCorsForOrigin("https://example.com") // enables CORS for a specific origin
+    .enableDynamicGzip() // enables dynamic gzip compression for responses
+    .enableRouteOverview("/routes") // enables a route overview at the specified
+    .enableStandardRequestLogging() // enables standard request logging
+    .enableStaticFiles("/public") // serves static files from the specified directory
+    .maxBodySizeForRequestCache(1024 * 1024) // sets the maximum body size for request cache
+    .port(7000) // sets the port for the server
+    .start(); // starts the server
+```
+
+Any argument in `contextPath()` will be normalized to start with a `/` and not end with a `/`. So `contextPath("api")` and `contextPath("/api/")` will both be normalized to `/api`.
+
+#### Custom Server
+
+If you need to customize the embedded server, you can call the `app.embedServer()` method with a custom `Server` instance:
+
+```java
+app.embedServer(new EmbeddedJettyFactory() {
+   Server server = new Server();
+    // customize the server here
+    return server;
+});
+```
+
+This allows you to configure your embedded Jetty server fully, including SSL, HTTP/2, and everything else Jetty supports.
+
+#### Custom Jetty Handlers
+
+You can configure your embedded Jetty server with a handler chain, and Javalin will attach its own handlers to the end of the chain:
+
+```java
+StatisticsHandler statisticsHandler = new StatisticsHandler();
+
+Javalin.create()
+    .embeddedServer(new EmbeddedJettyFactory(()-> {
+      Server server = new Server();
+      server.setHandler(statisticsHandler);
+      return server;
+    }
+    )).start();
+```
+
+This allows you to add custom Jetty handlers to your application, such as logging, monitoring, or authentication handlers.
+
+#### Examples of Different Configurations
+
+##### HTTP Configuration
+
+```java
+Javalin.create(config -> {
+  config.http.generateEtags = true; // if Javalin should generate ETags for responses (etags are used for caching)
+  config.http.prefer405over404 = true; // if Javalin should return 405 Method Not Allowed instead of 404 Not Found when no handler is found for the request method
+  config.http.maxRequestSize = 10 * 1024 * 1024; // max request size in bytes (default is 10MB)
+  config.http.defaultContentType = "application/json"; // default content type for responses
+  config.http.asyncTimeout = 10_000; // async request timeout in milliseconds (default is 10 seconds)
+})
+```
+
+This configuration sets various HTTP options for the Javalin application, such as enabling ETag generation, preferring 405 responses over 404, setting a maximum request size, defining a default content type, and specifying an async request timeout.
+
+##### Routing Configuration
+
+```java
+Javalin.create(config -> {
+  config.routing.contextPath = "/api"; // base URL for all routes
+  config.routing.ignoreTrailingSlashes = false; // if trailing slashes should be ignored when matching routes (so "/path" and "/path/" are the same endpoint)
+  config.routing.treatMultipleSlashesAsSingleSlash = true; // if multiple slashes should be treated as a single slash when matching routes (so "/path//to///resource" is the same as "/path/to/resource")
+})
+```
+
+This configuration sets routing options for the Javalin application, such as defining a base URL for all routes, specifying whether to ignore trailing slashes, and determining how to handle multiple consecutive slashes in URLs.
+
+#### Real Example with HttpClient
+
+Below we will show how we could use Javalin to create an application that generates random names assuming that we have a random name generator API already created.
+
+```java
+private static CompletableFuture<HttpResponse<String>> getRandomName() {
+  HttpRequest req = HttpRequest.newBuilder()
+      .uri(URI.create("https://random-name-generator-api.com/api/v1/names"))
+      .build(); // creates a new HttpRequest to the random name generator API
+
+  return HttpClient.sendAsync(req, HttpResponse.BodyHandlers.ofString()); // returns a CompletableFuture that will complete with the HttpResponse
+}
+```
+
+The above code creates an `HttpRequest` to the random name generator API and sends it asynchronously using `HttpClient`. It returns a `CompletableFuture` that will complete with the `HttpResponse`. It will either resolve in a random name or an error. Below, we will implement the Javalin code that will asynchronously return a random name to the client.
+
+```java
+app.get("/random-name" ctx -> {
+  ctx.future(() -> {
+    return getRandomName()
+          .thenApply(res -> ctx.html(res.body())).status(res.statusCode()); // if the request is successful, return the name in the response body with the same status code as the API
+          .exceptionally(throwable -> {
+            ctx.status(500).result("Could not fetch a random name: " + throwable.getMessage());
+            return null;
+          }); // if the request fails, return a 500 status code with an error message
+  })
+})
+```
+
+This code defines a GET endpoint at `/random-name` that uses the `getRandomName()` method to fetch a random name from the external API. It uses `ctx.future()` to handle the asynchronous operation, returning the name in the response body if successful or a 500 status code with an error message if it fails.
