@@ -642,3 +642,134 @@ app.post("/", ctx -> {
 ```
 
 The above code snippet shows how to handle a `POST` request to create a new user. The `ctx.bodyAsClass(User.class)` method is used to convert the JSON request body into a `User` object. After storing the user in the database (not shown in this example), we return the created user in the response body with a 201 Created status.
+
+## Exception Handling
+
+#### Exception Mapping
+
+All handlers (before, endpoint, after) can throw exceptions and any subclass of `Exception`. The `app.exception()` method allows you to map specific exception types to handlers that will be executed when those exceptions are thrown.
+
+```java
+// Handle NullPointerException specifically
+app.exception(NullPointerException.class, (e, ctx) -> {
+  ctx.status(400).json("Null value encountered");
+});
+
+// Catch all for any other exceptions
+app.exception(Exception.class, (e, ctx) -> {
+  // Will not trigger if a more specific exception-mapper is found
+  ctx.status(500).json("Internal server error");
+});
+```
+
+#### Error Mapping
+
+Error mapping is similar to exception mapping, but it is used to handle specific HTTP status codes instead of exceptions. The `app.error()` method allows you to map specific status codes to handlers that will be executed when those status codes are returned.
+
+For example, you can create a custom handler for 404 Not Found errors in use cases where a resource is not found:
+
+```java
+app.error(404, ctx -> {
+  ctx.json("Custom 404 Not Found message");
+})
+```
+
+This code snippet defines a custom handler for 404 Not Found errors. When a request results in a 404 status code, the handler will return a JSON response with the message "Custom 404 Not Found message".
+
+#### Exception and Error Mapping
+
+Sometimes we want to handle both exceptions and specific error codes in a unified way. For example, we might want to return a 400 Bad Request status code for `IllegalArgumentException` and a 404 Not Found status code for `NoSuchElementException`.
+
+```java
+app.exception(FileNotFoundException.class, (e, ctx -> {
+  ctx.status(404);
+}).error(404, ctx -> {
+  ctx.json("Resource not found");
+}));
+```
+
+This code snippet defines an exception handler for `FileNotFoundException` that sets the response status to 404 Not Found. It also defines an error handler for 404 status codes that returns a JSON response with the message "Resource not found". This way, both exceptions and 404 errors are handled in a consistent manner.
+
+### Real World Application
+
+#### Why Handle Java Exceptions?
+
+Java exception handling is important because it helps maintain the normal flow of the application, even when unexpected errors occur. If Java exceptions are not handled properly, programs can crash or behave unpredictably, leading to a poor user experience and potential data loss. This would be very frustrating for users and could lead to a loss of trust in the application.
+
+The worst situation is if your application crashes while the user is doing any important work, especially if they have not saved their work. To make the user interface robust, it is important to handle exceptions to prevent the application from unexpectedly crashing and losing user data.
+
+There can be many causes for a sudden crash of the application, such as invalid user input, network issues, file not found errors, database connection failures, and more. For example, if we try to add two users with duplicate IDs to the database, we should throw an exception and handle it gracefully, rather than letting the application crash.
+
+Developers can predict many of the Java exceptions that may occur in their code and handle them appropriately.
+
+The best course of action is to explicitly handle those exceptions to recover from them gracefully. Programming languages provide ways to handle exceptions, starting from specific exceptions to more general ones. Tracking exceptions centrally offers visibility to your development team on the quality of the code and what causes these exceptions so they can be fixed.
+
+### Implementation
+
+In this example, we will demonstrate how to use error and exception handlers within a note-saving application. For simplicity, we will only include code that is relevant to exception and error handling.
+
+#### `Note.java` and `NoteController.java`
+
+We will need a `Note` class to represent our notes:
+
+```java
+public class Note {
+  private long id;
+  private String content;
+  private String priority; // can be "low", "medium", or "high"
+
+  // constructor, getters, and setters
+}
+```
+
+We will also need a `NoteController` class to handle our note-related operations:
+
+```java
+public class NoteController {
+  // ...service layer configuration code omitted for brevity
+
+  // method that starts Javalin and sets up routes
+  public void setup() {
+    // create Javalin object
+    Javalin app = Javalin.create().start(7000);
+
+    // endpoints
+    app.get("/notes", this::getAllNotes);
+    app.get("/notes/{id}", this::getNoteById);
+
+    app.error(404, this::handleNotFound); // handle 404 errors
+    app.exception(Exception.class, this::handleException); // handle all exceptions
+  }
+
+  private void getAllNotes(Context ctx) {
+    List<Note> notes = noteService.getAllNotes();
+    ctx.json(notes);
+  }
+
+  private void getNoteById(Context ctx) {
+    long id = Long.parseLong(ctx.pathParam("id"));
+    Note note = noteService.getNoteById(id)
+                           .orElseThrow(() -> new NoSuchElementException("Note not found with id: " + id));
+    ctx.json(note);
+  }
+
+  private void handleNotFound(Context ctx) {
+    ctx.status(404).json("The requested resource was not found.");
+  }
+
+  private void handleException(Exception e, Context ctx) {
+    ctx.status(500).json("An unexpected error occurred: " + e.getMessage());
+  }
+}
+```
+
+In this code snippet, we define a `Note` class to represent our notes and a `NoteController` class to handle note-related operations. The `setup()` method initializes the Javalin application, sets up the routes, and registers the error and exception handlers
+. The `getAllNotes()` and `getNoteById()` methods handle the respective endpoints, while the `handleNotFound()` and `handleException()` methods handle 404 errors and general exceptions, respectively.
+
+#### Error Mapping
+
+The `app.error()` call requires that we specify a status code to map to a handler. In this case, we are mapping the 404 Not Found status code to the `handleNotFound()` method. This method sets the response status to 404 and returns a JSON message indicating that the requested resource was not found.
+
+#### Exception Mapping
+
+The `app.exception()` call requires that we specify an exception type to map to a handler. In this case, we are mapping the `Exception` class to the `handleException()` method. This method sets the response status to 500 Internal Server Error and returns a JSON message indicating that an unexpected error occurred, along with the exception message.
