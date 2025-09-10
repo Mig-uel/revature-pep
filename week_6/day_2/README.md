@@ -773,3 +773,33 @@ The `app.error()` call requires that we specify a status code to map to a handle
 #### Exception Mapping
 
 The `app.exception()` call requires that we specify an exception type to map to a handler. In this case, we are mapping the `Exception` class to the `handleException()` method. This method sets the response status to 500 Internal Server Error and returns a JSON message indicating that an unexpected error occurred, along with the exception message.
+
+## JSON
+
+JSON (JavaScript Object Notation) is a lightweight data interchange format that is easy for humans to read and write, and easy for machines to parse and generate. It is commonly used in web applications to transmit data between a server and a client.
+
+A JSON object is a collection of key-value pairs, where the keys are strings and the values can be strings, numbers, booleans, arrays, or other JSON objects.
+
+Example:
+
+```json
+{
+  "key1": "value1",
+  "key2": 123,
+  "key3": true,
+  "key4": ["item1", "item2", "item3"],
+  "key5": {
+    "nestedKey1": "nestedValue1",
+    "nestedKey2": 456
+  }
+}
+```
+
+### Real World Application
+
+Some common use cases for JSON include:
+
+- **APIs**: JSON is often used as the data format for RESTful APIs, allowing clients to send and receive data in a structured way.
+- **Configuration Files**: JSON is commonly used for configuration files in web applications, allowing developers to easily modify settings without changing code.
+- **Data Storage**: JSON can be used as a lightweight data storage format, allowing applications to store and retrieve data in a structured way.
+- **Data Interchange**: JSON is often used as a data interchange format between different programming languages and platforms, allowing for easy integration between systems.
