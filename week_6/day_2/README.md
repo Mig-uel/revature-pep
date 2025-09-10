@@ -803,3 +803,103 @@ Some common use cases for JSON include:
 - **Configuration Files**: JSON is commonly used for configuration files in web applications, allowing developers to easily modify settings without changing code.
 - **Data Storage**: JSON can be used as a lightweight data storage format, allowing applications to store and retrieve data in a structured way.
 - **Data Interchange**: JSON is often used as a data interchange format between different programming languages and platforms, allowing for easy integration between systems.
+
+## Exposing and Consuming Restful API Endpoints
+
+#### What is a RESTful API?
+
+If you've ever spend any time programming or researching programming, you've probably heard of the term API. An API stands for Application Programming Interface. It is a medium that allows two applications to communicate with each other. APIs are used in many different contexts, but one of the most common is in web development.
+
+Roy Fielding, one of the principal authors of the HTTP specification, defined REST (Representational State Transfer) in his 2000 doctoral dissertation. REST is an architectural style for designing networked applications. It is based on a set of principles that emphasize scalability, simplicity, and interoperability.
+
+When a request is made via REST API, it sends a representation of the resource's current state to the requestor or endpoint. This state representation can be in various formats, such as JSON, XML, or HTML. JSON is the most commonly used format for RESTful APIs due to its simplicity and ease of use.
+
+#### Exposing Endpoints
+
+You could let the users CREATE, READ, UPDATE, or DELETE (CRUD) resources in your application using HTTP methods through your RESTful API. That of course adheres to the REST principles. RESTful APIs use standard HTTP methods to perform CRUD operations on resources. The most commonly used HTTP methods are:
+
+- **POST**: Used to create a new resource.
+- **GET**: Used to retrieve a resource or a collection of resources.
+- **PUT**: Used to update an existing resource.
+- **DELETE**: Used to delete a resource.
+
+These methods say how resources should be manipulated.
+
+A REST resource is a piece of identifiable information that can be accessed and manipulated via a RESTful API. Resources are typically represented as URLs (Uniform Resource Locators) and can be anything from a single object to a collection of objects. Note that resources are not necessarily domain entities, but they often are. Exposing endpoints means that you enable information to be accessed through some form of interface, in this case, a RESTful API. An endpoint is a specific URL that represents a resource and can be accessed using HTTP methods.
+
+For example, in a RESTful API for managing a collection of books, exposing endpoints might involve defining resources such as `/books` for the collection of books and `/books/{id}` for individual book resources. After defining those resources, you'll need to define **routes** or **handlers** that will handle the HTTP requests made to those endpoints. These are typically methods or functions that wait for an HTTP request to be made to a specific endpoint and then perform the appropriate action based on the HTTP method used. The result of the execution should be a response that is sent back to the client.
+
+#### Consuming Endpoints
+
+Consuming endpoints involves sending requests to the exposed endpoints of another application or service to access its functionalities or resources. In other words, it's the process of making HTTP requests to a RESTful API to interact with the resources it provides.
+
+To consume endpoints, you use HTTP client libraries or tools in your application to send requests to the specified URLs and handle the responses returned by the server. You typically specify the HTTP method (GET, POST, PUT, DELETE, etc.), along with any necessary headers, query parameters, or request bodies., and process the response data received from the server.
+
+In a client application (e.g., a web or mobile app), consuming endpoints might involve sending GET requests to retrieve a list of books from a remote server, sending POST requests to create new books, or sending PUT requests to update existing book information, and sending DELETE requests to remove books from the collection.
+
+### Implementation
+
+#### Exposing Endpoints
+
+##### Step 1: Identify Your Resources
+
+The first thing to do when building a RESTful API is to identify the resources that you want to expose and define. These resources will allow users to interact with one or all blog posts in your application.
+
+- `/posts`: Represents a collection of blog posts.
+- `/posts/{id}`: Represents a single blog post identified by its unique ID.
+
+Next, let's define some endpoints we could expose to a client application.
+
+#### Step 2: Identify Your Endpoints
+
+These endpoints will allow the client to perform various actions such as creating, reading, updating, and deleting blog posts.
+
+| HTTP Method | Endpoint    | Description                              |
+| ----------- | ----------- | ---------------------------------------- |
+| GET         | /posts      | Retrieve a list of all blog posts.       |
+| GET         | /posts/{id} | Retrieve a specific blog post by its ID. |
+| POST        | /posts      | Create a new blog post.                  |
+| PUT         | /posts/{id} | Update an existing blog post by its ID.  |
+| DELETE      | /posts/{id} | Delete a specific blog post by its ID.   |
+
+We could also identify resources and endpoints for other entities in our application, such as users and comments.
+
+#### Step 3: Implementation
+
+The implementation of a RESTful API will vary depending on the programming language and framework you are using. You will most likely be using a web framework like Express.js for Node.js, Flask for Python, or Spring Boot for Java.
+
+Examples of routes/handlers for the `GET` to `/posts` endpoint:
+
+```js
+app.get("/posts", (req, res) => {
+  // Logic to retrieve all blog posts from the database
+  const posts = getAllPostsFromDatabase();
+  res.json(posts); // Send the list of posts as a JSON response
+});
+```
+
+```python
+@app.route('/posts', methods=['GET'])
+def get_posts():
+    # Logic to retrieve all blog posts from the database
+    posts = get_all_posts_from_database()
+    return jsonify(posts)  # Send the list of posts as a JSON response
+```
+
+```java
+@GetMapping("/posts")
+public List<Post> getAllPosts() {
+    // Logic to retrieve all blog posts from the database
+    return postService.getAllPosts(); // Return the list of posts as a JSON response
+}
+```
+
+#### Consuming Endpoints
+
+To consume the endpoints of a RESTful API, you can use various HTTP client libraries or tools depending on your programming language or environment. We will keep it simple and use a simple command line tool called `curl` to demonstrate how to consume the endpoints we defined earlier.
+
+```bash
+curl -X GET http://localhost:7000/posts
+```
+
+The result of the above command would be a JSON array of all blog posts in the application.
