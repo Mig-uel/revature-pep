@@ -903,3 +903,146 @@ curl -X GET http://localhost:7000/posts
 ```
 
 The result of the above command would be a JSON array of all blog posts in the application.
+
+## REST Resources and URL Structure
+
+#### What is a Resource?
+
+In REST, the primary data representation in REST is a resource. A resource is any piece of information that can be named, such as a document or image, a temporal service (e.g., "today's weather in Los Angeles"), a collection of other resources, a non-virtual object (e.g., a person), and so on.
+
+In other words, any concept that might be the target of an author's hypertext reference is a resource. A resource is a representation of an object or entity that can be accessed and manipulated via a RESTful API. Resources are typically represented as URLs (Uniform Resource Locators) and can be anything from a single object to a collection of objects.
+
+A resource is a conceptual mapping to a set of entities, not the entity that corresponds to the mapping at any particular point in time. For example, the resource identified by the URL `http://example.com/customers/jdoe` may correspond to a particular person at one point in time and to a different person at another time. The resource itself is not the person, but rather a concept that can be used to access information about that person.
+
+#### Singleton and Collection Resources
+
+A resource can be categorized as either:
+
+- **Singleton Resource**: A singleton resource represents a single entity or object. It is typically accessed using a unique identifier in the URL. For example, `/users/{id}` represents a singleton resource for a specific user identified by their unique ID.
+- **Collection Resource**: A collection resource represents a group or collection of entities or objects. It is typically accessed using a plural noun in the URL. For example, `/users` represents a collection resource for all users in the system.
+
+#### Collection and Sub-Collection Resources
+
+A resource may contain other resources, which are called sub-resources. Sub-resources are typically accessed using a hierarchical URL structure. For example, `/users/{id}/posts` represents a sub-resource for all posts created by a specific user identified by their unique ID.
+
+Similarly, a singleton resource may also contain sub-resources. For example, `/users/{id}/profile` represents a sub-resource for the profile information of a specific user identified by their unique ID.
+
+#### URI
+
+REST APIS use Uniform Resource Identifiers (URIs) to identify resources. A URI is a string of characters that uniquely identifies a resource on the web. REST API designers should create URIs that convey a REST API's resource model to the potential clients of the API. When resources are named well, an API is intuitive and easy to use. If done poorly, that same API can be difficult to understand and use.
+
+The constraint of a uniform interface is partially addressed by the combinations of URIs and HTTP methods. The URI identifies the resource, and the HTTP method indicates the action to be performed on that resource.
+
+RESTFul URIs should refer to a resource (noun) that is a thing, not an action (verb) that is performed on the resource. For example, `/users` is a good URI because it refers to a resource (users), while `/getUsers` is a bad URI because it refers to an action (get) that is performed on the resource.
+
+Below is an example of definition of resources for an application that has user and network device domain entities:
+
+| Resource                                | Description                                                                           |
+| --------------------------------------- | ------------------------------------------------------------------------------------- |
+| /device-management/managed-devices      | Collection of all managed network devices.                                            |
+| /device-management/managed-devices/{id} | Singleton resource for a specific managed network device identified by its unique ID. |
+| user-management/users                   | Collection of all users.                                                              |
+| user-management/users/{id}              | Singleton resource for a specific user identified by their unique ID.                 |
+
+See how the resources are named using nouns and not verbs. The resources are also organized in a hierarchical structure, with sub-resources for specific entities.
+
+#### Resource Archetypes
+
+For more clarity, let's divide the resource archetypes into four categories:
+
+- Document Resources: A document resource represents a single entity or object that can be accessed and manipulated via a RESTful API. It is typically accessed using a unique identifier in the URL. For example, `/users/{id}` represents a document resource for a specific user identified by their unique ID.
+- Collection Resources: A collection resource represents a group or collection of entities or objects. It is typically accessed using a plural noun in the URL. For example, `/users` represents a collection resource for all users in the system.
+- Store Resources: A store resource represents a storage mechanism for resources, such as a database or file system. It is typically accessed using a unique identifier in the URL. For example, `/users/{id}/files` represents a store resource for all files associated with a specific user identified by their unique ID.
+- Controller Resources: A controller resource represents a set of actions or operations that can be performed on a resource. It is typically accessed using a unique identifier in the URL. For example, `/users/{id}/activate` represents a controller resource for activating a specific user identified by their unique ID.
+
+##### Document Resource
+
+A document resource is a singleton resource that represents a single entity or object.
+
+In REST, you can view it as a single resource inside a resource collection. A document's state representation typically includes both fields with values and links to other related resources.
+
+Use "singular" names for document resources.
+
+Example: `/users/{id}` represents a document resource for a specific user identified by their unique ID.
+
+##### Collection Resource
+
+A collection resource represents a group or collection of entities or objects.
+
+Client may propose new resources to be added to the collection. However, it is up to the collection resource to choose to create a new resource or not.
+
+A collection resource choose what it wants to contain and also decided the URIs of the resources it contains.
+
+Use "plural" names for collection resources.
+
+Example: `/users` represents a collection resource for all users in the system.
+
+##### Store Resource
+
+A store resource represents a storage mechanism for resources, such as a database or file system. A store resource lets an API client put resources in, get resources from, and delete resources from the store.
+
+A store never generates new URIs for the resources it contains. Instead, each stored resource has its own URI, which is typically provided by the client when the resource is added to the store.
+
+Use "plural" names for store resources.
+
+Example: `/users/{id}/files` represents a store resource for all files associated with a specific user identified by their unique ID.
+
+#### Controller Resource
+
+A controller resource represents a set of actions or operations that can be performed on a resource. A controller resource is not a resource in the traditional sense, but rather a way to group related actions together.
+
+Controller resources are typically used for actions that do not fit neatly into the CRUD (Create, Read, Update, Delete) model. For example, activating or deactivating a user account, or sending a password reset email. They are like executable functions, with parameters and return values, inputs, and outputs.
+
+Use "singular" verbs for controller resources.
+
+Example: `/users/{id}/activate` represents a controller resource for activating a specific user identified by their unique ID.
+
+#### Best Practices
+
+Use consistent resource naming conventions and URI structure for minimum ambiguity and maximum readability and maintainability.
+
+Below are some best design practices to follow when designing RESTful APIs:
+
+##### Use A Forward Slash (`/`) to Indicate Hierarchy
+
+Use a forward slash (`/`) to indicate hierarchy in your URIs.
+
+For example, `/users/{id}/posts` represents a sub-resource for all posts created by a specific user identified by their unique ID.
+
+##### Use Hyphens (`-`) to Improve Readability
+
+To make your URIs more readable and interpretable, use hyphens (`-`) to separate words in your resource names.
+
+For example, `/user-profiles/{id}` is more readable than `/userprofiles/{id}`.
+
+##### Do Not Use Trailing Forward Slashes (`/`)
+
+Do not use trailing forward slashes (`/`) at the end of your URIs. This can lead to confusion and ambiguity and adds no semantic value.
+
+For example, use `/users` instead of `/users/`.
+
+##### Do Not Use Underscores (`_`)
+
+It is possible to use underscores (`_`) in your URIs, but it is not recommended. Depending on the font used, underscores can be hard to see and can lead to confusion and get partially obscured or completely hidden in some browsers or screens.
+
+For example, use `/user-profiles/{id}` instead of `/user_profiles/{id}`.
+
+##### Use Lowercase Letters
+
+Use lowercase letters in your URIs. This improves readability and avoids confusion, as some systems are case-sensitive.
+
+For example, use `/users` instead of `/Users` or `/USERS`.
+
+##### Do Not Use File Extensions
+
+File extensions (e.g., `.json`, `.xml`) look bad and do not add any semantic value to your URIs. Removing them decreases the length of your URIs and makes them more readable.
+
+Apart from the above reason, if you want to highlight the media type of the resource, yous should rely on the `Content-Type` and `Accept` HTTP headers instead.
+
+For example, use `/users` instead of `/users.json`.
+
+##### Use Query Parameters for Filtering, Sorting, and Pagination
+
+Use query parameters to filter, sort, and paginate resources in your RESTful API. This allows clients to retrieve only the data they need and reduces the amount of data transferred over the network.
+
+For example, use `/users?sort=asc&limit=10&page=2` to retrieve a sorted and paginated list of users.
