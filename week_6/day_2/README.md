@@ -365,3 +365,280 @@ app.get("/random-name" ctx -> {
 ```
 
 This code defines a GET endpoint at `/random-name` that uses the `getRandomName()` method to fetch a random name from the external API. It uses `ctx.future()` to handle the asynchronous operation, returning the name in the response body if successful or a 500 status code with an error message if it fails.
+
+### Handlers
+
+Javalin has three main types of handlers:
+
+- **Before Handlers**: These handlers are executed before the main request handler. They are typically used for tasks such as authentication, logging, or modifying the request context. Before handlers can be defined globally for all routes or for specific routes.
+- **Main/Endpoint Handlers**: These handlers are executed when a specific route is matched. They are responsible for processing the request and generating the response. Main handlers can be defined for specific HTTP methods (GET, POST, PUT, DELETE, etc.) and routes.
+- **After Handlers**: These handlers are executed after the main request handler. They are typically used for tasks such as logging, modifying the response, or cleaning up resources. After handlers can also be defined globally for all routes or for specific routes.
+
+There are also exception handlers and error handlers:
+
+- **Exception Handlers**: These handlers are executed when an exception is thrown during the processing of a request. They can be used to handle specific types of exceptions and generate appropriate error responses.
+- **Error Handlers**: These handlers are executed when a specific HTTP error status code is returned. They can be used to customize the error response for specific status codes.
+
+The before, main/endpoint, and after handlers require three parameters:
+
+- The HTTP method (GET, POST, PUT, DELETE, etc.)
+- The path (e.g., "/users", "/books/{id}", etc.)
+- A handler function that takes a `Context` object as a parameter and performs the desired actions
+
+The Handler interface has a `void` return type, meaning it does not return any value. Instead, it modifies the `Context` object to set the response.
+
+You use a method like `ctx.result(result)` to set the response body, `ctx.status(code)` to set the response status code, `ctx.json(object)` to return JSON data, `ctx.future(supplier)` to handle asynchronous operations, and other methods to set headers, cookies, etc, which will be sent back to the client.
+
+Here is an example of how to define before, main/endpoint, and after handlers in Javalin:
+
+```java
+Javalin app = Javalin.create().start(7000);
+app.before(ctx -> {
+    // This code will run before every request
+    System.out.println("Before handler: " + ctx.method() + " " + ctx.path());
+});
+```
+
+```java
+app.get("/hello", ctx -> {
+    // This code will run when a GET request is made to /hello
+    ctx.result("Hello, world!");
+});
+```
+
+```java
+app.after(ctx -> {
+    // This code will run after every request
+    System.out.println("After handler: " + ctx.method() + " " + ctx.path());
+});
+```
+
+#### Before Handlers
+
+Before handlers are executed before the main request handler. They are typically used for tasks such as authentication, logging, or modifying the request context. Before handlers can be defined globally for all routes or for specific routes.
+
+```java
+app.before(ctx -> {
+  // runs before all requests
+});
+app.before("/path/*", ctx -> {
+  // runs before requests to /path/*
+});
+```
+
+#### Endpoint Handlers
+
+Endpoint handlers are executed when a specific route is matched. They are responsible for processing the request and generating the response. Main handlers can be defined for specific HTTP methods (GET, POST, PUT, DELETE, etc.) and routes. Uncommon HTTP methods like OPTIONS, HEAD, and TRACE are also supported but via `Javalin#addHandler`.
+
+```java
+app.get("/path", ctx -> {
+  // runs for GET requests to /path
+  ctx.json(object); // returns JSON response
+});
+app.post("/path", ctx -> {
+  // runs for POST requests to /path
+  ctx.status(201).result("Created"); // returns 201 Created status
+});
+```
+
+Handler paths can include path parameters, which are denoted by curly braces `{}`. For example, `/users/{id}` would match requests like `/users/1` or `/users/42`, and the value of the `id` parameter can be accessed using `ctx.pathParam("id")`.
+
+```java
+app.get("/users/{id}", ctx -> {
+  ctx.result("User ID: " + ctx.pathParam("id"));
+})
+```
+
+However, you cannot extract the value of a wildcard (`*`) using `ctx.pathParam()`. Wildcards are used to match any part of a path, but they do not create a named parameter that can be accessed.
+
+```java
+app.get("/files/*", ctx -> {
+  ctx.result("This matches any path under /files/");
+});
+```
+
+#### After Handlers
+
+After handlers are executed after the main request handler (even if an exception is thrown). They are typically used for tasks such as logging, modifying the response, or cleaning up resources. After handlers can also be defined globally for all routes or for specific routes. You might know after handlers as `filters`, `interceptors`, or `middleware` in other frameworks.
+
+```java
+app.after(ctx -> {
+  // runs after all requests
+});
+app.after("/path/*", ctx -> {
+  // runs after requests to /path/*
+});
+```
+
+#### Context
+
+The `Context` object (`ctx`) is a central part of Javalin's request handling. It provides access to the HTTP request and response, as well as various methods for manipulating them.
+
+| Request Methods           | Description                                      |
+| ------------------------- | ------------------------------------------------ |
+| `body()`                  | Returns the request body as a string.            |
+| `pathParam()`             | Retrieves a path parameter by name.              |
+| `attribute("key", value)` | Sets an attribute in the request context.        |
+| `attribute("key")`        | Retrieves an attribute from the request context. |
+| `path()`                  | Returns the request path.                        |
+| `method()`                | Returns the HTTP method of the request.          |
+| `queryParam("name")`      | Retrieves a query parameter by name.             |
+
+| Response Methods                | Description                                                                               |
+| ------------------------------- | ----------------------------------------------------------------------------------------- |
+| `redirect("/path", statusCode)` | Redirects the client to the specified path with an optional status code (default is 302). |
+| `status(code)`                  | Sets the HTTP status code for the response.                                               |
+| `status()`                      | Retrieves the current HTTP status code of the response.                                   |
+
+### Real World Application
+
+Typical uses for HTTP handlers include:
+
+- **Authentication and Authorization**: Before handlers can be used to check if a user is authenticated and authorized to access a specific resource. If not, the handler can return a 401 Unauthorized or 403 Forbidden response.
+- **Logging and Monitoring**: Before and after handlers can be used to log requests and responses for monitoring and debugging purposes. This can include logging the request method, path, status code, and response time.
+- **Input Validation**: Before handlers can be used to validate input data before it is processed by the main handler. If the input is invalid, the handler can return a 400 Bad Request response.
+- **RSS Feeds**: After handlers can be used to modify the response to include additional information, such as adding an RSS feed to a blog post response.
+- **Image Server**: If you want a web application to serve images of different sizes, you could use before handlers to check if the requested size is valid and after handlers to resize the image before sending it back to the client.
+- **Error Handling**: Exception handlers can be used to catch and handle specific exceptions that may occur during request processing. This allows for graceful error handling and the ability to return meaningful error messages to the client.
+
+### Implementation
+
+Let's look into a more realistic use case for Javalin and handlers.
+
+First, we need to create a simple data model of the object we are going to be working with. In this case, we will create a package called `user` and create a `User` class.
+
+```java
+package com.example.user;
+
+public class User {
+  public final int id;
+  public final String name;
+
+  // constructor
+}
+```
+
+Also, we need to set up our data access object (DAO) to handle the data storage and retrieval. We will use an in-memory object to store our users for simplicity.
+
+```java
+class UserDao {
+  private List<User> users = Arrays.asList(
+    new User(0, "Steve Rogers"),
+    new User(1, "Tony Stark"),
+    new User(2, "Carol Danvers")
+  ); // sample data
+
+  private static UserDao userDao = null; // singleton instance
+
+  private UserDao() {} // private constructor to prevent instantiation
+
+  static UserDao instance() {
+    if (userDao == null) {
+      userDao = new UserDao();
+    }
+    return userDao;
+  } // get the singleton instance
+
+  // Optional<T> is a container object which may or may not contain a non-null value.
+  Optional<User> getUserById(int id) {
+    return users.stream()
+                .filter(u -> u.id == id)
+                .findAny();
+  } // get a user by id
+
+  // Iterable is a collection of objects that can be iterated over.
+  Iterable<String> getAllUsernames() {
+    return users.stream()
+                .map(user -> user.name)
+                .toList();
+  } // get all usernames
+}
+```
+
+Implementing our DAO as a singleton makes it easier to manage the data access throughout our application. We could also declare it as a static member of our main class or use dependency injection from a library like Spring.
+
+Finally, we want to create our `controller` class. A controller is responsible for handling the HTTP requests and responses. Javalin allows us to be very flexible when we declare route handlers, so this is only one way of defining them.
+
+We create a new class called `UserController.java`:
+
+```java
+package com.example.user;
+
+public class UserController {
+  // Handler is a functional interface that represents a function that takes a Context object and returns void (part of Javalin library)
+  public static Handler fetchAllUserNames = ctx -> {
+    UserDao dao = UserDao.instance();
+    Iterable<String> users = dao.getAllUsernames();
+    ctx.json(user);
+  }
+
+  // Fetch a user by id
+  public static Handler fetchById = ctx -> {
+    // Get the id from the path parameter and convert it to an integer
+    // Objects.requireNonNull() is used to ensure that the value is not null, otherwise it will throw a NullPointerException (part of java.util package)
+    int id = Integer.parseInt(Objects.requireNonNull(ctx.pathParam("id")));
+
+    // Get singleton instance of UserDao
+    UserDao dao = UserDao.instance();
+
+    // Get the user by id
+    // Optional<T> is a container object which may or may not contain a non-null value (part of java.util package)
+    Optional<User> user = dao.getUserById(id);
+
+    // If the user is found, return it as JSON, otherwise return a 404 Not Found status
+    if (user.isPresent()) {
+      // Return the user object in the response body as JSON
+      ctx.json(user.get()); // user.get() returns the value if present, otherwise throws NoSuchElementException (part of Optional class)
+    } else {
+      ctx.status(404).html("Not found"); // return 404 Not Found status with a message
+    }
+
+    /**
+     * Alternative to if/else statement
+     *
+     * // Using ifPresent() method of Optional class which takes a Consumer
+     * // functional interface as a parameter
+     * user.ifPresent(u -> ctx.json(u)); // if the user is present, return it as JSON
+     *
+     * if (!user.isPresent()) {
+     *  ctx.html("Not found");
+     * }
+     */
+  }
+}
+```
+
+By declaring the handlers as static, we ensure that the controller itself holds no state. But, in more complex applications, we may want to store state between requests, in which case we'd need to remove the static keyword and instantiate the controller class in our main application.
+
+Also, note that unit testing is harder with static members, so if you plan to write tests for your handlers, consider using instance methods instead.
+
+#### Adding Routes
+
+We now have multiple ways of fetching data from our model. The last step is to expose this data via REST endpoints. We need to to register two new routes in our main application class.
+
+```java
+app.get("/users", UserController.fetchAllUserNames); // fetch all usernames
+app.get("/users/{id}", UserController.fetchById); // fetch a user by id
+```
+
+After compiling and running the application, we can test our endpoints using a tool like Postman or curl.
+
+#### Extending Routes
+
+Retrieving data is a vital task in most microservices.
+
+However, we also need to be able to store data in our database. Javalin provides the full set of path handlers (GET, POST, PUT, DELETE, PATCH) to perform CRUD operations on our resources.
+
+We saw an example of a `GET` request above, but `POST`, `PUT`, `DELETE`, and `PATCH` are also available.
+
+Also, if we include the Jackson dependency in our project, we can easily convert JSON data to Java objects and vice versa.
+
+```java
+app.post("/", ctx -> {
+  User user = ctx.bodyAsClass(User.class); // convert the request body to a User object
+  // store the user in the database
+  ctx.status(201).json(user); // return the created user with a 201 Created status
+})
+```
+
+The above code snippet shows how to handle a `POST` request to create a new user. The `ctx.bodyAsClass(User.class)` method is used to convert the JSON request body into a `User` object. After storing the user in the database (not shown in this example), we return the created user in the response body with a 201 Created status.
