@@ -1,0 +1,24 @@
+<configuration>
+    <!-- Define a file appender -->
+    <!-- You can consider the <appender> as one profile for logging -->
+    <!-- This appender writes log messages to a file -->
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <!-- Specify the log file location -->
+        <file>logs/app.log</file>
+
+        <!-- Append to the existing log file -->
+        <append>true</append>
+
+        <!-- Define the log message format -->
+        <encoder>
+            <!-- Example pattern: date, log level, thread, logger name, file name, line number, and message -->
+            <pattern>%date %level [%thread] %logger{10} [%file:%line] -- %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Set the default root logger level and attach the file appender -->
+    <root level="WARN"> <!-- Set the logging level to WARN meaning only WARN and ERROR messages will be logged -->
+        <!-- Attach the file appender -->
+        <appender-ref ref="FILE" />
+    </root>
+</configuration>
