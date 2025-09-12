@@ -178,3 +178,119 @@ public class Example {
 ```
 
 This code initializes a logger for the `Example` class and logs messages at different levels (INFO, DEBUG, ERROR). When you run this application, you should see the log messages printed to the console and written to the `app.log` file as specified in the `logback.xml` configuration.
+
+## Java Logback Logging Levels
+
+In most logging frameworks, including Logback, logging levels are used to categorize the severity or importance of log messages. Each level represents a different degree of urgency or detail, allowing developers to filter and manage log output effectively.
+
+The common logging levels in Logback, from the most detailed to the least detailed, are as follows:
+
+- **TRACE**
+- **DEBUG**
+- **INFO**
+- **WARN**
+- **ERROR**
+
+The names of these levels give a good indication of what they represent.
+
+#### TRACE
+
+The **TRACE** level is the most detailed level of logging. It is used for fine-grained informational events that are useful for diagnosing problems and tracing the flow of execution in an application. **TRACE** logs are typically used during development and debugging to provide insights into the internal workings of the code.
+
+Example usage:
+
+```java
+logger.trace("Entering method calculateTotal with parameters: {}", params);
+```
+
+#### DEBUG
+
+The **DEBUG** level is used for debugging information that is less detailed than TRACE but still provides valuable insights into the application's behavior. It is typically used to log information that can help developers understand the flow of execution and identify issues during development.
+
+Example usage:
+
+```java
+logger.debug("User {} has logged in successfully", username);
+```
+
+#### INFO
+
+The **INFO** level is used for informational messages that highlight the progress of the application at a high level. These messages are typically used to indicate significant events, such as the start or completion of a process, without overwhelming the log with too much detail For example, an INFO log might indicate that a user has successfully logged in or that a scheduled task has started. The information logged using the `INFO` level should be purely informative, and not reviewing it on a regular basis should not lead to missing important events.
+
+Example usage:
+
+```java
+logger.info("User {} has logged in successfully", username);
+```
+
+#### WARN
+
+The **WARN** level is used for potentially harmful situations that are not necessarily errors but may require attention. These messages indicate that something unexpected happened, but the application can still continue to function. For example, a WARN log might indicate that a configuration file is missing or that a deprecated API is being used.
+
+Example usage:
+
+```java
+logger.warn("Configuration file {} is missing", configFilePath);
+```
+
+#### ERROR
+
+The **ERROR** level is used for error events that indicate a failure in the application. These messages typically indicate serious issues that need to be addressed, such as exceptions or critical failures that prevent the application from functioning correctly. For example, an ERROR log might indicate that a database connection failed or that an unhandled exception occurred.
+
+### Real World Application
+
+Logging levels offer several benefits in application development and operations:
+
+- **Granular Control**: Logging levels allow developers to control the verbosity of log output. By adjusting the logging level, developers can choose to see more or less detail in the logs, depending on their needs. For example, during development, a developer might set the logging level to DEBUG to see detailed information about the application's behavior. In a production environment, the logging level might be set to WARN or ERROR to reduce noise and focus on critical issues.
+- **Flexible Configuration**: Logging frameworks typically allow users to configure the logging levels for different components or modules of an application independently. This flexibility enables developers adjust the logging behavior dynamically at runtime without modifying the code, facilitating troubleshooting, debugging, and monitoring.
+- **Prioritization of Issues**: Logging levels help prioritize issues based on their severity. By categorizing log messages into different levels, developers and operations teams can quickly identify and address critical problems while ignoring less important information. For example, an ERROR log might indicate a critical failure that requires immediate attention, while a WARN log might indicate a potential issue that can be addressed later.
+
+In summary, logging levels are a fundamental aspect of logging frameworks that provide a structured way to categorize and manage log messages based on their severity and importance. By using logging levels effectively, developers can improve the maintainability, reliability, and performance of their applications.
+
+Below is an example of using different logging levels in a Java application with Logback.
+
+```xml
+<configuration>
+
+  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <file>app.log</file>
+
+    <encoder>
+      <pattern>%date %level [%thread] %logger{10} [%file:%line] -%kvp- %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <root level="debug">
+    <appender-ref ref="FILE" />
+  </root>
+</configuration>
+```
+
+This configuration sets the root logging level to DEBUG, meaning that all log messages at the DEBUG level and above (INFO, WARN, ERROR) will be logged to the `app.log` file.
+
+```java
+public class Main {
+  // Initialize the logger
+  private static final Logger logger = LoggerFactory.getLogger(Main.class);
+
+  // Main method
+  public static void main(String[] args) {
+    // Adding a TRACE log and passing the class name as a parameter
+    logger.trace("This is a TRACE log message", Main.class.getSimpleName());
+
+    // Adding a DEBUG log and passing the class name as a parameter
+    logger.debug("This is a DEBUG log message", Main.class.getSimpleName());
+
+    // Adding an INFO log and passing the class name as a parameter
+    logger.info("This is an INFO log message", Main.class.getSimpleName());
+
+    // Adding a WARN log and passing the class name as a parameter
+    logger.warn("This is a WARN log message", Main.class.getSimpleName());
+
+    // Adding an ERROR log and passing the class name as a parameter
+    logger.error("This is an ERROR log message", Main.class.getSimpleName());
+  }
+}
+```
+
+In this example, we initialize a logger for the `Main` class and log messages at different levels (TRACE, DEBUG, INFO, WARN, ERROR). Each log message includes the class name as a parameter for better context. When you run this application, you should see the log messages written to the `app.log` file as specified in the `logback.xml` configuration.
