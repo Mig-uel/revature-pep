@@ -499,7 +499,8 @@ public class NumberUtilityTest {
     boolean actual = nu.isPrime(input);
 
     // Assert
-    Assertions.assertEquals(expected, actual);
+    // Assertions.assertEquals(expected, actual);
+    Assertions.assertFalse(actual);
   }
 
   @Test
@@ -513,7 +514,8 @@ public class NumberUtilityTest {
     boolean actual = nu.isPrime(input);
 
     // Assert
-    Assertions.assertEquals(expected, actual);
+    // Assertions.assertEquals(expected, actual);
+    Assertions.assertTrue(actual);
   }
 
   @Test
@@ -527,7 +529,8 @@ public class NumberUtilityTest {
     boolean actual = nu.isPrime(input);
 
     // Assert
-    Assertions.assertEquals(expected, actual);
+    // Assertions.assertEquals(expected, actual);
+    Assertions.assertFalse(actual);
   }
 }
 ```
