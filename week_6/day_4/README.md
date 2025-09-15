@@ -379,3 +379,155 @@ Unit tests are all about verifying functionality at a micro level, testing indiv
 - If the test passes, this means that the code behaves as expected.
 
 **UNIT TESTING SHOULD NEVER INTERACT WITH EXTERNAL SYSTEMS SUCH AS DATABASES OR APIs**
+
+## JUnit Annotations and Assertions
+
+#### What's New in JUnit 5?
+
+JUnit 5 is is a complete rewrite of the framework and requires Java 8 or higher, though it can test Java code that is written in older versions of Java.
+
+The new version allows us to use lambdas in assertions, a feature you might already know from the popular AssertJ library. Unlike it predecessor, JUnit 5 is not an all-in-one framework, but rather a collection of different modules that can be used independently.
+
+JUnit 5 tests look a lot like JUnit 4 tests: just create a class and add test methods annotated with `@Test`. However, JUnit 5 provides a completely new set of annotations that reside in a different package than their JUnit 4 counterparts. In addition, the assertion methods moved from `org.junit.Assert` to `org.junit.jupiter.api.Assertions`.
+
+#### JUnit 5 Assertions
+
+The available assertion methods in JUnit 5 are similar to those in JUnit 4. The Assertions class provides `assertTrue`, `assertEquals`, `assertNull`, `assertSame`, and their negated counterparts. What's new is the overloaded versions of these methods that expect a lambda expression as the last parameter, which supplies the assertion message or boolean condition only if the assertion fails. On top of that, there is a new feature called grouped assertions, which allows us to group multiple assertions in a single test and report all failures at once. It was previously considered bad practice to put multiple assertions into a single test method, because the test would stop executing after the first failure. With grouped assertions, we can now do this without losing information about other failures.
+
+Another improvement over JUnit 4 is they way to assert expected exceptions. Instead of putting the expected exception type into the `@Test` annotation, or wrapping your test code in a `try-catch` block, you can use `assertThrows` and `assertEquals` to verify that a specific exception is thrown and check its message.
+
+#### Testing Best Practices
+
+When it comes to testing code, a few best practices should be followed:
+
+- Utilize dependency injection to make your code more testable.
+- Write testable code by following the Single Responsibility Principle.
+- Use a mocking library like Mockito to isolate the code under test.
+- Measure your code coverage with a tool like JaCoCo.
+- Externalize test data when possible (i.e. read it from a file).
+- Generally, you still want one assertion per test method, unless you are using grouped assertions.
+- Write deterministic tests that always produce the same result.
+
+### Real World Application
+
+The following code is an example of using annotations and assertions in JUnit. Here, we have a class called `NumberUtility` that will accept an integer as input and determine if it is a prime number or not. It should return a boolean value of `true` if the number is prime and `false` if it is not.
+
+We will use JUnit annotations and assertions to test the functionality of the `NumberUtility` class.`
+
+```java
+public class NumberUtility {
+  /**
+   * Determines if a number is prime.
+   * True if the number is prime, false otherwise.
+   * Prime: a number that can only be divided by 1 and itself.
+   *
+   * @param number the number to check
+   * @return true if the number is prime, false otherwise
+   */
+  public boolean isPrime(int number) {
+    if (number <= 1) {
+      return false; // edge case
+    }
+
+    for (int i = 2; i < number; i++) {
+      if (number % i == 0) {
+        return false; // number is divisible by i, so it is not prime
+      }
+    }
+
+    return true; // number is prime
+  }
+}
+```
+
+Below is a class called `NumberUtilityTest` that uses JUnit annotations and assertions to test the functionality of the `NumberUtility` class.
+
+```java
+/**
+ * This class will contain various test cases to test the functionality of
+ * the NumberUtility class.
+ */
+public class NumberUtilityTest {
+  public static NumberUtility nu;
+
+  /**
+   * @Test: Marks a method as a test method.
+   * @BeforeAll: Marks a method to be run before all test methods in the class.
+   * @AfterAll: Marks a method to be run after all test methods in the class
+   * have been run.
+   * @BeforeEach: Marks a method to be run before each test method.
+   * @AfterEach: Marks a method to be run after each test method.
+   */
+  @BeforeAll
+  public static void setup() {
+    nu = new NumberUtility();
+    System.out.println("Runs before all test methods.");
+  }
+
+  @BeforeEach
+  public void init() {
+    System.out.println("Runs before each test method.");
+  }
+
+  @AfterEach
+  public void tearDown() {
+    System.out.println("Runs after each test method.");
+  }
+
+  @AfterAll
+  public static void done() {
+    System.out.println("Runs after all test methods.");
+  }
+
+  // We will write some unit tests inside of this class.
+
+  @Test
+  public void testIsPrime_1_shouldBeFalse() {
+    /**
+     * AAA Pattern:
+     * Arrange: set up the data needed for the test.
+     * Act: run the method that is being tested.
+     * Assert: compare the actual result to the expected result.
+     */
+
+    // Arrange
+    // NumberUtility nu = new NumberUtility(); // moved to @BeforeAll method
+    int input = 1;
+    boolean expected = false;
+
+    // Act
+    boolean actual = nu.isPrime(input);
+
+    // Assert
+    Assertions.assertEquals(expected, actual);
+  }
+
+  @Test
+  public void testIsPrime_13_shouldBeTrue() {
+    // Arrange
+    // NumberUtility nu = new NumberUtility(); // moved to @BeforeAll method
+    int input = 13;
+    boolean expected = true;
+
+    // Act
+    boolean actual = nu.isPrime(input);
+
+    // Assert
+    Assertions.assertEquals(expected, actual);
+  }
+
+  @Test
+  public void testIsPrime_negativeNumber_shouldBeFalse() {
+    // Arrange
+    // NumberUtility nu = new NumberUtility(); // moved to @BeforeAll method
+    int input = -1000;
+    boolean expected = false;
+
+    // Act
+    boolean actual = nu.isPrime(input);
+
+    // Assert
+    Assertions.assertEquals(expected, actual);
+  }
+}
+```
