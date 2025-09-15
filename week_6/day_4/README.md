@@ -801,3 +801,164 @@ public void getPetById_succeeds() {
   Assertions.assertEquals(pet, petReturned);
 }
 ```
+
+## Mocking the DAO Layer
+
+#### The DAO Layer and the Service Layer
+
+The DAO (Data Access Object) layer is responsible for interacting with the database. It contains methods for CRUD (Create, Read, Update, Delete) operations on the database. It encapsulates data access logic and provides abstraction over the data source.
+
+The Service layer is responsible for the business logic of the application. It contains methods that perform operations on the data and interact with the DAO layer to retrieve or store data in the database. The Service layer acts as a bridge between the presentation layer (e.g., controllers) and the DAO layer.
+The Service layer implements use cases, enforces business rules, performs validation, and coordinates transactions.
+
+The service layer depends on the DAO layer to access and manipulate data. Service contain DAO instances that can be used to call their respective CRUD operation methods.
+
+#### Testing the Service Layer
+
+When testing the Service layer, we want to isolate it from the DAO layer. This is where mocking comes in. We can use Mockito to create mock objects of the DAO layer and inject them into the Service layer. This allows us to test the Service layer without actually interacting with the database.
+
+When testing the Service layer, we want to focus on the business logic and not the data access logic. DAO's are often mocked or stubbed to isolate the service logic from database interactions. Mocking DAO's allow for unit testing of service methods with controlled data scenarios. DAOs are tested separately to ensure correct database interactions and query execution; however, these are integration tests rather than unit tests.
+
+We can use Mockito to mock the DAO instance. The `@InjectMocks` annotation can be used to automatically inject mocked dependencies into the fields of the target object being tested. It simplifies the process of setting up the tests by automatically creating mocks for the dependencies of the target object and injecting them during test initialization.
+
+### Real World Application
+
+Understanding how to mock dependencies and test the service layer is crucial for several reasons:
+
+- **Isolation of Unit Tests**: By mocking dependencies, you can isolate the code under test from its collaborators, such as databases, external APIs, or third-party services. This allows you to focus on testing the logic specific to the service layer without the need for complex setup or teardown of external systems.
+- **Flexibility in Test Scenarios**: Mocking dependencies gives you control over the behavior and responses of external components, allowing you to simulate various scenarios and edge cases that may be difficult to reproduce in a real-world environment. This enables thorough testing of error handling, edge cases, and specific business logic.
+- **Enhances Code Quality and Maintainability**: Writing tests for the service layer with mocked dependencies encourages modular, loosely coupled design principles, leading to cleaner, more maintainable code. It also provides documentation of the service layer's expected behavior and interactions with its dependencies.
+
+In summary, understanding how to mock dependencies and test the service layer is essential for effective and comprehensive unit testing of your application's business logic and behavior.
+
+### Implementation
+
+The use case for the following test is finding a birthday celebration that actually happened. Let's assume birthdays were stored in a database with their year, but we do not know which was the latest, as celebrations did not happen every year. Thus, the business logic is searching back from a given year to find the most recent birthday celebration.
+
+It is this logic that we want to test, and nothing else. We are not interested in testing databases access; furthermore, we do not want to rely on data stored in a database, as this would make our tests brittle and unreliable.
+
+Technically, we know that the service layer depends on the DAO layer to access and manipulate data so we will mock the DAO layer to isolate the service layer. We also have access to the service implementation class, so we can construct it. Nevertheless, the DAO is a private hidden field in the service. The challenge is write a unit test, using Mockito, that asserts that the service actually searches back from a given year to find the most recent birthday celebration.
+
+#### Setting Up the Project
+
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>fri</groupId>
+    <artifactId>mockitoTest3</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+
+    </dependencies>
+
+</project>
+```
+
+#### Service and DAO Layer
+
+The code below is the service interface. The comment on the `findBirthdayCelebration()` method describes the business logic.
+Note: methods in interfaces are public by default.
+
+```java
+public interface BirthdayCelebrationService {
+  /**
+   * Find the most recent birthday celebration on or before the given year.
+   * If no birthday celebration is found, return null.
+   *
+   * @param year the year to search back from
+   * @return the most recent birthday celebration on or before the given year, or null if none found
+   */
+  BirthdayCelebration findBirthdayCelebration(int year);
+}
+```
+
+The service implementation contains the business logic that we want to test. It depends on the DAO layer to access the data.
+
+```java
+public class BirthdayCelebrationServiceImpl implements BirthdayCelebrationService {
+  private static final int MAX_YEARS_BACK = 100;
+  private BirthdayCelebrationDao dao = new BirthdayCelebrationDao();
+
+  public Date findBirthdayCelebration(int startYear) {
+    Date found = null;
+    int year = startYear;
+    for (int count = 0; found == null && count < MAX_YEARS_BACK; count++) {
+      found = dao.getBirthdayCelebration(year);
+      year--;
+    }
+    return found;
+  }
+}
+```
+
+Finally, here is the DAO layer that normally encapsulates the data access logic.
+
+```java
+public class BirthdayCelebrationDao {
+  public Date getBirthdayCelebration(int year) {
+    // This method would normally access the database to retrieve the birthday celebration for the given year.
+    // For this example, we will return null to simulate that no celebration was found.
+    return null;
+  }
+}
+```
+
+#### The Unit Test
+
+```java
+public class BirthdayCelebrationServiceTest {
+  @Mock private BirthdayCelebrationDao dao;
+
+  @InjectMocks
+  private BirthdayCelebrationService service = new BirthdayCelebrationServiceImpl();
+
+  @Before
+  public void initMocks() {
+    MockitoAnnotations.initMocks(this);
+  }
+
+  @Test
+  public void whenNoBirthdayCelebrationThenSkipToPreviousYear_Success() {
+    // Arrange
+    final int LATEST_BIRTHDAY_CELEBRATION_YEAR = 2017;
+    final Date expected = newBirthdayDate(LATEST_BIRTHDAY_CELEBRATION_YEAR);
+    final int START_YEAR = LATEST_BIRTHDAY_CELEBRATION_YEAR + 2;
+
+    for (int year = START_YEAR; year > LATEST_BIRTHDAY_CELEBRATION_YEAR; year--) {
+      when(dao.getBirthdayCelebration(year)).thenReturn(null);
+    }
+    when(dao.getBirthdayCelebration(LATEST_BIRTHDAY_CELEBRATION_YEAR)).thenReturn(expected);
+
+    // Act
+    final Date actual = service.findBirthdayCelebration(START_YEAR);
+
+    // Assert
+    Assertions.assertEquals(expected, actual);
+  }
+
+
+  private Date newBirthdayDate(int year) {
+        final Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.MONTH, Calendar.MAY);
+        calendar.set(Calendar.DAY_OF_MONTH, 12);
+        calendar.set(Calendar.YEAR, year);
+        return calendar.getTime();
+    }
+}
+```
