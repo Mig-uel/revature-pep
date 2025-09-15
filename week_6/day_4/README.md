@@ -337,3 +337,45 @@ public class TemperatureConverterImpl implements TemperatureConverter {
   }
 }
 ```
+
+## Video - Test Driven Development (TDD) Notes
+
+- Testing should not be optional, an afterthought, a chore, time-consuming, or expensive.
+- It should be strictly about 'code coverage' and 'quality assurance'.
+
+- When creating an executing tests you should make sure that you:
+  - Clarify any ambiguity in the requirements of the code.
+  - Ensure software meets expectations and helps achieve business objectives.
+  - Can easily identify areas that do not meet requirements.
+  - Assume product quality from the start.
+
+One methodology to achieve this is Test Driven Development (TDD).
+
+In this methodology, you write tests before writing the code that needs to be tested. These tests are based on the requirements that are established earlier.
+
+When you want to follow a TDD approach, you should follow these steps:
+
+1. Write a failing test based on the requirements.
+2. Fix the test by writing applicable code.
+3. Retest and refactor the code as needed.
+4. Repeat for each new requirement or feature.
+
+There are many different forms of testing:
+
+- Unit Testing - Testing individual units or components of a software application in isolation.
+- User Interface Testing - Testing the user interface of a software application to ensure it meets the requirements and is user-friendly.
+- Integration Testing - Testing the interaction between integrated components or systems.
+- Functional Testing - Testing the functionality of a software application to ensure it meets the requirements.
+- Quality Assurance Testing - Testing the overall quality of a software application to ensure it meets the required standards.
+- Performance Testing - Testing the performance of a software application to ensure it meets the required performance standards.
+- Security Testing - Testing the security of a software application to ensure it meets the required security standards.
+
+This list doesn't encapsulate all forms of testing, but it does give you an idea of the different types of testing that are available.
+
+Unit tests are all about verifying functionality at a micro level, testing individual methods or entities in isolation.
+
+- Write tests which execute the code on the individual units we want to inspect.
+- When the code under scrutiny deviates from the expected behavior, the test fails.
+- If the test passes, this means that the code behaves as expected.
+
+**UNIT TESTING SHOULD NEVER INTERACT WITH EXTERNAL SYSTEMS SUCH AS DATABASES OR APIs**
