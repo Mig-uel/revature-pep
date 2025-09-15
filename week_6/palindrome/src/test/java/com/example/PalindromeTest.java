@@ -1,10 +1,17 @@
 package com.example;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class PalindromeTest {
-  Palindrome palindrome = new Palindrome();
+  public static Palindrome palindrome;
+
+  @BeforeClass
+  public static void setUp() {
+    palindrome = new Palindrome();
+    System.out.println("BeforeClass executed");
+  }
 
   @Test
   public void isPalindromeStringNull() {
