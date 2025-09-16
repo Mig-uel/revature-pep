@@ -389,3 +389,203 @@ public class Container<T> {
 ```
 
 Now, the `Container` class is fully generic and enforces type safety at compile time. You can create a `Container` for any type, and it will only accept that type.
+
+## `Set` Interface
+
+The `Set` interface contains only methods inherited from the `Collection` interface and adds the restriction that duplicate elements are not allowed. More formally, sets contain no pair of elements `e1` and `e2` such that `e1.equals(e2)`, and at most one null element.
+
+`Set` also adds a stronger contract on the `equals` and `hashCode` methods, requiring that two sets be equal if they contain the same elements.
+
+#### `HashSet`
+
+A `HashSet` implements the `Set` interface, backed by a hash table (actually a `HashMap` instance).
+
+- Guarantees no ordering of elements.
+- Permits the null element.
+- Offers constant time performance for basic operations like add, remove, contains, and size, assuming the hash function disperses elements properly among the buckets.
+
+#### `TreeSet`
+
+A `TreeSet` implements the `Set` interface that uses a tree for storage. Its elements are maintained in sorted order, either according to their natural ordering or according to a specified comparator. Internally, it is backed by a Sorted Tree.
+
+- Guarantees that the elements will be in ascending order, sorted according to the natural order of the elements or by a `Comparator` provided at set creation time.
+- Does not permit the null element.
+- Insertion and removal operations take O(log n) time and are slow because of the sorting.
+
+The methods declared by the `Set` interface are:
+
+- `add(E e): boolean`: Adds the specified element to the set if it is not already present.
+  - Returns `true` if the set did not already contain the specified element, otherwise returns `false`.
+- `clear(): void`: Removes all elements from the set.
+- `contains(Object o): boolean`: Checks if the set contains the specified element.
+  - Returns `true` if the set contains the specified element, otherwise returns `false`.
+- `isEmpty(): boolean`: Checks if the set is empty.
+  - Returns `true` if the set contains no elements, otherwise returns `false`.
+- `iterator(): Iterator<E>`: Returns an iterator over the elements in the set.
+- `remove(Object o): boolean`: Removes the specified element from the set if it is present.
+  - Returns `true` if the set contained the specified element, otherwise returns `false`.
+- `size(): int`: Returns the number of elements in the set.
+
+Below is an example of using a `Set` in Java:
+
+```java
+import java.util.Set;
+
+public class Main {
+  public static void main(String[] args) {
+    int count[] = {34, 22, 10, 60, 30, 22};
+    Set<Integer> set = new HashSet<Integer>();
+
+    try {
+      for (int i = 0; i < 5; i++) {
+        set.add(count[i]);
+      }
+
+      System.out.println(set);
+
+      TreeSet<Integer> treeSet = new TreeSet<>(set);
+
+      System.out.println("The sorted list is:");
+      System.out.println(treeSet);
+
+      System.out.println("The first element of the set is: " + treeSet.first());
+      System.out.println("The last element of the set is: " + treeSet.last());
+    } catch (Exception e) {
+      System.out.println(e);
+    }
+  }
+}
+```
+
+### Real World Application
+
+A `Set` is a type of collection that does not allow duplicate elements. This means an element can only exist once in a set. It models the mathematical set abstraction.
+
+#### Characteristic of a Set
+
+- No duplicate elements: A set cannot contain two elements that are considered equal according to the `equals()` method.
+- Unordered: The elements in a set are not stored in any particular order. The order of elements may change over time as elements are added or removed.
+- Allows null elements: Most implementations of the `Set` interface allow the inclusion of a null element, although this may vary depending on the specific implementation.
+
+#### Why and When to Use a Set
+
+Based on the characteristics of a set, here are some reasons why and when you might want to use a set in your Java applications:
+
+- **Unique Elements**: If you need to store a collection of items where duplicates are not allowed, a set is the ideal choice. For example, if you are maintaining a list of unique user IDs or email addresses, a set will automatically handle duplicate entries for you.
+- **Order Independence**: If the order of elements is not important for your application, a set provides a simple and efficient way to store and manage your data without worrying about the order in which elements are added or retrieved.
+- **Efficient Lookups**: Sets typically provide efficient methods for checking the presence of an element. If your application requires frequent membership tests (i.e., checking if an item exists in the collection), a set can offer better performance compared to other collection types like lists.
+
+### Implementation
+
+The `Set` interface allows users to perform basic set operations. Let's use two sets of numbers to demonstrate these basic operations: [1, 3, 2, 4, 8, 9, 0] and [1, 3, 7, 5, 4, 0, 7, 5].
+
+Possible operations include:
+
+- **Union**: This operation combines all the elements from both sets, removing duplicates. The result of the union of the two sets would be [0, 1, 2, 3, 4, 5, 7, 8, 9].
+- **Intersection**: This operation finds the common elements between both sets. The result of the intersection of the two sets would be [0, 1, 3, 4].
+- **Difference**: This operation finds the elements that are in the first set but not in the second set. The result of the difference of the two sets would be [2, 8, 9].
+
+```java
+import java.util.*;
+
+public class Main {
+  public static void main(String[] args) {
+    // Creating an object of Set class
+    // Declaring object of Integer type
+    Set<Integer> a = new HashSet<Integer>();
+
+    // Adding elements to the set
+    a.addAll(Arrays.asList(
+      new Integer[] {1, 3, 2, 4, 8, 9, 0}
+    ));
+
+    // Creating another object of Set class
+    Set<Integer> b = new HashSet<Integer>();
+
+    // Adding elements to the set
+    b.addAll(Arrays.asList(
+      new Integer[] {1, 3, 7, 5, 4, 0, 7, 5}
+    ));
+
+    // To find union
+    Set<Integer> union = new HashSet<Integer>(a);
+    union.addAll(b);
+    System.out.print("Union of the two Set");
+    System.out.println(union);
+
+    // To find intersection
+    Set<Integer> intersection = new HashSet<Integer>(a);
+    intersection.retainAll(b);
+    System.out.print("Intersection of the two Set");
+    System.out.println(intersection);
+
+    // To find the symmetric difference
+    Set<Integer> difference = new HashSet<Integer>(a);
+    difference.removeAll(b);
+    System.out.print("Difference of the two Set");
+    System.out.println(difference);
+  }
+}
+```
+
+## `HashSet` and `TreeSet`
+
+#### `HashSet`
+
+A `HashSet` is a collection that implements the `Set` interface, backed by a hash table (actually a `HashMap` instance). It makes no guarantees as to the iteration order of the set; in particular, it does not guarantee that the order will remain constant over time. This class permits the null element.
+
+- Offers constant time performance for the basic operations (add, remove, contains, and size), assuming the hash function disperses the elements properly among the buckets.
+
+#### `TreeSet`
+
+A `TreeSet` is a collection that implements the `Set` interface that uses a tree for storage. It is part of the Java Collections Framework and implements the `NavigableSet` interface, which extends the `SortedSet` interface. The elements in a `TreeSet` are ordered using their natural ordering or by a specified comparator.
+
+- Guarantees that the elements will be in ascending order, sorted according to the natural order of the elements or by a `Comparator` provided at set creation time.
+- Does not permit the null element.
+- Insertion and removal operations take O(log n) time.
+
+`HashSet` and `TreeSet` belong to the collections framework. `HashSet` is the implementation of the `Set` interface, whereas `TreeSet` implements `SortedSet`. `TreeSet` is backed by a TreeMap, while `HashSet` is backed by a HashMap.
+
+| Category       | HashSet                                                                 | TreeSet                                                                                                                        |
+| -------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Implementation | Hash table (backed by a HashMap)                                        | Red-Black tree (backed by a TreeMap)                                                                                           |
+| Null Object    | Permits one null object                                                 | Does not permit null objects                                                                                                   |
+| Methods        | HashSet uses the `equals()` method to compare two objects for equality. | TreeSet uses the `compareTo()` method (from the `Comparable` interface) or a `Comparator` to compare two objects for ordering. |
+| Heterogeneous  | Permits heterogeneous objects if they are mutually comparable.          | Does not permit heterogeneous objects.                                                                                         |
+| Order          | Does not guarantee any specific order of elements.                      | Maintains elements in a sorted order (ascending by default).                                                                   |
+
+### Real World Application
+
+#### HashSets
+
+Hash Tables store data in key-value pairs. A hash function is used to compute an index (also called a hash code) into an array of buckets or slots, from which the desired value can be found. They only store data that has a key associated with it. Inserting and searching operations are very fast with hash tables.
+
+Some real-world applications of hash tables include:
+
+- **Databases**: Hash tables are used in database indexing to quickly locate a data record given its search key.
+- **Caching**: Hash tables are used in caching mechanisms to store frequently accessed data for quick retrieval.
+- Every time we type something to be searched on Google, it generates the desired output based on the principle of hashing.
+- **Message Digest**: A function of cryptography that takes an input and returns a fixed-size string of bytes. The output is typically a "digest" that is unique to each unique input. Hash functions are used in various security applications and protocols, including digital signatures and message authentication codes.
+- In our computers, we have various files stored in it; each file has two crucial pieces of information, namely the filename and file path. Hash tables are used to store this information, allowing for quick access to files based on their names.
+- **Social Network Feeds**: Hash tables are used to store and retrieve user data, posts, and comments efficiently.
+- **Password Hashing**: Hash tables are used to store hashed passwords securely, allowing for quick verification during login attempts.
+- Fast data lookup, such as symbols for compilers and interpreters, database indexing, caches, and unique data representation in many applications.
+- **Load Balancing**: Hash tables are used in load balancing algorithms to distribute requests evenly across multiple servers.
+
+#### TreeSets
+
+A tree is a data structure that consists of nodes connected by edges. Each node contains a value and references to its child nodes. The topmost node is called the root, and nodes with no children are called leaves. Trees are used to represent hierarchical relationships and allow for efficient searching, insertion, and deletion of elements.
+
+Some real-world applications of tree data structures include:
+
+- **XML/HTML Parsing**: Trees are used to represent the hierarchical structure of XML and HTML documents, allowing for efficient parsing and manipulation of the document's elements.
+- Decision-based algorithms, such as decision trees used in machine learning for classification and regression tasks.
+- Databases also use tree structures, such as B-trees and B+ trees, to index data for efficient searching and retrieval.
+- Domain Name Servers (DNS) use tree structures to map domain names to IP addresses, allowing for efficient resolution of domain names. A tree structure is used to represent the hierarchical nature of domain names, with each level of the tree representing a different level of the domain name hierarchy.
+- **File Systems**: File systems use tree structures to organize files and directories in a hierarchical manner, allowing for efficient navigation and access to files.
+- **Binary Search Trees (BST)**: BSTs are used in various applications, such as maintaining sorted data, implementing priority queues, and facilitating efficient searching and sorting operations.
+- On websites like Quora, comments are child nodes of the post, and replies to comments are child nodes of the comments. This hierarchical structure can be represented using a tree data structure.
+- Code compression algorithms, such as Huffman coding, use tree structures to represent the frequency of characters in a given text, allowing for efficient encoding and decoding of the text.
+- **Document Object Model (DOM)**: The DOM represents the structure of an HTML or XML document as a tree, allowing for easy manipulation and traversal of the document's elements.
+- Storing genealogy or family tree data, where each person is a node and relationships are represented as edges between nodes.
+- **JVM**: The Java Virtual Machine (JVM) uses tree structures to represent the hierarchy of classes and objects in a Java program, allowing for efficient memory management and garbage collection.
