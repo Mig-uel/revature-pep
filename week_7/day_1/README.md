@@ -220,3 +220,172 @@ public class Main {
   }
 }
 ```
+
+## Generics
+
+Generics is a feature in Java that allows developers to define classes, interfaces, and methods with a placeholder for the type of data they operate on. This means that you can create a single class or method that can work with different types of data without needing to write multiple versions for each type.
+
+Generics are constructs introduced in Java 5 that enforce compile-time type safety by allowing you to use parameterized types. This means you can define a class, interface, or method with a placeholder for the type of data it operates on, which is specified when the class or method is instantiated or called.
+
+Generics can be declared on a class (generic types), method parameters (generic methods), interfaces, or return types. The most common use of generics is with collections, such as `ArrayList`, `HashMap`, and `HashSet`, where you can specify the type of elements that the collection will hold.
+
+Before Java 5, you had to write something like this and hope developers used the correct types:
+
+```java
+List names = new ArrayList();
+names.add("Alice"); // OK
+names.add(123);     // Also OK, but not intended
+```
+
+With generics, you can restrict a class to only accept objects of a specific type, and the compiler will enforce this restriction:
+
+```java
+List<String> names = new ArrayList<>(); // Only Strings allowed
+names.add("Alice"); // OK
+names.add(123);     // Compile-time error
+```
+
+#### Generic Classes
+
+To make a class (or interface) generic, use angle brackets (`<>`) when declaring it and use an identifier (commonly a single uppercase letter), such as `T` for "type", `E` for "element", `K` for "key", or `V` for "value". This identifier acts as a placeholder for the actual type that will be specified when the class is instantiated and can be used throughout the class definition.
+
+```java
+public class MyGenericClass<T> {
+  private T instance;
+
+  // simple generic setter method
+  public void setObject(T object) {
+    this.instance = object;
+  }
+}
+```
+
+#### Naming Convention for Generics
+
+Technically, type parameters can be named anything you want. However, the convention is to use single uppercase letters to make it clear that they are type parameters and not regular class names. Here are some common conventions:
+
+| Letter  | Meaning                       |
+| ------- | ----------------------------- |
+| E       | Element (used in collections) |
+| K       | Key (used in maps)            |
+| N       | Number                        |
+| T       | Type (general type)           |
+| V       | Value (used in maps)          |
+| S, U, V | 2nd, 3rd types                |
+
+### Real World Application
+
+Consider this scenario where we are implementing a radio station on the web. One part of this large project is to create a class called `MetaInfoObject`, which is the superclass for `PLS` and `M3U` classes.
+
+```java
+public abstract class MetaInfoObject {
+  // ...code omitted for brevity
+}
+public class PLS extends MetaInfoObject {
+  // ...code omitted for brevity
+}
+public class M3U extends MetaInfoObject {
+  // ...code omitted for brevity
+}
+```
+
+We allow the web "DJ" to change playlists via a selection dialog box. This means that our dialog class, `SelectMultipleStreamDialog`, will have an object that can be of any type that extends `MetaInfoObject`. We can use generics to enforce this at compile time.
+
+```java
+public class SelectMultipleStreamDialog<T extends MetaInfoObject> {
+  private T selectedStream;
+
+  public T getSelectedStream() {
+    return selectedStream;
+  }
+
+  // ...code omitted for brevity
+}
+```
+
+Would it not still work if we just used `MetaInfoObject` as the type for `selectedStream` because of polymorphism? Yes, it would. However, using generics allows us to avoid casting when we retrieve the selected stream. For example:
+
+```java
+SelectMultipleStreamDialog<PLS> dialog = new SelectMultipleStreamDialog<>();
+PLS plsStream = dialog.getSelectedStream(); // No cast needed
+```
+
+vs.
+
+```java
+SelectMultipleStreamDialog dialog = new SelectMultipleStreamDialog();
+PLS plsStream = (PLS) dialog.getSelectedStream(); // Cast needed
+```
+
+We now have a flexible dialog box that can store different types of streams, rather than just one type, and we have type safety at compile time.
+
+### Implementation
+
+Recall that generics are a feature that you can use to define overall functionality for a class, interface, or method while deferring the specification of one or more types until the class or method is instantiated or called.
+
+Generics are commonly used with collections and classes as well as utility classes (a class whose purpose is to provide methods that perform common functions).
+
+In the example below, we will update a class to utilize generics to enforce type safety at compile time.
+
+Company XYZ has a special `Container` that they have developed. A container supports actions for adding an object, viewing what is in the container, and removing an object from the container.
+
+```java
+package com.example.model;
+
+public class Container {
+  private Object obj;
+  public void setObject(Object obj) {
+    this.obj = obj;
+  }
+  public Object getObject() {
+    return obj;
+  }
+  public Object removeObject() {
+    this.obj = null;
+    return obj;
+  }
+}
+```
+
+Company XYZ has an issue with this class. They want to restrict the type of items that go into the container to be of a single type. For example, they do not want to mix Integer objects with String objects in the same container. They want to enforce this restriction at compile time. How can they do this?
+
+With Generics!
+
+#### Potential Project Usage
+
+How can you make this class use generics to enforce type safety at compile time? Since we want the entire class and its single property to be constrained to a single type, we will make the class itself generic.
+
+```java
+public class Container<A> {
+  // ...code omitted for brevity
+}
+```
+
+Choosing the letter is important as there are industry conventions that you should follow. The most common letter used is `T` for "Type" and we will use that in our example.
+
+```java
+public class Container<T>  {
+
+}
+```
+
+This is great but it does not solve the problem yet. We need to update the property and methods to use the generic type `T` instead of `Object`. Since company XYZ wants to restrict the type of items that go into the container to be of a single type, we will update the property and methods accordingly.
+
+```java
+public class Container<T> {
+  private T obj;
+
+  public void setObject(T obj) {
+    this.obj = obj;
+  }
+  public T getObject() {
+    return obj;
+  }
+  public T removeObject() {
+    this.obj = null;
+    return obj;
+  }
+}
+```
+
+Now, the `Container` class is fully generic and enforces type safety at compile time. You can create a `Container` for any type, and it will only accept that type.
