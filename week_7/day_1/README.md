@@ -773,3 +773,77 @@ public class Main {
   }
 }
 ```
+
+## Map Interface
+
+The `Map` interface in Java does not extend the `Collection` interface; however, it is considered to be part of the Java Collections Framework. A map is an object that maps keys to values. A map cannot contain duplicate keys; each key can map to at most one value. It is used to identify a value by a key, and each entry in a map is a key-value pair.
+
+Because it does not implement `Iterable` as well, it does not support the enhanced for loop. However, you can iterate over the keys, values, or key-value pairs of a map using methods provided by the `Map` interface.
+
+- Use the `keySet()` method to get a set of all keys in the map and iterate over them.
+- Use the `values()` method to get a collection of all values in the map and iterate over them.
+- Use the `entrySet()` method to get a set of all key-value pairs in the map and iterate over them.
+
+There are two interfaces that extend the `Map` interface:
+
+- `SortedMap`: A map that maintains its entries in ascending order based on the natural ordering of its keys or by a specified comparator.
+- `NavigableMap`: A sorted map that provides navigation methods to retrieve entries based on their keys.
+
+The most commonly used classes that implement the `Map` interface are:
+
+- `HashMap`: A hash table-based implementation of the `Map` interface that allows null values and keys. It does not guarantee any specific order of the elements.
+  - Store elements in key-value pairs.
+  - Provides fast insertion and retrieval operations.
+  - Does not maintain any order of elements.
+  - Permits one null key and multiple null values.
+- `TreeMap`: A red-black tree-based implementation of the `NavigableMap` interface that maintains its entries in ascending order based on the natural ordering of its keys or by a specified comparator
+  - Store elements in key-value pairs.
+  - Provides log(n) time complexity for insertion and retrieval operations.
+  - Maintains elements in sorted order based on keys.
+  - Does not permit null keys (throws `NullPointerException`), but allows multiple null values.
+- `HashTable`: A synchronized hash table-based implementation of the `Map` interface that does not allow null values or keys. It is considered to be a legacy class and is generally not recommended for new code.
+  - Store elements in key-value pairs.
+  - Provides synchronized access, making it thread-safe.
+  - Does not maintain any order of elements.
+  - Does not permit null keys or null values (throws `NullPointerException`).
+
+### Real World Application
+
+Maps are perfect for key-value association mapping, such as directories. Maps are used to perform lookups by keys or when someone wants to retrieve and update elements based on keys. Some common real-world applications of maps include:
+
+- A map of error codes and their corresponding error messages.
+- A map of zip codes and their corresponding city names.
+- A map of managers and their corresponding employees. Each manager (key) can have multiple employees (values).
+- A map of classes and their corresponding students. Each class (key) can have multiple students (values).
+- In a banking project, you can map a customer to their various bank accounts.
+
+### Implementation
+
+Since `Map` is an interface, we cannot instantiate it directly. Instead, we can use one of its implementing classes, such as `HashMap`, `TreeMap`, or `Hashtable`. The following is an example of creating a `Map` object using the `HashMap` class:
+
+```java
+import java.util.*;
+
+class Main {
+  public static void main(String[] args) {
+    // Creating an empty HashMap
+    Map<String, Integer> hm = new HashMap<>(); // <KeyType, ValueType>
+
+    // Inserting pairs in the above Map using put() method
+    hm.put("India", new Integer(100));
+    hm.put("China", new Integer(150));
+    hm.put("USA", new Integer(50));
+    hm.put("UK", new Integer(30));
+
+    // Traversing the Map using a for-each loop
+    // Remember that Map does not implement Iterable so
+    // we cannot use the enhanced for loop directly on Map
+    // We can use keySet(), values(), or entrySet() methods to get
+    // a collection view of the keys, values, or key-value pairs
+    for (Map.Entry<String, Integer> me : hm.entrySet()) {
+      System.out.print(me.getKey() + ": ");
+      System.out.println(me.getValue());
+    }
+  }
+}
+```
