@@ -589,3 +589,187 @@ Some real-world applications of tree data structures include:
 - **Document Object Model (DOM)**: The DOM represents the structure of an HTML or XML document as a tree, allowing for easy manipulation and traversal of the document's elements.
 - Storing genealogy or family tree data, where each person is a node and relationships are represented as edges between nodes.
 - **JVM**: The Java Virtual Machine (JVM) uses tree structures to represent the hierarchy of classes and objects in a Java program, allowing for efficient memory management and garbage collection.
+
+## Queue Interface
+
+To visualize a queue, think of a hot dog stand. Customers arrive and get in line. The first customer in line is the first one to be served. New customers arriving at the stand go to the back of the line. Customers leave the line when they are served.
+
+Queues in Java work in a similar way. A queue is a collection used to hold multiple elements prior to processing. It is typically used to order elements in a FIFO (first-in-first-out) manner. After we declare a queue, we can add elements to the end (tail) of the queue and remove elements from the front (head) of the queue.
+
+Some queue specific methods are:
+
+- `offer(E e): boolean`: Inserts the specified element into the queue if it is possible to do so immediately without violating capacity restrictions.
+  - Returns `true` if the element was added to the queue, otherwise returns `false`.
+- `poll(): E`: Retrieves and removes the head of the queue, or returns `null` if the queue is empty.
+- `peek(): E`: Retrieves, but does not remove, the head of the queue, or returns `null` if the queue is empty.
+
+One exception to the FIFO rule is the `PriorityQueue` class, which orders its elements according to their natural ordering or by a specified comparator. In a priority queue, elements with higher priority are served before elements with lower priority, regardless of their order in the queue.
+
+In a `PriorityQueue`, when new elements are inserted, they are ordered based on their natural ordering or by a specified comparator. This means that elements with higher priority will be placed at the front of the queue, while elements with lower priority will be placed at the back. When elements are removed from the queue, they are removed in order of their priority, with the highest priority elements being removed first.
+
+#### Subinterfaces of Queue
+
+Generally, the `Queue` interface is inherited by three main subinterfaces:
+
+- `Deque`: A double-ended queue that allows insertion and removal of elements from both ends.
+- `BlockingQueue`: A queue that supports operations that wait for the queue to become non-empty when retrieving an element and wait for space to become available in the queue when storing an element.
+- `TransferQueue`: A blocking queue in which producers may wait for consumers to receive elements.
+
+Together, these three subinterfaces are implemented by various classes in the Java Collections Framework, such as `ArrayDeque`, `LinkedList`, `PriorityQueue`, `ArrayBlockingQueue`, `LinkedBlockingQueue`, and `SynchronousQueue`.
+
+##### Blocking Queues
+
+A `BlockingQueue` is a type of queue that supports operations that wait for the queue to become non-empty when retrieving an element and wait for space to become available in the queue when storing an element. This means that if a thread tries to retrieve an element from an empty `BlockingQueue`, it will block (wait) until an element becomes available. Similarly, if a thread tries to add an element to a full `BlockingQueue`, it will block until space becomes available.
+
+Standard implementations of the `BlockingQueue` interface include:
+
+- `ArrayBlockingQueue`: A bounded blocking queue backed by an array.
+- `LinkedBlockingQueue`: An optionally bounded blocking queue backed by linked nodes.
+- `SynchronousQueue`: A blocking queue in which each insert operation must wait for a corresponding remove operation by another thread, and vice versa.
+
+##### Transfer Queues
+
+A `TransferQueue` is a specialized type of `BlockingQueue` that allows producers to wait for consumers to receive elements. In a `TransferQueue`, when a producer adds an element to the queue, it can choose to wait until a consumer retrieves that element before proceeding. This is useful in scenarios where the producer wants to ensure that the consumer has processed the element before moving on.
+
+Standard implementations of the `TransferQueue` interface include:
+
+- `LinkedTransferQueue`: An unbounded `TransferQueue` based on linked nodes.
+
+##### Deques
+
+A `Deque` (double-ended queue) is a linear collection that supports the insertion and removal of elements from both ends. This means that you can add or remove elements from the front (head) or back (tail) of the deque. Much like a traditional queue, the `Deque` interface provides methods to add, retrieve, and peek at elements from both ends of the deque. Deques can be used to implement a stack (LIFO) or a queue (FIFO) data structure.
+
+Standard implementations of the `Deque` interface include:
+
+- `ArrayDeque`: A resizable-array implementation of the `Deque` interface.
+- `LinkedList`: A doubly-linked list implementation of the `Deque` interface.
+
+#### Commonly Used Implementing Classes
+
+- `LinkedList`: Implements both the `List` and `Deque` interfaces, allowing it to be used as a list, stack, or queue.
+- `ArrayDeque`: A resizable-array implementation of the `Deque` interface, providing a fast and efficient way to implement a double-ended queue.
+- `PriorityQueue`: Implements the `Queue` interface and provides a priority-based ordering of elements.
+- `ArrayBlockingQueue`: A bounded blocking queue backed by an array.
+
+#### Thread Safety
+
+Adding elements to queues is particularly useful in multi-threaded environments, where one thread produces data and another thread consumes it. A queue can be shared among threads and used to block progress until space is available or data is present, helping us overcome some common multi-threading issues.
+
+For example, writing to a single disk from multiple threads creates resource contention (multiple threads are trying to access the same resource at the same time) and can lead to slow performance or data corruption. Creating a single writer thread with a `BlockingQueue` can alleviate this issue by allowing multiple threads to add data to the queue while the single writer thread processes the data in the order it was added.
+
+Luckily, Java offers `Concurrent` implementations of the `Queue` interface that are thread-safe, such as `ConcurrentLinkedQueue`, `ConcurrentLinkedDeque`, and `ArrayBlockingQueue`, which are thread-safe without requiring additional synchronization.
+
+### Real World Application
+
+Queues are used when things do not have to be processed immediately but have to be processed in the order they were added to the queue. This property of the queue is called FIFO (First In First Out) and is what makes it useful in the following scenarios:
+
+- When a resource is shared among multiple consumers, such as a printer or CPU, a queue can be used to manage access to the resource in an orderly fashion.
+- When data is transferred asynchronously (data is sent and received at different times) between two processes or threads, a queue can be used to buffer the data and ensure that it is processed in the correct order.
+- In operating systems:
+  - Semaphores use queues to manage access to shared resources.
+  - First-Come-First-Served (FCFS) scheduling uses queues to manage the order in which processes are executed.
+  - Spooling uses queues to manage print jobs.
+  - Buffering for devices like keyboards and mice uses queues to manage input events.
+- In networks:
+  - Packet switching uses queues to manage the order in which packets are transmitted.
+  - Routers use queues to manage the order in which packets are forwarded.
+  - Mail servers use queues to manage the order in which emails are sent and received.
+- Some other applications of the Queue data structure include:
+  - Waiting lists for a single shared resource, like a printer or CPU.
+  - Buffers on MP3 players and other media devices.
+  - Call center phone systems use queues to manage incoming calls and route them to available agents.
+  - Adding a song at the end of a playlist.
+  - Handling requests on a single shared resource, like a web server or database.
+  - In breadth-first search algorithms, where nodes are explored level by level.
+
+### Implementation
+
+#### Creating Queue Objects
+
+Since `Queue` is an interface, we cannot instantiate it directly. Instead, we can use one of its implementing classes, such as `LinkedList`, `PriorityQueue`, or `ArrayDeque`. The following is an example of creating a `Queue` object using the `PriorityQueue` class:
+
+```java
+// Obj is the type of objects to be stored in the queue
+Queue<Obj> queue = new PriorityQueue<>();
+```
+
+```java
+import java.util.LinkedList;
+import java.util.Queue;
+
+public class Main {
+  public static void main(String[] args) {
+    Queue<Integer> q = new LinkedList<>();
+
+    // Adds elements {0, 1, 2, 3, 4} to queue
+    for (int i = 0; i < 5; i++) q.add(i);
+
+    // Display contents of the queue.
+    System.out.println("Elements of queue: " + q);
+
+    // To remove the head of queue.
+    int removedHead = q.remove();
+    System.out.println("Removed element: " + removedHead);
+
+    // To peek at the head of queue (without removing it).
+    int head = q.peek();
+    System.out.println("Head of queue: " + head);
+
+    // Res of the methods of the Collection interface,
+    // like size and contains can be used with this queue.
+    int size = q.size();
+    System.out.println("Size of queue: " + size);
+
+    boolean isEmpty = q.isEmpty();
+    System.out.println("Is queue empty? " + isEmpty);
+  }
+}
+```
+
+#### Creating Deque Objects
+
+Since `Deque` is an interface, we cannot instantiate it directly. Instead, we can use one of its implementing classes, such as `ArrayDeque` or `LinkedList`. The following is an example of creating a `Deque` object using the `LinkedList` class:
+
+```java
+import java.util.*;
+
+public class Main {
+  public static void main(String[] args) {
+    Deque<String> deque = new LinkedList<>();
+
+    // We can add elements to the queue in various ways
+
+    // Add to the end of the deque
+    deque.add("Element 1 (Tail)");
+
+    // Add to the front of the deque
+    deque.addFirst("Element 2 (Head)");
+
+    // Add to the end of the deque
+    deque.addLast("Element 3 (Tail)");
+
+    // Add to the front of the deque
+    deque.push("Element 4 (Head)");
+
+    // Add to the end of the deque
+    deque.offer("Element 5 (Tail)");
+
+    // Add to the front of the deque
+    deque.offerFirst("Element 6 (Head)");
+
+    System.out.println("Deque after additions: " + deque);
+
+    // We can remove elements from the deque in various ways
+
+    // Remove from the front of the deque
+    String removedElement = deque.removeFirst();
+    System.out.println("Removed from front: " + removedElement);
+
+    // Remove from the end of the deque
+    removedElement = deque.removeLast();
+    System.out.println("Removed from end: " + removedElement);
+
+    System.out.println("Deque after removals: " + deque);
+  }
+}
+```
