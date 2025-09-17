@@ -847,3 +847,154 @@ class Main {
   }
 }
 ```
+
+## HashMap and HashTable
+
+#### HashTable
+
+A `HashTable` is a synchronized hash table-based implementation of the `Map` interface that does not allow null values or keys. It is considered to be a legacy class and is generally not recommended for new code.
+
+- Any non-null object can be used as a key or as a value.
+- To successfully store and retrieve objects from a hashtable, the objects used as keys must implement the `hashCode` and `equals` methods.
+- Hash is synchronized, meaning it is thread-safe and can be shared between multiple threads without additional synchronization.
+- In Hashtable, we specify an object that is used as a key, and the value we want to associate with that key. They key is then hashed, and the resulting hash code is used as an index to store the value in an internal array.
+
+#### HashMap
+
+A `HashMap` is a hash table-based implementation of the `Map` interface that allows null values and keys. It does not guarantee any specific order of the elements.
+
+- This `Map` implementation usually acts as a bucketed hash table, and is roughly equivalent to `Hashtable`, except that it is unsynchronized and permits nulls.
+- When buckets get too large, i.e., a bucket contains too many key-value pairs, they are transformed into a balanced tree structure to improve performance.
+- In HashMap, we specify an object that is used as a key, and the value we want to associate with that key. The key is then hashed, and the resulting hash code is used as an index to store the value in an internal array.
+
+#### Order
+
+`HashMap` does not guarantee any specific order of the elements, while `Hashtable` also does not guarantee any specific order of the elements.
+
+This means we cannot assume any order while iterating over the entries of either `HashMap` or `Hashtable`. If we need a specific order, we can use other implementations of the `Map` interface, such as `LinkedHashMap` (which maintains insertion order) or `TreeMap` (which maintains sorted order based on keys).
+
+```java
+@Test
+public void whenInsertObjectsHashMap_thenRandomOrder() {
+  Map<Integer, String> hs = new HashMap<>();
+  hs.put(3, "Three");
+  hs.put(2, "Two");
+  hs.put(1, "One");
+
+  assertThat(hs.keySet()).containsInAnyOrder(1, 2, 3);
+}
+```
+
+### Real World Application
+
+#### HashMap
+
+HashMap is widely used in various applications due to its efficiency and flexibility. Some common real-world applications of HashMap include:
+
+- To populate a dropdown list in your forms (key as a dropdown option value and value as a dropdown option label).
+- To implement a phone book (key as a person's name and value as their phone number).
+- To implement a dictionary (key as a word and value as its definition).
+- Priority queues (key as the priority level and value as the task or item associated with that priority).
+- Dijkstra's algorithm (key as the node and value as the shortest distance from the source node).
+- Topological sorting (key as the node and value as its dependencies).
+- Caching (key as the resource identifier and value as the cached data).
+
+#### HashTable
+
+Hashtable is considered a legacy class and is generally not recommended for new code. However, it is still used in some applications due to its thread-safety and synchronization features. Some common real-world applications of Hashtable include:
+
+- In multi-threaded applications where multiple threads need to access and modify a shared map concurrently, Hashtable can be used to ensure thread-safety without requiring additional synchronization.
+- In legacy codebases that were developed before the introduction of the `ConcurrentHashMap` class, Hashtable may still be used for compatibility reasons.
+- File systems, where it can be used to store file metadata (key as the file name and value as the file attributes).
+- Pattern searching algorithms, where it can be used to store patterns and their corresponding actions (key as the pattern and value as the action).
+- Cryptography, where it can be used to store encryption keys and their corresponding algorithms (key as the encryption key and value as the algorithm).
+
+### Implementation
+
+#### HashMap
+
+`HashMap` is similar to `Hashtable`, but it is unsynchronized and permits nulls. This class makes no guarantees as to the order of the map; in particular, it does not guarantee that the order will remain constant over time.
+
+```java
+import java.util.HashMap;
+
+public class Main {
+  public static void main(String[] args) {
+    // Create an empty HashMap
+    HashMap<String, Integer> hm = new HashMap<>();
+
+    // Inserting pairs in the above HashMap using put() method
+    hm.put("India", new Integer(100));
+    hm.put("China", new Integer(150));
+    hm.put("USA", new Integer(50));
+
+    // Print size and content of the HashMap
+    System.out.println("Size of the HashMap: " + hm.size());
+    System.out.println("Content of the HashMap: " + hm);
+
+    // Checking if a key is present and if present, print its value
+    String key = "India";
+    if (hm.containsKey(key))
+      System.out.println("Value for " + key + " is: " + hm.get(key));
+  }
+}
+```
+
+#### HashTable
+
+`Hashtable` is synchronized, meaning it is thread-safe and can be shared between multiple threads without additional synchronization. Any non-null object can be used as a key or as a value.
+
+```java
+import java.io.*;
+import java.util.*;
+
+class Main {
+  public static void main(String[] args) {
+    // Create an empty Hashtable
+    Hashtable<Integer, String> ht = new Hashtable<>();
+
+    // Inserting pairs in the above Hashtable using put() method
+    ht.put(1, "One");
+    ht.put(2, "Two");
+    ht.put(3, "Three");
+
+    // Print the hashtable
+    System.out.println("The hashtable is: " + ht);
+  }
+}
+```
+
+#### Performing Various Operations on a Hashtable
+
+Below is a simple program to demonstrate changing elements in a hashtable:
+
+```java
+// Inserting elements in a Hashtable
+ht.put(1, "One");
+ht.put(2, "Two");
+ht.put(3, "Three");
+
+// Printing the Hashtable
+System.out.println("The hashtable is: " + ht);
+
+// Changing value for key 2
+ht.put(2, "New Two");
+System.out.println("The hashtable after change is: " + ht);
+```
+
+Below is a simple program to demonstrate removing elements from a hashtable:
+
+```java
+// Inserting elements in a Hashtable
+ht.put(1, "One");
+ht.put(2, "Two");
+ht.put(3, "Three");
+
+// Printing the Hashtable
+System.out.println("The hashtable is: " + ht);
+
+// Removing key 3
+ht.remove(3);
+
+System.out.println("The hashtable after removal is: " + ht);
+```
