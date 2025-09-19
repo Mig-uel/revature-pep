@@ -318,3 +318,248 @@ System.out.println("Stack after popping the top element: " + stack); // Output: 
 ```
 
 Both `ArrayList` and `LinkedList` implement the `List` interface, allowing for common list operations such as adding, removing, and accessing elements by index. However, `LinkedList` also implements the `Deque` interface, which provides additional methods for double-ended queue operations.
+
+## PriorityQueue
+
+The `PriorityQueue` class in Java is a queue data structure that orders its elements based on their natural ordering or a specified comparator. It is part of the Java Collections Framework and implements the `Queue` interface.
+
+Note that `PriorityQueue` is different from other standard queues that implement the FIFO (First-In-First-Out) principle. In a `PriorityQueue`, elements with higher priority are served before elements with lower priority, regardless of their insertion order.
+
+By default, the priority is determined by the natural ordering of the elements (for example, numeric or lexicographic order). Default priority can be overridden by providing a custom comparator when creating the `PriorityQueue`.
+
+A priority queue does not permit `null` elements and is not thread-safe. If multiple threads access a `PriorityQueue` concurrently, and at least one of the threads modifies the queue, it must be synchronized externally.
+
+A priority queue that relies on natural ordering also does not permit the insertion of non-comparable objects (doing so results in a `ClassCastException`).
+
+The head of this queue is the least element with respect to the specified ordering. If multiple elements are tied for least value, the head is one of those elements -- ties are broken arbitrarily. The queue retrieval operations `poll`, `remove`, `peek`, and `element` access the element at the head of the queue.
+
+A priority queue is unbounded but has an internal capacity governing the size of an array used to store the elements on the queue. It is always at least as large as the queue size. As elements are added to a priority queue, its capacity grows automatically. The details of the growth policy are not specified. In simple terms, the capacity grows by about 50% each time it needs to grow and the new capacity is at least large enough to hold the elements currently in the queue.
+
+This class and its iterator implement all of the optional methods of the `Collection` and `Iterator` interfaces. The `Iterator` provided in method `iterator()` is not guaranteed to traverse the elements of the priority queue in any particular order. If you need ordered traversal, consider using `Arrays.sort(pq.toArray())`.
+
+Note that this implementation is not synchronized. Multiple threads should not access a `PriorityQueue` instance concurrently if any of the threads modifies the queue. Instead, use the thread-safe `PriorityBlockingQueue` class.
+
+#### PriorityQueue Features
+
+Let's note a few important features of the `PriorityQueue` class:
+
+- `PriorityQueue` is an unbounded queue that orders its elements based on their natural ordering or a specified comparator and grows dynamically as elements are added (Unbounded means that there is no fixed size limit for the queue; it can grow as needed).
+- The default initial capacity of a `PriorityQueue` is 11, but it can be specified during instantiation.
+- It does not allow `null` elements and is not thread-safe.
+- The queue items must be `Comparable` to determine their priority, or a custom `Comparator` must be provided.
+- By default, the items in the queue are ordered in natural ascending order (i.e., the smallest element has the highest priority).
+- A `Comparator` can be provided to define a custom ordering for the elements in the queue.
+- A priority queue relying on natural ordering does not permit the insertion of non-comparable objects (doing so results in a `ClassCastException`).
+- The queue retrieval operations `poll`, `remove`, `peek`, and `element` access the element at the head of the queue, which is the least element with respect to the specified ordering.
+- The head of the `PriorityQueue` is the least element with respect to the specified ordering. If multiple elements are tied for least value, the head is one of those elements -- ties are broken arbitrarily.
+- It provides `O(log n)` time complexity for insertion and removal operations, making it efficient for priority-based processing.
+- The `Iterator` provided in the `iterator()` method does not guarantee any specific order of traversal. If ordered traversal is needed, consider using `Arrays.sort(pq.toArray())`.
+
+#### PriorityQueue Constructors
+
+The `PriorityQueue` class provides several constructors to create a priority queue with different configurations:
+
+- `PriorityQueue()`: Creates a priority queue with the default initial capacity (11) and natural ordering of elements.
+- `PriorityQueue(Collection c)`: Creates a priority queue containing the elements of the specified collection, with the default initial capacity and natural ordering.
+- `PriorityQueue(int initialCapacity)`: Creates a priority queue with the specified initial capacity and natural ordering.
+- `PriorityQueue(int initialCapacity, Comparator<? super E> comparator)`: Creates a priority queue with the specified initial capacity and the specified comparator for ordering elements.
+- `PriorityQueue(PriorityQueue<? extends E> c)`: Creates a priority queue containing the elements of the specified priority queue, with the same ordering.
+- `PriorityQueue(SortedSet<? extends E> c)`: Creates a priority queue containing the elements of the specified sorted set, with the same ordering.
+- `PriorityQueue(Comparator<? super E> comparator)`: Creates a priority queue with the specified comparator for ordering elements and the default initial capacity.
+
+#### PriorityQueue Methods
+
+The `PriorityQueue` class provides several methods to manipulate and access the elements in the queue:
+
+- Adding items:
+  - `boolean add(E e)`: Inserts the specified element into the priority queue. Throws an exception if the element cannot be added.
+  - `boolean offer(E e)`: Inserts the specified element into the priority queue. Returns `true` if the element was added successfully, or `false` if it could not be added
+- Accessing items:
+  - `E peek()`: Retrieves, but does not remove, the head of the queue, or returns `null` if the queue is empty.
+  - `E element()`: Retrieves, but does not remove, the head of the queue. Throws an exception if the queue is empty.
+- Removing items:
+  - `E poll()`: Retrieves and removes the head of the queue, or returns `null` if the queue is empty.
+  - `E remove()`: Retrieves and removes the head of the queue. Throws an exception if the queue is empty.
+  - `void clear()`: Removes all elements from the priority queue.
+- Other methods:
+  - `Comparator<? super E> comparator()`: Returns the comparator used to order the elements in the queue, or `null` if the queue uses natural ordering.
+  - `boolean contains(Object o)`: Returns `true` if the queue contains the specified element.
+  - `Iterator<E> iterator()`: Returns an iterator over the elements in the queue.
+  - `int size()`: Returns the number of elements in the queue.
+  - `Object[] toArray()`: Returns an array containing all elements in the queue.
+
+### Real World Application
+
+A `PriorityQueue` is different from a normal queue because instead of being FIFO (First In First Out), it serves elements based on their priority. Elements with higher priority are served before elements with lower priority, regardless of their insertion order. It is an abstract data type that captures the idea of a container whose elements have "priorities" associated with them. An element with high priority always appears at the front of the queue, while an element with low priority appears at the back of the queue. If that priority element is removed, the next highest priority element will be at the front of the queue.
+
+A priority queue is typically implemented using a heap data structure, which allows for efficient insertion and removal of elements based on their priority. The most common implementation is a binary heap, where each parent node has a higher priority than its child nodes.
+
+Here are some real world applications of `PriorityQueue`:
+
+- **Dijkstra's Algorithm**: In graph algorithms like Dijkstra's algorithm for finding the shortest path, a priority queue is used to efficiently retrieve the next node with the smallest tentative distance.
+- **Prim's Algorithm**: In Prim's algorithm for finding the minimum spanning tree of a graph, a priority queue is used to select the next edge with the smallest weight.
+- **Data Compression**: In data compression algorithms like Huffman coding, a priority queue is used to build the Huffman tree by repeatedly merging the two nodes with the smallest frequencies.
+- **Artificial Intelligence**: In AI applications, priority queues can be used in search algorithms like A\* to prioritize nodes based on their estimated cost to reach the goal.
+- **Heap Sort**: The heap sort algorithm uses a priority queue to sort elements by repeatedly extracting the maximum (or minimum) element from the heap.
+- **Operating Systems**: In operating systems, priority queues are used for scheduling tasks based on their priority levels, ensuring that high-priority tasks are executed before lower-priority ones.
+
+### Implementation
+
+The example below explains the following basic operations of a `PriorityQueue`:
+
+- `boolean add(E e)`: Inserts the specified element into the priority queue. Throws an exception if the element cannot be added.
+- `E peek()`: Retrieves, but does not remove, the head of the queue, or returns `null` if the queue is empty.
+- `E poll()`: Retrieves and removes the head of the queue, or returns `null` if the queue is empty.
+
+```java
+import java.util.*;
+
+class Main {
+    public static void main(String[] args) {
+        // Creating an empty PriorityQueue
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+
+        // Adding elements to the PriorityQueue
+        pq.add(5);
+        pq.add(10);
+        pq.add(15);
+
+        // Displaying the PriorityQueue
+        System.out.println("PriorityQueue: " + pq); // Output: [5, 10, 15]
+
+        // Displaying the head of the PriorityQueue without removing it
+        System.out.println("Head of PriorityQueue: " + pq.peek()); // Output: 5
+
+        // Displaying and removing the head of the PriorityQueue
+        System.out.println("Removed head of PriorityQueue: " + pq.poll()); // Output: 5
+
+        // Displaying the head of the PriorityQueue after removal
+        System.out.println("Head of PriorityQueue after removal: " + pq.peek()); // Output: 10
+    }
+}
+```
+
+#### Operations on a PriorityQueue
+
+Let's see how to perform a few frequently used operations on a `PriorityQueue`:
+
+##### Adding Elements
+
+To add elements to a `PriorityQueue`, you can use the `add()` or `offer()` methods. Both methods insert the specified element into the priority queue. The insertion order is not retained; instead, elements are ordered based on their priority, which is ascending order by default.
+
+```java
+import java.util.*;
+import java.io.*;
+
+public class Main {
+    public static void main(String[] args) {
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+
+        // Adding elements to the PriorityQueue
+        for (int i = 0; i < 3; i++) {
+            pq.add(i);
+            pq.add(1);
+        }
+
+        while (!pq.isEmpty()) {
+            System.out.println(pq.poll());
+        }
+
+        // Output:
+        // 0
+        // 1
+        // 1
+        // 1
+        // 2
+    }
+}
+```
+
+Note: we did not get the elements in the order we added them. The `PriorityQueue` orders them based on their natural ordering (ascending order for integers).
+
+##### Removing Elements
+
+In order to remove an element from a priority queue, we can use the `poll()` or `remove()` methods. Both methods remove and return the head of the queue, which is the element with the highest priority (the smallest element in natural ordering). If the queue is empty, `poll()` returns `null`, while `remove()` throws a `NoSuchElementException`.
+
+```java
+import java.util.*;
+import java.io.*;
+
+class Main {
+    public static void main(String[] args) {
+        // Creating a PriorityQueue
+        PriorityQueue<String> pq = new PriorityQueue<>();
+
+        // Adding elements to the PriorityQueue
+        pq.add("Apple");
+        pq.add("Banana");
+        pq.add("Apple"); // Duplicate element
+
+        System.out.println("Initial PriorityQueue: " + pq); // Output: [Apple, Apple, Banana]
+
+        // Removing elements from the PriorityQueue
+        pq.remove("Apple"); // Removes one occurrence of "Apple"
+
+        System.out.println("PriorityQueue after removing 'Apple': " + pq); // Output: [Apple, Banana]
+
+        System.out.println("Polled element: " + pq.poll()); // Output: Apple
+
+        System.out.println("PriorityQueue after polling: " + pq); // Output: [Banana]
+    }
+}
+```
+
+##### Accessing Elements
+
+Since a queue follows the FIFO (First In First Out) principle, we can only access the head of the queue. To access the head of the queue without removing it, we can use the `peek()` or `element()` methods. Both methods return the head of the queue, but if the queue is empty, `peek()` returns `null`, while `element()` throws a `NoSuchElementException`.
+
+```java
+import java.util.*;
+
+class Main {
+    public static void main(String[] args) {
+        // Creating a PriorityQueue
+        PriorityQueue<String> pq = new PriorityQueue<>();
+
+        // Adding elements to the PriorityQueue
+        pq.add("Apple");
+        pq.add("Banana");
+        pq.add("Apple"); // Duplicate element
+
+        System.out.println("Initial PriorityQueue: " + pq); // Output: [Apple, Apple, Banana]
+
+        // Using peek() to access the head of the queue without removing it
+        String element = pq.peek();
+        System.out.println("Head of the queue using peek(): " + element); // Output: Apple
+    }
+}
+```
+
+##### Iterating Over a PriorityQueue
+
+There are multiple ways to iterate over the elements of a `PriorityQueue`. However, it's important to note that the iterator does not guarantee any specific order of traversal. If ordered traversal is needed, consider using `Arrays.sort(pq.toArray())`. The most common way to iterate is to convert the queue to an array and then iterate over the array. However, the queue also has a built-in iterator.
+
+```java
+import java.util.*;
+
+class Main {
+    public static void main(String[] args) {
+        // Create a PriorityQueue
+        PriorityQueue<String> pq = new PriorityQueue<>();
+
+        // Add elements to the PriorityQueue
+        pq.add("Apple");
+        pq.add("Banana");
+        pq.add("Cherry");
+
+        // Obtain an iterator for the PriorityQueue
+        Iterator<String> iterator = pq.iterator();
+
+        // Iterate through the PriorityQueue using the iterator
+        while (iterator.hasNext()) {
+            String element = iterator.next();
+            System.out.println(element);
+        }
+    }
+}
+```
