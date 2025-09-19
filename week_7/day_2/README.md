@@ -563,3 +563,221 @@ class Main {
     }
 }
 ```
+
+## Stacks and Vectors
+
+#### Vector
+
+The `Vector` class in Java is a part of the Java Collections Framework and implements a dynamic array that can grow or shrink in size as needed. It is similar to an `ArrayList`, but with some key differences.
+
+Like an array, it contains elements that can be accessed using an integer index. However, unlike an array, a `Vector` can dynamically resize itself when elements are added or removed.
+
+Each vector trues to optimize storage management by maintaining a capacity and a capacity increment. The capacity is always at least as large as the vector size; it is usually larger because as elements are added to a vector, the vector's capacity grows automatically. The capacity increment is the amount by which the capacity of the vector is increased when its size becomes greater than its capacity. If the capacity increment is not specified, it defaults to doubling the current capacity. An application can increase the capacity of a vector before inserting a large number of elements by calling the `ensureCapacity` method; this may reduce the number of incremental re-allocations.
+
+The iterators returned by the `iterator` and `listIterator` methods of this class are fail-fast: if the vector is structurally modified at any time after the iterator is created, in any way except through the iterator's own `remove` or `add` methods, the iterator will throw a `ConcurrentModificationException`. Thus, in the face of concurrent modification, the iterator fails quickly and cleanly, rather than risking arbitrary, non-deterministic behavior at an undetermined time in the future.
+
+Note that the fail-fast behavior of an iterator cannot be guaranteed as it is, generally speaking, impossible to make any hard guarantees in the presence of unsynchronized concurrent modification. Fail-fast iterators throw `ConcurrentModificationException` on a best-effort basis. Therefore, it would be wrong to write a program that depended on this exception for its correctness: the fail-fast behavior of iterators should be used only to detect bugs.
+
+As of Java 2 platform v1.2, this class was retrofitted to implement the `List` interface, making it a member of the Java Collections Framework. Unlike the new collection implementations, `Vector` is synchronized. If a thread-safe implementation is not needed, it is recommended to use `ArrayList` in place of `Vector`.
+
+#### Stack
+
+The `Stack` class in Java is a part of the Java Collections Framework and represents a last-in-first-out (LIFO) stack of objects. It extends the `Vector` class with five operations that allow a vector to be treated as a stack. The usual push and pop operations are provided, as well as a method to peek at the top item on the stack, a method to test for whether the stack is empty, and a method to search the stack for an item and discover how far it is from the top. When a stack is first created, it contains no items.
+
+A more complete and consistent set of LIFO stack operations is provided by the `Deque` interface and its implementations, which should be used in preference to this class.
+
+In the following example, we have created an instance of the `Stack` class.
+
+```java
+import java.util.Stack;
+
+class Main {
+    public static void main(String[] args) {
+        // Creating a Stack
+        Stack<Integer> stack = new Stack<>();
+
+        // Checking if the stack is empty
+        boolean isEmpty = stack.isEmpty();
+        System.out.println("Is the stack empty? " + isEmpty); // Output: true
+
+        // Pushing elements onto the stack
+        stack.push(10);
+        stack.push(20);
+        stack.push(30);
+        stack.push(40);
+
+        // Displaying the stack
+        System.out.println("Stack after pushing elements: " + stack); // Output: [10, 20, 30, 40]
+
+        isEmpty = stack.isEmpty();
+        System.out.println("Is the stack empty? " + isEmpty); // Output: false
+    }
+}
+```
+
+#### Stack `push()` and `pop()` Methods
+
+The `push()` method is used to add an element to the top of the stack, while the `pop()` method is used to remove and return the top element from the stack. If the stack is empty, calling `pop()` will throw an `EmptyStackException`.
+
+```java
+import java.util.Stack;
+
+class Main {
+    public static void main(String[] args) {
+        // Creating a Stack
+        Stack<Integer> stack = new Stack<>();
+
+        // Pushing elements onto the stack
+        pushElement(stack, 10);
+        pushElement(stack, 20);
+        pushElement(stack, 30);
+        pushElement(stack, 40);
+
+        // Popping elements from the stack
+        try {
+            popElement(stack);
+            popElement(stack);
+            popElement(stack);
+            popElement(stack);
+            popElement(stack); // This will throw EmptyStackException
+        } catch (Exception e) {
+            System.out.println("Exception: " + e.getMessage());
+        }
+    }
+
+    // Pushing elements onto the stack
+    static void pushElement(Stack<Integer> stack, int element) {
+        // Invoking the push() method
+        stack.push(element);
+        System.out.println("Pushed element: " + element);
+        System.out.println("Stack after pushing element: " + stack);
+    }
+
+    // Popping elements from the stack
+    static void popElement(Stack<Integer> stack) throws EmptyStackException {
+        Integer poppedElement = stack.pop();
+        System.out.println("Popped element: " + poppedElement);
+        System.out.println("Stack after popping element: " + stack);
+    }
+}
+```
+
+### Real World Application
+
+Here are some different application of the stack data structure:
+
+- Memory management (function calls, local variables)
+- Function calls, particularly recursive function calls
+- String reversal
+- Parenthesis checking
+- Syntax parsing
+- Matching HTML tags
+- Arithmetic expression evaluation
+
+### Implementation
+
+Below we will implement a stack from scratch using an array.
+
+```java
+public class Stack {
+    private int lastItem = 0;
+    private int[] items = new int[0];
+
+    // Add items to the stack
+    public void push(int item) {
+
+    }
+
+    // Remove items from the stack
+    public int pop() {
+
+    }
+
+    // View last item added to the stack
+    public int peek() {
+
+     }
+}
+```
+
+We will use this basic structure to keep track of the last item added to the stack and an array to store the items in the stack. We will implement the `push()`, `pop()`, and `peek()` methods to add, remove, and view items in the stack, respectively.
+
+Notice that we have initialized the `items` array to have a size of 0. This is because we will dynamically resize the array as we add items to the stack.
+
+#### Implementing the `push()` Method
+
+The first thing we'll do is implement the `push()` method. This method will add an item to the top of the stack. If the stack is full, we will resize the array to double its current size.
+
+It will also track the last item added to the stack.
+
+To add an item to the array, we will simply add the new item to the end of the array. But how do we know where the end of the array is? Since we initialized it with a length of zero, we can use the length property to find the end of the array. In addition to that, we must increase the length of the array by one to accommodate the new item. If we increase the length of the array by one, we will have an empty space at the end of the array where we can add the new item.
+
+```java
+public void push(int item) {
+    int index = items.length; // Find the end of the array
+
+    // Create a new array with an increased size
+    int[] newItems = new int[index + 1];
+
+    // Copy the old items to the new array
+    // Parameters: source array, starting position in source array,
+    // destination array, starting position in destination array, number of elements to copy
+    System.arraycopy(items, 0, newItems, 0, index);
+
+    newItems[index] = item; // Add the new item to the end of the array
+    items = newItems; // Update the items array to the new array
+    lastItem = item; // Update the last item added to the stack
+
+    // Debugging output
+    System.out.println("Updated Stack: " + java.util.Arrays.toString(items));
+}
+```
+
+#### Implementing the `pop()` Method
+
+Adding items to the stack is great, but we also need a way to remove items from the stack. This is where the `pop()` method comes in. This method will remove the last item added to the stack and return it.
+
+You'll find that our current approach to a Stack may be challenging to support.
+
+For instance, we have a reference to the last item added to the stack, but we cannot simply return that item. We need to remove it entirely from the array. Arrays are fixed-size objects in Java, so that means we'll have to copy over all of the elements to a new array, minus the last item.
+
+```java
+public int pop() {
+    int temp = lastItem; // Store the last item to return later
+
+    // Create a new array with a decreased size
+    int[] newItems = new int[items.length - 1];
+
+    // Copy the old items to the new array, excluding the last item
+    // System.arraycopy(items, 0, newItems, 0, items.length - 1);
+    for (int i = 0; i < newItems.length; i++) {
+        newItems[i] = items[i];
+    }
+
+    items = newItems; // Update the items array to the new array
+    lastItem = items[items.length - 1]; // Update the last item added to the stack
+
+    return temp; // Return the last item
+}
+```
+
+#### Testing Our Stack Implementation
+
+Now that we have implemented the `push()` and `pop()` methods, let's test our stack implementation to ensure it works as expected.
+
+```java
+class StackTest {
+    public static void main(String[] args) {
+        Stack stack = new Stack();
+
+        // Push elements onto the stack
+        stack.push(10);
+        stack.push(20);
+
+        int val = stack.pop(); // Should return 20
+
+        System.out.println(val); // Output: 20
+        System.out.println(val); // Output: 20
+    }
+}
+```
