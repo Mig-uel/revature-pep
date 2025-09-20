@@ -916,3 +916,228 @@ class TestSort2 {
 ```
 
 In the above example, we have modified the `compareTo()` method to sort students based on their age in reverse order. The rest of the code remains the same. When we run the program, we get the sorted list of students in descending order of age.
+
+## Comparator Interface
+
+The `Comparator` interface in Java is used to define a custom ordering for objects of a class. It is part of the `java.util` package and contains two methods, `compare()` and `equals()`, which are used to compare two objects of the same type.
+
+A class must implement the `Comparator` interface if it is to be sorted by the `compare()` method. The `compare()` method returns an integer value that indicates the relative order of the two objects being compared. The method returns:
+
+- A negative integer if the first object is less than the second object.
+- Zero if the first object is equal to the second object.
+- A positive integer if the first object is greater than the second object.
+
+```java
+public interface Comparator<T> {
+    public int compare(T firstObj, T secondObj);
+}
+```
+
+A comparator in Java is a function that defines how objects should be ordered. It can be passed to sorting methods like `Collections.sort` or `Arrays.sort` to control the exact sort order, and it is also used by data structures such as `TreeSet` and `TreeMap`, which need a consistent way to arrange their elements. Comparators are especially useful when objects do not have a natural ordering or when a custom ordering is required.
+
+A key rule when creating comparators is that they should usually be consistent with `equals`. This means that if two objects are considered equal using `equals()`, the comparator should also treat them as equal (i.e., `compare(a, b) == 0`). If the comparator and `equals()` disagree, collections like `TreeSet` and `TreeMap` may behave in unexpected ways. For example, a `TreeSet` might allow two objects that are considered equal by `equals()` to both exist in the set, violating the expectation that a set contains no duplicates.
+
+To avoid these issues, it is generally best practice to ensure your comparator agrees with `equals()`. Additionally, when working with serializable data structures, the comparator itself should also implement `Serializable` so the data structure can be saved and restored properly.
+
+In short, comparators give you control over how objects are ordered and stored, but they must be designed carefully to avoid breaking the contracts that sets and maps rely on.
+
+### Real World Application
+
+The Java `Comparator` interface imposes a total ordering on objects that may not have a natural ordering. This is useful when you want to sort objects based on different attributes or criteria.
+
+For example, for a `List` of `Employee` objects, the natural order may be ordered by the employee ID. However, in real life applications, we may want to sort the list by their first name, date of birth, or any other attribute. In such cases, we can use the `Comparator` interface to define custom sorting logic.
+
+We can use the `Comparator` interface in various scenarios, such as:
+
+- Sorting the array or list of objects, but NOT based on their natural ordering.
+- Sorting the array or list of objects where we cannot modify the source code of the class whose objects we want to sort.
+- Using group by sort on a list or array of objects on multiple attributes.
+
+### Implementation
+
+Supposed we have an `Array` or `ArrayList` of our custom class, containing fields like `rollNo`, `name`, and `address`, `DOB`, etc. We need to sort the array based on `rollNo` or `name`.
+
+- Method 1: One obvious approach is to write our own `sort()` method using any sorting algorithm like bubble sort, selection sort, etc. This solution requires rewriting sorting logic every time we want to sort the array based on a different attribute.
+- Method 2: Another approach is to implement the `Comparator` interface in our custom class and override the `compare()` method. Using a comparator, we can sort the elements based on data members. For instance, it can sort based on `rollNo` or `name`. This approach is more flexible and reusable.
+
+#### How Does the `sort()` Method of the Collections Class Work?
+
+Internally, the `sort()` method of calls the `compare()` method of the `Comparator` interface to compare two objects. To compare two elements, it asks, "Which is greater?" The `compare()` method returns a negative integer, zero, or a positive integer as the first argument is less than, equal to, or greater than the second.
+
+```java
+import java.util.*;
+import java.io.*;
+import java.lang.*;
+
+// Class 1
+// A class to represent a student.
+class Student {
+    int rollNo;
+    String name;
+    String address;
+
+    // Constructor
+    Student(int rollNo, String name, String address) {
+        this.rollNo = rollNo;
+        this.name = name;
+        this.address = address;
+    }
+
+    @Override
+    public String toString() {
+        return this.rollNo + " " + this.name + " " + this.address;
+    }
+}
+
+// Class 2
+// Helper class implementing Comparator interface
+class SortByRollNo implements Comparator<Student> {
+    // Method
+    // Sorting in ascending order of roll number
+    public int compare(Student a, Student b) {
+        return a.rollNo - b.rollNo;
+    }
+}
+
+// Class 3
+// Helper class implementing Comparator interface
+class SortByName implements Comparator<Student> {
+    // Method
+    // Sorting in ascending order of name
+    @Override
+    public int compare(Student a, Student b) {
+        return a.name.compareTo(b.name);
+    }
+}
+
+// Class 4
+// Main class
+class Main {
+    public static void main(String[] args) {
+        // Creating an ArrayList of Student
+        ArrayList<Student> al = new ArrayList<Student>();
+
+        // Adding Student to the ArrayList
+        al.add(new Student(101, "Vijay", "Delhi"));
+        al.add(new Student(106, "Ajay", "Mumbai"));
+        al.add(new Student(105, "Jai", "Chennai"));
+        al.add(new Student(102, "Raj", "Kolkata"));
+
+        // Display message
+        System.out.println("Unsorted");
+        // Iterating using for-each loop
+        for (Student st : al) {
+            System.out.println(st);
+        }
+
+        // Sorting students by roll number
+        Collections.sort(al, new SortByRollNo());
+        System.out.println("\nSorted by roll number");
+        for (Student st : al) {
+            System.out.println(st);
+        }
+
+        // Sorting students by name
+        Collections.sort(al, new SortByName());
+        System.out.println("\nSorted by name");
+        for (Student st : al) {
+            System.out.println(st);
+        }
+
+        // Output:
+        // Unsorted
+        // 101 Vijay Delhi
+        // 106 Ajay Mumbai
+        // 105 Jai Chennai
+        // 102 Raj Kolkata
+
+        // Sorted by roll number
+        // 101 Vijay Delhi
+        // 102 Raj Kolkata
+        // 105 Jai Chennai
+        // 106 Ajay Mumbai
+
+        // Sorted by name
+        // 106 Ajay Mumbai
+        // 105 Jai Chennai
+        // 102 Raj Kolkata
+        // 101 Vijay Delhi
+    }
+}
+```
+
+#### Sort Collection by More Than One Attribute
+
+In the previous example, we discussed how to sort the list of objects based on a single attribute using the `Comparable` and `Comparator` interfaces. But what if we want to sort the list based on multiple attributes? For example, we may want to sort the list of students first by their name and then by their age.
+
+We can achieve this by chaining multiple comparators together. We can use the `thenComparing()` method of the `Comparator` interface to chain multiple comparators. The `thenComparing()` method returns a new comparator that first uses the original comparator and then uses the specified comparator if the original comparator considers the two elements equal.
+
+```java
+import java.util.*;
+import java.io.*;
+import java.lang.*;
+
+// Class 1
+// A class to represent a student.
+class Student {
+    String name;
+    int age;
+
+    // Constructor
+    Student(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    @Override
+    public String toString() {
+        return this.name + " " + this.age;
+    }
+}
+
+// Class 2
+// Main class
+class Main {
+    public static void main(String[] args) {
+        // Creating an ArrayList of Student
+        ArrayList<Student> al = new ArrayList<Student>();
+
+        // Adding Student to the ArrayList
+        al.add(new Student("Vijay", 23));
+        al.add(new Student("Ajay", 27));
+        al.add(new Student("Jai", 21));
+        al.add(new Student("Raj", 23));
+        al.add(new Student("Raj", 22));
+
+        // Display message
+        System.out.println("Unsorted");
+        // Iterating using for-each loop
+        for (Student st : al) {
+            System.out.println(st);
+        }
+
+        // Sorting students by name and then by age
+        Collections.sort(al, Comparator.comparing((Student s) -> s.name)
+                                       .thenComparing(s -> s.age));
+        System.out.println("\nSorted by name and then by age");
+        for (Student st : al) {
+            System.out.println(st);
+        }
+
+        // Output:
+        // Unsorted
+        // Vijay 23
+        // Ajay 27
+        // Jai 21
+        // Raj 23
+        // Raj 22
+
+        // Sorted by name and then by age
+        // Ajay 27
+        // Jai 21
+        // Raj 22
+        // Raj 23
+        // Vijay 23
+   }
+}
+```
