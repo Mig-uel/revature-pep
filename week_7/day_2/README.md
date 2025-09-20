@@ -781,3 +781,138 @@ class StackTest {
     }
 }
 ```
+
+## Comparable Interface
+
+The `Comparable` interface in Java is used to define the natural ordering of objects of a class. It is part of the `java.lang` package and contains a single method, `compareTo()`, which is used to compare the current object with another object of the same type.
+
+A class must implement the `Comparable` interface if it is to be sorted by the `compareTo()` method. The `compareTo()` method returns an integer value that indicates the relative order of the two objects being compared. The method returns:
+
+- A negative integer if the current object is less than the specified object.
+- Zero if the current object is equal to the specified object.
+- A positive integer if the current object is greater than the specified object.
+
+```java
+public interface Comparable<T> {
+    int compareTo(T o);
+}
+```
+
+We can sort the elements of:
+
+- `String` objects in lexicographical order.
+- Wrapper class objects in ascending numerical order.
+- User-defined class objects based on a specific attribute.
+- `Date` objects in chronological order.
+- and many more.
+
+#### Collections Class
+
+The `Collections` class provides static methods for sorting the elements of collections. If collection elements are of type `Set` or `Map`, we can use `TreeSet` or `TreeMap` to sort the elements. However, we cannot sort the elements of a `List` type directly. We can use the `Collections.sort()` method to sort the elements of a `List`.
+
+#### Real World Application
+
+The `Comparable` interface is often used to implement sorting routines in Java. Here are some real world applications of the `Comparable` interface:
+
+- Bubble sorting is used in programming guide (cable box/satellite box) software to sort channels based on numerical order, alphabetical order, or, in some cases, audience ratings.
+- Databases use external merge sort to sort sets of data that are too large to be fully loaded into memory.
+- Online sports scoreboards are organized by the quick sort algorithm to display teams in order of their rankings in real-time.
+
+### Implementation
+
+Let us see an example of the `Comparable` interface that sorts a list of elements based on age.
+
+```java
+class Student implements Comparable<Student> {
+    int rollNo;
+    String name;
+    int age;
+
+    Student  (int rollNo, String name, int age) {
+        this.rollNo = rollNo;
+        this.name = name;
+        this.age = age;
+    }
+
+    public int compareTo(Student s) {
+        // return this.age - s.age; // Sorting based on age
+        if (age == s.age) return 0;
+        else if (age > s.age) return 1;
+        else return -1;
+    }
+}
+```
+
+```java
+import java.util.*;
+
+class TestSort1 {
+    public static void main(String[] args) {
+        ArrayList<Student> al = new ArrayList<Student>();
+        al.add(new Student(101, "Vijay", 23));
+        al.add(new Student(106, "Ajay", 27));
+        al.add(new Student(105, "Jai", 21));
+
+        Collections.sort(al);
+
+        for (Student st : al) {
+            System.out.println(st.rollNo + " " + st.name + " " + st.age);
+            // Output:
+            // 105 Jai 21
+            // 101 Vijay 23
+            // 106 Ajay 27
+        }
+    }
+}
+```
+
+In the above example, we have created a `Student` class that implements the `Comparable` interface. The `compareTo()` method is overridden to compare students based on their age. We then create an `ArrayList` of `Student` objects, add some students to the list, and use `Collections.sort()` to sort the list based on age. Finally, we print the sorted list of students.
+
+Does `Collections.sort()` use the `compareTo()` method we defined in the `Student` class? Yes, it does. The `Collections.sort()` method uses the `compareTo()` method to determine the order of the elements in the list.
+
+#### Comparable: Reverse Order
+
+Let's see the same example of the `Comparable` interface that sorts a list of elements based on age in reverse order.
+
+```java
+class Student implements Comparable<Student> {
+    int rollNo;
+    String name;
+    int age;
+
+    Student  (int rollNo, String name, int age) {
+        this.rollNo = rollNo;
+        this.name = name;
+        this.age = age;
+    }
+
+    public int compareTo(Student s) {
+        return s.age - this.age; // Sorting based on age in reverse order
+    }
+}
+```
+
+```java
+import java.util.*;
+
+class TestSort2 {
+    public static void main(String[] args) {
+        ArrayList<Student> al = new ArrayList<Student>();
+        al.add(new Student(101, "Vijay", 23));
+        al.add(new Student(106, "Ajay", 27));
+        al.add(new Student(105, "Jai", 21));
+
+        Collections.sort(al);
+
+        for (Student st : al) {
+            System.out.println(st.rollNo + " " + st.name + " " + st.age);
+            // Output:
+            // 106 Ajay 27
+            // 101 Vijay 23
+            // 105 Jai 21
+        }
+    }
+}
+```
+
+In the above example, we have modified the `compareTo()` method to sort students based on their age in reverse order. The rest of the code remains the same. When we run the program, we get the sorted list of students in descending order of age.
