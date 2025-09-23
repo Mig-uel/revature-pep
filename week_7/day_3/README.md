@@ -159,3 +159,94 @@ public class Main {
   }
 }
 ```
+
+## What is an Algorithm?
+
+An algorithm is a process or set of rules/steps to be followed in calculations or other problem-solving operations, especially by a computer. Algorithms are used for data processing, calculation, and other tasks. They can be expressed in various forms, including natural language, pseudocode, flowcharts, or programming languages.
+
+When crafting algorithms, the amount or size input will often determine the efficiency of the algorithm.
+
+As programmers, we measure the efficiency of algorithms based on their time complexity (how many steps are needed to complete the algorithm) and space complexity (how much memory is needed to complete the algorithm). Both complexities are often expressed using Big O notation, which classifies algorithms according to how their run time or space requirements grow as the input size grows.
+
+Additionally, some problems occurs frequently in programming, such as sorting data sets or searching for specific values, and many common techniques exist which can be used to solve these problems.
+
+### Real World Application
+
+Developers use algorithms in nearly every facet of development. Some common real world applications of algorithms include:
+
+- **Searching Algorithms**:
+  - Algorithms which search through a collection of data to find a specific element or set of elements.
+  - These are used in search engines to find the most relevant results based on user queries. Examples include binary search and depth-first search.
+- **Sorting Algorithms**:
+  - Algorithms which re-order elements of some larger collection based on an established sorting criteria.
+  - These algorithms are essential in data processing for organizing data in a specific order, such as alphabetical or numerical order. Examples include quicksort, merge sort, and bubble sort.
+- **Pathfinding Algorithms**:
+  - Algorithms which find the shortest or most efficient path between two points in a graph or network.
+  - These are used in GPS navigation systems to determine the best route from one location to another. Examples include Dijkstra's algorithm and A\* search algorithm.
+- **Machine Learning Algorithms**:
+  - Algorithms which allow computers to learn from and make predictions or decisions based on data.
+  - These are used in recommendation systems, such as those used by streaming services to suggest content based on user preferences. Examples include decision trees, neural networks, and k-means clustering.
+- **Cryptographic Algorithms**:
+  - Algorithms which secure data through encryption and decryption processes.
+  - These are used in secure communications, such as online banking and e-commerce, to protect sensitive information. Examples include RSA, AES, and SHA-256.
+
+### Implementation
+
+Unlike most other topics in Computer Science, the ability to effectively create or use algorithms is not as straightforward as memorizing syntax or learning about specific solutions. Instead, creating efficient algorithms requires practice and understanding how to apply various tools to certain scenarios. A common, loose-guideline for solving algorithmic problems is as follows:
+
+- **Fully Understand the Problem**:
+  - The first step is to understand what is being asked, and what components are available to solve the problem.
+  - What is the input and desired output?
+  - Are there any constraints or edge cases to consider?
+- **Break Down the Problem Into Smaller Parts**:
+  - Before working on solutions, it is helpful to break larger problems into smaller, more manageable problems or steps which should be solved in sequence or repeated based on some condition.
+  - In many ways, this step is a further breakdown of the first step, as it helps to clarify the problem and identify potential solutions.
+- **Create a Plan**:
+  - Creating a plan involves working out the specific steps prior to writing any code.
+  - You do not need to have working code to plan out what you want your code to do.
+  - Pseudocode, flowcharts, and diagrams can be useful tools to help visualize the plan.
+- **Implement a Solution**:
+  - Once a plan is in place, the next step is to implement the solution in code.
+  - With proper planning, implementation should primarily focus on writing the correct syntax, and not so much on what steps your code should be taking.
+- **Test Your Solution**:
+  - Although a solution may seem to be correct through your planning or at first glance, it is important to double check your work to ensure that the problem is fully solved.
+  - Make sure to test edge cases and constraints to ensure that your solution is robust and can handle a variety of inputs.
+- **Optimize Your Solution**:
+  - No one get it right on the first try! If (and when) a solution does not function fully, it is best to move through each of the previous steps again to identify where the problem lies.
+
+#### Pseudocode
+
+Pseudocode is a simplified, half-English, half-code outline used to represent the logic of an algorithm or program. It is not written in any specific programming language, but rather uses a combination of natural language and programming constructs to describe the steps needed to solve a problem. Pseudocode helps in planning and visualizing the steps of an algorithm clearly, making it easier to later translate into actual code.
+
+##### Key Characteristics of Pseudocode
+
+- **Language-Agnostic**: Pseudocode is not tied to any specific programming language, allowing it to be understood by anyone familiar with programming concepts.
+- **Focus on Logic**: It emphasizes the logic and structure of the algorithm rather than syntax.
+- **Readable and Understandable**: Pseudocode is designed to be easily read and understood by humans, making it a useful tool for communication among developers.
+- **Structured Format**: While it does not follow strict syntax rules, pseudocode often uses indentation and formatting to represent control structures like loops and conditionals.
+
+##### Common Techniques and Rules for Writing Pseudocode
+
+- **Use Clear and Concise Statements**: Pseudocode should be brief and to the point, avoiding overly complex sentences.
+- **Use Standard Programming Constructs**: Utilize common programming constructs such as loops (for, while), conditionals (if, else), and function definitions.
+- **Indentation for Structure**: Use indentation to represent nested structures, making it clear which statements belong to which control structures.
+- **Descriptive Naming**: Use meaningful names for variables and functions to convey their purpose.
+- **Specify Inputs and Outputs**: Clearly define what inputs the algorithm takes and what outputs it produces.
+- **Commenting and Documentation**: Include comments to explain complex parts of the pseudocode or to clarify the purpose of certain steps.
+- **Sequence of Steps**: Write the steps in a logical order, ensuring that each step follows naturally from the previous one.
+- **Avoid Language-Specific Syntax**: Refrain from using syntax that is specific to a particular programming language, focusing instead on the logic and flow of the algorithm.
+
+##### Example of Pseudocode
+
+```plaintext
+Procedure BubbleSort(Array A)
+  For i from 1 to length(A)
+    For j from 0 to length(A) - i - 1
+      If A[j] > A[j + 1] Then
+        Swap A[j] and A[j + 1]
+      End If
+    End For
+  End For
+```
+
+This pseudocode outlines the Bubble Sort algorithm, which sorts an array by repeatedly stepping through the list, comparing adjacent elements and swapping them if they are in the wrong order. The process is repeated until the array is sorted.
