@@ -69,3 +69,10 @@ public class Main {
   }
 }
 ```
+
+## Video: Factory Design Pattern
+
+- The Factory pattern defines a method that will return an object of a varying class, depending on the input to the method.
+- The class is chosen at runtime, so the code that calls the factory method does not need to know about the different classes that might be returned.
+- The benefits of the Factory pattern is that it abstracts the away the complexity of choosing the right class to instantiate the object as well as how to instantiate it.
+- It follows the Single Responsibility Principle by separating the object creation logic from the business logic.
