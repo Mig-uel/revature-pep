@@ -308,3 +308,34 @@ public class Main {
 ```
 
 In this code, the `mergeSort` method recursively divides the array into halves until each sub-array contains a single element. The `merge` method then combines these sorted sub-arrays back together in the correct order. The final output is a sorted array printed to the console.
+
+## Video: Common Searching Algorithms - Searching and Sorting
+
+### Searching
+
+- Searching an unsorted set is (almost) always linear search, O(n) operation.
+- Ideally we would like to search a selection of elements in O(log n) or even O(1) time, but doing that requires the data to be sorted or organized in a specific way.
+
+- Binary Search
+
+  - Runs in O(log n) time, no additional memory required.
+  - Compares target value to the middle element of the array.
+  - If midpoint is the target value, return the index.
+  - If target value is less than the midpoint, repeat the search on the left half of the array.
+  - If target value is greater than the midpoint, repeat the search on the right half of the array.
+  - Repeat until the target value is found or the search space is empty.
+
+- Bubble Sort
+
+  - Starting at the beginning of the array, compare the first two elements.
+  - If the first element is greater than the second, swap them.
+  - Move to the next pair of elements, compare them and swap if necessary.
+  - Continue this process until the end of the array is reached.
+  - Repeat the entire process for the length of the array minus one.
+  - Time complexity is O(n^2) in the average and worst case, O(n) in the best case (when the array is already sorted).
+
+- Merge Sort
+  - Runs in O(n log n) time, requires additional memory.
+  - Divide the collection in log(n) times, performing n operations each time.
+  - Recursively split the array into halves until each sub-array contains a single element.
+  - Merge the sub-arrays back together in sorted order.
