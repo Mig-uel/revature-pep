@@ -342,3 +342,27 @@ FUNCTION fibonacci(n)
   RETURN the sum of CALLING fibonacci(n - 1) and CALLING fibonacci(n - 2)
 END FUNCTION
 ```
+
+## Greedy Algorithm
+
+A greedy algorithm is an algorithmic paradigm that builds up a solution piece by piece, always choosing the next piece that offers the most immediate benefit or the most optimal choice at that moment. The idea is to make a series of choices, each of which looks best at the time, with the hope that these local optimum choices will lead to a global optimum solution.
+
+As such, greedy algorithms are not always the most optimal paradigm to use; however, it is often the most lightweight and cost effective in terms of time and space complexity. Greedy algorithms are often used in optimization problems, where the goal is to find the best solution among a set of possible solutions.
+
+### Real World Application
+
+Greedy algorithms are widely used in various real-world applications where making a series of locally optimal choices leads to a globally optimal solution. Here are some common real-world applications of greedy algorithms:
+
+- **Telecommunication Networks**: Building a telecommunication network infrastructure to connect different regions or cities while minimizing the cost of laying cables or setting up towers. Algorithms like Prim's or Kruskal's can be used to find the minimum spanning tree, ensuring that all locations are connected with the least total cost.
+- **Transportation Networks**: Planning transportation routes such as highways or railways to connect multiple cities or towns efficiently while minimizing construction costs. Greedy algorithms can help in selecting the most cost-effective routes.
+- **Pipeline Networks**: Designing pipeline networks for transporting resources like water, oil, or gas from extraction points to processing facilities or distribution centers while minimizing the cost of laying pipes. Greedy algorithms can assist in determining the optimal layout of the pipeline network.
+
+### Implementation
+
+To implement a greedy algorithm, we typically follow these steps:
+
+- **Define the Problem**: Clearly understand the problem and identify the objective that needs to be optimized (e.g., minimize cost, maximize profit).
+- **Identify the Greedy Choice Property**: Determine the local optimal choice that can be made at each step of the algorithm. This choice should lead to a globally optimal solution.
+- **Create a Greedy Algorithm**: Develop an algorithm that makes the greedy choice at each step and builds up the solution incrementally.
+- **Prove Optimality**: Ensure that the greedy choice property holds and that the algorithm produces an optimal solution for the problem.
+- **Analyze Time and Space Complexity**: Evaluate the efficiency of the algorithm in terms of time and space complexity.
