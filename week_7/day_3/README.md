@@ -455,3 +455,226 @@ FUNCTION merge(leftArr, rightArr)
   RETURN sortedArr
 END FUNCTION
 ```
+
+## Backtracking Algorithm
+
+A backtracking algorithm is an algorithmic paradigm that incrementally builds candidates to the solutions of a problem, and abandons a candidate ("backtracks") as soon as it determines that the candidate cannot possibly lead to a valid solution. Backtracking is often used for solving constraint satisfaction problems, combinatorial optimization problems, and puzzles.
+
+Is is similar to Brute Force, that uses a recursive approach to test all possible solutions and then compares the results to find the best one. These types of algorithms are quite expensive in terms of time complexity, because it needs to check every possibility than can exist. The term "backtracking" comes from the fact that the algorithm will backtrack to a previous step if it determines that the current path will not lead to a valid solution. Each time we backtrack and iterate, we can describe the next solution as a new permutation of the previous solution.
+
+A permutation in laymen's terms is simply a rearrangement of elements in a particular order. For example, the permutations of the set {1, 2, 3} are:
+
+- {1, 2, 3}
+- {1, 3, 2}
+- {2, 1, 3}
+- {2, 3, 1}
+- {3, 1, 2}
+- {3, 2, 1}
+
+### Real World Application
+
+Backtracking algorithms are widely used in various real-world applications where problems can be solved by exploring all possible configurations and making decisions based on constraints. Here are some common real-world applications of backtracking algorithms:
+
+- **Puzzle Solving**: Backtracking algorithms are commonly used to solve puzzles such as Sudoku, N-Queens, and crossword puzzles. The algorithm explores different configurations of the puzzle and backtracks when it encounters a configuration that violates the rules of the puzzle.
+- **Combinatorial Optimization**: Backtracking algorithms are used in combinatorial optimization problems, such as the traveling salesman problem, where the goal is to find the shortest possible route that visits a set of cities and returns to the origin city. The algorithm explores different routes and backtracks when it encounters a route that is longer than the current best route.
+- **Constraint Satisfaction Problems**: Backtracking algorithms are used in constraint satisfaction problems, such as scheduling and resource allocation, where the goal is to find a configuration that satisfies a set of constraints. The algorithm explores different configurations and backtracks when it encounters a configuration that violates the constraints.
+
+### Implementation
+
+Let's take a look at an example of how we might use a backtracking algorithm to solve the N-Queens problem. The N-Queens problem is a classic problem in computer science where the goal is to place N queens on an N x N chessboard such that no two queens threaten each other. This means that no two queens can be in the same row, column, or diagonal. In chess, a queen can move any amount in any direction and even diagonally (left, right, up, down, up-left, up-right, down-left, down-right), therefore, in order to solve this problem, none of the queens should be able to make a legal move to attack another queen.
+
+Let's begin by solving the problem logically and then move towards an actual implementation.
+
+- Start in the leftmost column and place a queen in the first row.
+- If all queens are placed, return true. (solution found)
+- Try all rows in the current column. For each row:
+  - If the queen can be safely placed in the current row, then mark this index `[row, col]` as part of the solution and recursively check if placing a queen here leads to a solution (call this function again and jump to starting at the next column).
+  - If placing the queen in `[row, col]` leads to a solution, return true.
+  - If placing the queen does not lead to a solution, unmark this index (backtrack) and jump to step 1 for the next row.
+- If all rows have been tried and nothing worked, return false to trigger backtracking and move to the next column.
+
+For this example, lets say we want to solve the 4-Queens problem, which means we want to place 4 queens on a 4 x 4 chessboard. We can represent the chessboard as a 2D array, where `0` represents an empty square and `1` represents a square occupied by a queen.
+
+```plaintext
+{0, 0, 0, 0}
+{0, 0, 0, 0}
+{0, 0, 0, 0}
+{0, 0, 0, 0}
+```
+
+Let's follow the steps we outlined above to try and solve the problem. Starting in the left most column, `[0, 0]`, we do not return on step 2 because not all queens are placed.
+
+The next question asks if a queen can be safely placed in `[0, 0]`. Since there are no other queens on the board, we can place a queen here. We mark this index as part of the solution and move to the next column.
+
+```plaintext
+{1, 0, 0, 0}
+{0, 0, 0, 0}
+{0, 0, 0, 0}
+{0, 0, 0, 0}
+
+```
+
+We are now at `[0, 1]`. Let's work through our steps again.
+
+Not all queens are placed, so we move to step 3. Instead, we work through each row.
+
+- `[0, 1]`: A queen cannot be placed here because it is in the same row as the queen at `[0, 0]`.
+- `[1, 1]`: A queen cannot be placed here because it is in the same diagonal as the queen at `[0, 0]`.
+- `[2, 1]`: A queen can be placed here because it is not in the same row, column, or diagonal as the queen at `[0, 0]`. We mark this index as part of the solution and move to the next column.
+
+```plaintext
+{1, 0, 0, 0}
+{0, 0, 0, 0}
+{0, 1, 0, 0}
+{0, 0, 0, 0}
+```
+
+Woo, we are making progress! Let's continue. We are now at `[0, 2]`. Let's work through our steps again. Two queens still need to be placed.
+
+We do not return on step 2 because not all queens are placed. We move to step 3 and work through each row.
+
+- `[0, 2]`: A queen cannot be placed here because it is in the same row as the queen at `[0, 0]`.
+- `[1, 2]`: A queen cannot be placed here because it is in the same diagonal as the queen at `[0, 0]`.
+- `[2, 2]`: A queen cannot be placed here because it is in the same row as the queen at `[2, 1]`.
+- `[3, 2]`: A queen cannot be placed here because it is in the same diagonal as the queen at `[2, 1]`.
+
+Oh no, we reached the end of the entire column and could not place a queen anywhere. This isn't looking good but luckily our algorithm can handle this. Because we know nothing will ever be able to be placed in this column, we can backtrack to the last queen we placed, which was at `[2, 1]` and remove/unmark it from the solution. We will continue from `[2, 1]` and try the next row.
+
+```plaintext
+{1, 0, 0, 0}
+{0, 0, 0, 0}
+{0, 0, 0, 0}
+{0, 0, 0, 0}
+```
+
+We are now back at `[2, 1]`. Let's work through our steps again. Three queens still need to be placed.
+
+Because we backtracked, we already checked `[2, 1]`, so we will move to `[3, 1]`.
+
+- `[0, 1]`: A queen cannot be placed here because it is in the same row as the queen at `[0, 0]`.
+- `[1, 1]`: A queen cannot be placed here because it is in the same diagonal as the queen at `[0, 0]`.
+- `[2, 1]`: We already checked this index.
+- `[3, 1]`: A queen can be placed here because it is not in the same row, column, or diagonal as the queen at `[0, 0]`. We mark this index as part of the solution and move to the next column.
+
+```plaintext
+{1, 0, 0, 0}
+{0, 0, 0, 0}
+{0, 0, 0, 0}
+{0, 1, 0, 0}
+```
+
+We are now at `[0, 2]`. Let's work through our steps again. Two queens still need to be placed. We do not return on step 2 because not all queens are placed. We move to step 3 and work through each row.
+
+- `[0, 2]`: A queen cannot be placed here because it is in the same row as the queen at `[0, 0]`.
+- `[1, 2]`: A queen can be placed here because it is not in the same row, column, or diagonal as the queens at `[0, 0]` and `[3, 1]`. We mark this index as part of the solution and move to the next column.
+
+```plaintext
+{1, 0, 0, 0}
+{0, 0, 1, 0}
+{0, 0, 0, 0}
+{0, 1, 0, 0}
+```
+
+We are now at `[0, 3]`. Let's work through our steps again. One queen still needs to be placed. We do not return on step 2 because not all queens are placed. We move to step 3 and work through each row.
+
+- `[0, 3]`: A queen cannot be placed here because it is in the same row as the queen at `[0, 0]`.
+- `[1, 3]`: A queen cannot be placed here because it is in the same row as the queen at `[1, 2]`.
+- `[2, 3]`: A queen can be placed here because it is not in the same row, column, or diagonal as the queens at `[0, 0]`, `[1, 2]`, and `[3, 1]`. We mark this index as part of the solution and move to the next column.
+- `[3, 3] `: A queen cannot be placed here because it is in the same row as the queen at `[3, 1]`.
+
+Oh no, we reached the end of the entire column and could not place a queen anywhere. This means we have to backtrack and remove the last queen and keep trying the next rows.
+
+We jump back to `[1, 2]` and remove/unmark it from the solution. We will continue from `[1, 2]` and try the next row.
+
+```plaintext
+{1, 0, 0, 0}
+{0, 0, 0, 0}
+{0, 0, 0, 0}
+{0, 1, 0, 0}
+```
+
+Similar to the last time we backtracked, we are now back at `[1, 2]` but can move to `[2, 2]` since we already checked `[1, 2]`. Let's work through our steps again. Three queens still need to be placed.
+
+- `[0, 2]`: A queen cannot be placed here because it is in the same row as the queen at `[0, 0]`.
+- `[1, 2]`: We already checked this index.
+- `[2, 2]`: A queen cannot be placed here because it is in the same diagonal as the queen at `[3, 1]`.
+- `[3, 2]`: A queen cannot be placed here because it is in the same row as the queen at `[3, 1]`.
+
+Once again, we reached the end of the entire column and could not place a queen anywhere. This means we have to backtrack and remove the last queen and keep trying the next rows. We jump back to `[3, 1]` and remove/unmark it from the solution. We will continue from `[3, 1]` and try the next row.
+
+```plaintext
+{1, 0, 0, 0}
+{0, 0, 0, 0}
+{0, 0, 0, 0}
+{0, 0, 0, 0}
+```
+
+Since we jumped back to after the last row was tried, we have exhausted all rows in this column. This means we have to backtrack again. We jump back to `[0, 0]` and remove/unmark it from the solution. We will continue from `[0, 0]` and try the next row.
+
+```plaintext
+{0, 0, 0, 0}
+{0, 0, 0, 0}
+{0, 0, 0, 0}
+{0, 0, 0, 0}
+```
+
+Well, we are back to square one (literally), but that's fine because our algorithm eliminated a TON of possibilities already. That said we are now at `[1, 0]`. Let's work through our steps again. Four queens still need to be placed.
+
+- `[0, 0]`: We already checked this index.
+- `[1, 0]`: A queen can be placed here because it is not in the same row, column, or diagonal as any other queens (there are none). We mark this index as part of the solution and move to the next column.
+
+```plaintext
+{0, 0, 0, 0}
+{1, 0, 0, 0}
+{0, 0, 0, 0}
+{0, 0, 0, 0}
+```
+
+We are now at `[0, 1]`. Let's work through our steps again. Three queens still need to be placed. We do not return on step 2 because not all queens are placed. We move to step 3 and work through each row.
+
+- `[0, 1]`: A queen cannot be placed here because it is diagonal to the queen at `[1, 0]`.
+- `[1, 1]`: A queen cannot be placed here because it is in the same row as the queen at `[1, 0]`.
+- `[2, 1]`: A queen cannot be placed here because it is diagonal to the queen at `[1, 0]`.
+- `[3, 1]`: A queen can be placed here because it is not in the same row, column, or diagonal as the queen at `[1, 0]`. We mark this index as part of the solution and move to the next column.
+
+```plaintext
+{0, 0, 0, 0}
+{1, 0, 0, 0}
+{0, 0, 0, 0}
+{0, 1, 0, 0}
+```
+
+We are now at `[0, 2]`. Let's work through our steps again. Two queens still need to be placed. We do not return on step 2 because not all queens are placed. We move to step 3 and work through each row.
+
+- `[0, 2]`: A queen can be placed here because it is not in the same row, column, or diagonal as the queens at `[1, 0]` and `[3, 1]`. We mark this index as part of the solution and move to the next column.
+
+```plaintext
+{0, 0, 1, 0}
+{1, 0, 0, 0}
+{0, 0, 0, 0}
+{0, 1, 0, 0}
+```
+
+We are now at `[0, 3]`. Let's work through our steps again. One queen still needs to be placed. We do not return on step 2 because not all queens are placed. We move to step 3 and work through each row.
+
+- `[0, 3]`: A queen cannot be placed here because it is in the same row as the queen at `[0, 2]`.
+- `[1, 3]`: A queen cannot be placed here because it is diagonal to the queen at `[0, 2]`.
+- `[2, 3]`: A queen can be placed here because it is not in the same row, column, or diagonal as the queens at `[0, 2]`, `[1, 0]`, and `[3, 1]`. We mark this index as part of the solution and move to the next column.
+
+```plaintext
+{0, 0, 1, 0}
+{1, 0, 0, 0}
+{0, 0, 0, 1}
+{0, 1, 0, 0}
+```
+
+We have successfully placed all 4 queens on the board such that no two queens threaten each other! Here is the final solution:
+
+```plaintext
+{0, 0, 1, 0}
+{1, 0, 0, 0}
+{0, 0, 0, 1}
+{0, 1, 0, 0}
+```
+
+If all queens are placed, we return true on step 2 and the algorithm is complete. This will navigate back up the call stack, returning true at each level until we reach the original call to the function.
