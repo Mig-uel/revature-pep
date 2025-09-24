@@ -250,3 +250,95 @@ Procedure BubbleSort(Array A)
 ```
 
 This pseudocode outlines the Bubble Sort algorithm, which sorts an array by repeatedly stepping through the list, comparing adjacent elements and swapping them if they are in the wrong order. The process is repeated until the array is sorted.
+
+## Recursive Algorithm
+
+A recursive algorithm is an algorithm that calls itself or indirectly in order to continuously repeat the same set of steps until a solution is reached. Again, recursive algorithms are often used to solve problems that can be broken down into smaller, similar sub-problems. Each time the algorithm calls itself, it works on a smaller piece of the problem until it reaches a base case, which is a condition that stops the recursion.
+
+Certain problems can actually be solved much more easily using recursion. Let's take a look at the pseudocode of a function that returns the summation up to a given input, `n`, using a `while` loop:
+
+```plaintext
+INPUT n is a non-negative integer
+
+FUNCTION sum(n)
+  SET sum TO 0
+
+  WHILE n is greater than 0
+    compute sum as sum + n
+    decrement n by 1
+  END WHILE
+  RETURN sum
+END FUNCTION
+```
+
+The above pseudocode loops descending through all integers from `n` down to `1`, adding each integer to a running total, `sum`. This is a perfectly valid way to solve the problem, but it can be simplified using recursion:
+
+```plaintext
+INPUT n is a non-negative integer
+
+FUNCTION sumRecursion(n)
+  IF n equals 0 THEN
+    RETURN 0
+  ELSE
+    RETURN n + sumRecursion(n - 1)
+  END IF
+END FUNCTION
+```
+
+With the second version of the function, we can see that the problem is broken down into smaller pieces. The function calls itself with a decremented value of `n` until it reaches the base case of `n` being equal to `0`. At that point, the recursion stops and the function returns `0`. Each previous call to the function then adds its value of `n` to the result of the next call, ultimately returning the total sum.
+
+### Real World Application
+
+Recursive algorithms find applications in various real-world scenarios where problems can be broken down into smaller, similar sub-problems of the same type. Here is a real-world application of recursive algorithms:
+
+**File System Traversal**: Recursive algorithms are commonly used to traverse file systems. Each directory can be treated as a node in a tree, and the files and subdirectories within it are its children. A recursive function can be employed to explore each directory, processing files as it goes and making recursive calls for each subdirectory it encounters. This approach simplifies the code and makes it easier to handle directories of arbitrary depth.
+
+### Implementation
+
+#### How to Write a Recursive Function
+
+We can break recursive function down into a few main parts. First, let us review what the fibonacci sequence is: it is a series of numbers where each number is the sum of the two preceding ones, usually starting with 0 and 1. That is, the sequence begins 0, 1, 1, 2, 3, 5, 8, 13, and so on.
+
+#### Base Case
+
+With recursive functions, we are usually going to keep calling the function (recursing) until we reach some condition called the base case. The base case in recursion is the condition that defines the simplest scenario or stopping point for the recursive algorithm. In the case of the Fibonacci sequence, the base cases are when `n` is `0` or `1`, as these values can be returned directly without further recursion. So we can write a function that retrieves the `nth` number in the Fibonacci sequence, starting with these base cases:
+
+```plaintext
+INPUT n is an non-negative integer
+
+FUNCTION fibonacci(n)
+  IF n is equal to 0 THEN
+    RETURN 0
+  ELSE IF n is equal to 1 THEN
+    RETURN 1
+  END IF
+END FUNCTION
+```
+
+In this case, we directly return `0` if `n` is `0`, and `1` if `n` is `1`. These are our base cases. Once we have our base cases, we can move on to the recursive case.
+
+Note: if you do not include a base case in your recursive function, it will continue to call itself indefinitely until the program runs out of memory and crashes.
+
+#### Recursive Case
+
+```plaintext
+RETURN the sum of CALLING fibonacci(n - 1) and CALLING fibonacci(n - 2)
+```
+
+This is all we have to write because we just want the sum of the previous 2 numbers.
+
+#### Complete Implementation
+
+```plaintext
+INPUT n is an non-negative integer
+
+FUNCTION fibonacci(n)
+  IF n is equal to 0 THEN
+    RETURN 0
+  IF n is equal to 1 THEN
+    RETURN 1
+  END IF
+
+  RETURN the sum of CALLING fibonacci(n - 1) and CALLING fibonacci(n - 2)
+END FUNCTION
+```
