@@ -366,3 +366,92 @@ To implement a greedy algorithm, we typically follow these steps:
 - **Create a Greedy Algorithm**: Develop an algorithm that makes the greedy choice at each step and builds up the solution incrementally.
 - **Prove Optimality**: Ensure that the greedy choice property holds and that the algorithm produces an optimal solution for the problem.
 - **Analyze Time and Space Complexity**: Evaluate the efficiency of the algorithm in terms of time and space complexity.
+
+## Divide and Conquer Algorithm
+
+A divide and conquer algorithm is an algorithmic paradigm that breaks a problem down into smaller sub-problems, solves each sub-problem independently, and then combines the solutions to solve the original problem. The idea is to divide the problem into smaller parts, conquer each part by solving it recursively, and then combine the results to get the final solution.
+
+- Divide: Break the problem into smaller sub-problems that are similar to the original problem.
+- Conquer: Solve each sub-problem recursively. If the sub-problem is small enough, solve it directly.
+- Combine: Merge the solutions of the sub-problems to form a solution to the original problem.
+
+### Real World Application
+
+Divide and conquer algorithms are widely used in various real-world applications where problems can be broken down into smaller, manageable sub-problems. Here are some common real-world applications of divide and conquer algorithms:
+
+- **Data Processing**: In data analytics, a DAC algorithm is used to sort large volumes of data efficiently before performing further analysis or processing. For example, sorting records in a database, sorting log files, or sorting results in a search engine.
+- **External Sorting**: When dealing with large datasets that do not fit into memory, divide and conquer algorithms can be used to sort the data in chunks, sort each chunk individually, and then merge the sorted chunks together.
+- **File Systems**: In file systems, divide and conquer algorithms can be used to manage and organize files and directories efficiently. For example, searching for a file in a large directory structure can be optimized using a divide and conquer approach.
+- **Network Routing**: In network routing, divide and conquer algorithms can be used to find the shortest path between nodes in a network. For example, Dijkstra's algorithm uses a divide and conquer approach to find the shortest path from a source node to all other nodes in a weighted graph.
+
+### Implementation
+
+Let's take a look at an example array that we want to sort in ascending order with a divide and conquer approach.
+
+```java
+{8, 4, 1, 7, 5, 3}
+```
+
+Using the steps of divide and conquer, let's solve this problem.
+
+#### Divide
+
+In this step, we will divide the array into smaller sub-arrays until we reach arrays of size 1.
+
+```java
+{8, 4, 1, 7, 5, 3}
+{8, 4, 1}       {7, 5, 3}
+{8} {4, 1}     {7} {5, 3}
+{8} {4} {1}   {7} {5} {3}
+```
+
+#### Conquer
+
+Remember that arrays of size 1 are already sorted, so we will now start merging the arrays back together in sorted order. We can move piece by piece through the sub-arrays, comparing the values and adding the smaller value to a new array. Keep in mind, our algorithm is also combining our results back together as we go.
+
+```java
+{8} {4} {1}   {7} {5} {3}
+{4, 8} {1}   {5, 7} {3}
+{1, 4, 8}   {3, 5, 7}
+{1, 3, 4, 5, 7, 8}
+```
+
+Let's look at the pseudocode for how this might be implemented:
+
+```plaintext
+INPUT arr is an array of integers
+
+FUNCTION dac(arr)
+  SET mindIndex to the length of the arr divided by 2
+
+  IF the arr length is less than or equal to 1 THEN
+    RETURN arr
+
+  SET leftArr to be the first half of arr up to mindIndex
+  SET rightArr to be the second half of arr from mindIndex to end
+
+  CALL merge(dac(leftArr), dac(rightArr))
+END FUNCTION
+
+FUNCTION merge(leftArr, rightArr)
+  SET sortedArr to an empty array
+
+  WHILE both arrays have elements to iterate over
+    IF the current element of leftArr is less than or equal to the current element of rightArr THEN
+      ADD leftArr's current element to sortedArr
+    ELSE
+      ADD rightArr's current element to sortedArr
+    END IF
+  END WHILE
+
+  WHILE leftArr has elements to iterate over
+    ADD leftArr's current element to sortedArr
+  END WHILE
+
+  WHILE rightArr has elements to iterate over
+    ADD rightArr's current element to sortedArr
+  END WHILE
+
+  RETURN sortedArr
+END FUNCTION
+```
