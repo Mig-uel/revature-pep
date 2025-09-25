@@ -678,3 +678,195 @@ We have successfully placed all 4 queens on the board such that no two queens th
 ```
 
 If all queens are placed, we return true on step 2 and the algorithm is complete. This will navigate back up the call stack, returning true at each level until we reach the original call to the function.
+
+## Time Complexity
+
+So far. we have mostly emphasized the correctness of programs and algorithms. IN practice, another issue is also important: how efficient is the algorithm? When analyzing a program in terms of efficiency, we want to look at questions such as: How long does a program take to run? How much memory does it use? How do these factors change as the size of the input to the program changes? Is there a better way to solve the problem?
+
+Efficiency will always be less important than correctness; if you do not care whether a program works correctly, you can make it run very quickly, but no one will think it's much of an accomplishment. On the other hand, a program that gives a correct answer after ten thousand years is not very useful either, so efficiency is an important consideration.
+
+The term "efficiency" can refer to the efficient use of almost any resource, including time, computer memory, disk space, or network bandwidth. However, the most common measure of efficiency is time efficiency, which is the amount of time it takes to run an algorithm as a function of the size of the input.
+
+It really makes little sense to classify an individual program as being "efficient" or "inefficient". It makes more sense to compare two (correct) programs that perform the same task and ask which one of the two is more efficient, that is, which one performs the task more quickly. However, even here there are some complications. The running time of a program is not well defined. The runtime can be different depending on the number and speed of the processors in the computer on which the program is run, as well as many other factors, such as the amount of memory available, the operating system, and the load on the system from other programs. Even if we fix all these factors, the runtime of a program can still vary depending on the particular input to the program.
+
+In spite of these difficulties, there is a field of computer science devoted to analyzing the efficiency of algorithms known as Analysis of Algorithms. The focus is on algorithms rather than on particular programs, and the goal is to determine the efficiency of an algorithm as a function of the size of the input.
+
+Analysis of Algorithms is a mathematical discipline that abstracts away from these down and dirty details. Still, even though it is a theoretical discipline, every working programmer should be aware of some of its techniques and results, because they can help you to write better programs.
+
+One of the main techniques of the analysis of algorithms is asymptotic analysis, which is a way of describing the running time of an algorithm in terms of the size of the input for large inputs. The idea is to ignore constant factors and lower-order terms and to focus on the dominant term that describes how the running time grows as the size of the input increases. The analysis is considered asymptotic because it only considers what happens when the input size becomes very large. An asymptotic analysis is only a first approximation, but in practice, it often gives a good indication of the efficiency of an algorithm.
+
+Central to asymptotic analysis is the use of Big-O notation, which is a mathematical notation that describes the upper bound of the running time of an algorithm. Big-O notation is used to classify algorithms according to how their running time or space requirements grow as the input size grows. For example, an algorithm that runs in linear time is said to be O(n), where n is the size of the input. An algorithm that runs in quadratic time is said to be O(n^2), and so on.
+
+Common time complexities include:
+
+- O(1) - Constant Time: The running time of the algorithm does not change with the size of the input. Example: Accessing an element in an array by index.
+- O(log n) - Logarithmic Time: The running time of the algorithm grows logarithmically with the size of the input. Example: Binary search in a sorted array.
+- O(n) - Linear Time: The running time of the algorithm grows linearly with the size of the input. Example: Finding the maximum element in an unsorted array.
+- O(n log n) - Linearithmic Time: The running time of the algorithm grows in proportion to n log n. Example: Efficient sorting algorithms like Merge Sort and Quick Sort.
+- O(n^2) - Quadratic Time: The running time of the algorithm grows quadratically with the size of the input. Example: Simple sorting algorithms like Bubble Sort and Insertion Sort.
+- O(2^n) - Exponential Time: The running time of the algorithm grows exponentially with the size of the input. Example: Solving the Traveling Salesman Problem using brute-force search.
+
+### Real World Application
+
+Many operations in real life can help us determine the order of complexity. When analyzing algorithms or operations, we often consider the worst case scenario, such as, "What's the worst that could happen?" and "When does our algorithm need the most instructions to complete?" Big-O notation will always assume the upper limit where the algorithm will perform the maximum number of operations.
+
+Let's assume I am standing at the front of a class of students, and one of them has my bag. Here are a few scenarios and ways in which I can find my bag, along with their time complexities:
+
+#### O(n) - Linear Time
+
+**Scenario**: Only one student in my class who hid my bag knowns about it.
+**Approach**: I will have to ask each student individually in the class if they have my bag. If they don't, I will move on to the next student until I find the one who has it.
+**Worst Case Scenario**: I have to ask every student in the class before I find the one with my bag.
+
+#### O(1) - Constant Time
+
+**Scenario**: I know exactly which student has my bag.
+**Approach**: I will go directly to that student and ask for my bag.
+**Worst Case Scenario**: I only have to ask one student.
+
+#### O(n^2) - Quadratic Time
+
+**Scenario**: In the entire class, only one student knows who has my bag, but I don't know who that student is.
+**Approach**: I will start questioning each student one by one and ask them about all the other students too. If I don't get an answer from the first student, I will move on to the next student and repeat the process until I find the student who knows where my bag is.
+**Worst Case Scenario**: I will have to ask every student `n^2` questions about every other student before I find the one who knows where my bag is.
+
+#### O(log n) - Logarithmic Time
+
+**Scenario**: All the students know who has my bag but will only tell me if I guess the name right.
+**Approach**: I divide the class in half, then ask: "Is my bag on the left side or the right side of the room?" Based on their answer, I can eliminate half of the students and continue to divide the remaining students in half until I find the student with my bag.
+**Worst Case Scenario**: I will have to ask `log n` questions to find the student with my bag.
+
+### Implementation
+
+The following examples describe algorithms as well as their time complexities. The actual syntax and keywords used in the following examples are not specific to any particular programming language. Instead, make sure to focus on the steps of the algorithm and the time complexity of each.
+
+#### Problem 1
+
+We can use the following algorithm to determine whether a numerical value exists in an array of n numbers. The algorithm will find the first place where the number exists in the array and return its index. If the number does not exist in the array, the algorithm will return -1.
+
+```java
+public int findFirstIndexOfNumber(int number, int[] arr) {
+  if (arr.length == 0) {
+    return -1; // O(1)
+  }
+
+  for (int i = 0; i < arr.length; i++) {
+    if (arr[i] == number) {
+      return i; // O(n)
+    }
+  }
+
+  return -1; // O(n)
+}
+```
+
+This algorithm needs to loop through the array until it finds the first occurrence of the number we are looking for. It does not matter how big the data set is; at most, we need to loop through the entire array once. Therefore, the time complexity of this algorithm is O(n).
+
+#### Problem 2
+
+Instead of finding the just the first occurrence of a number in an array, we can modify the algorithm to find all occurrences of a number in an array of n numbers. The algorithm will return a list of indices where the number exists in the array. If the number does not exist in the array, the algorithm will return an empty list.
+
+```java
+public int[] findEachIndexOfNumber(int number, int[] arr) {
+  List<Integer> indices = new ArrayList<>();
+
+  if (arr.length == 0) {
+    return indices.toArray(new int[0]); // O(1)
+  }
+
+
+  for (int i = 0; i < arr.length; i++) {
+    if (arr[i] == number) {
+      indices.add(i); // O(n)
+    }
+  }
+
+  return indices.toArray(new int[0]); // O(n)
+}
+```
+
+While this algorithm is slightly different than the previous one, it still needs to loop through the entire array to find all occurrences of the number we are looking for. Therefore, the time complexity of this algorithm is also O(n).
+
+#### Problem 3
+
+The following function checks to see if the last item in a data set is higher or lower than the first item in a data set and returns "higher", "lower", or "neither".
+
+```java
+public static void main(String[] args) {
+  int[] arr = {36, 14, 1, 7, 21};
+  String result = higherOrLower(arr);
+  System.out.println(result); // Output: "lower"
+}
+
+public static String higherOrLower(int[] arr) {
+  if (arr.length == 0) {
+    return "neither"; // O(1)
+  }
+
+  if (arr[0] < arr[arr.length - 1]) {
+    return "higher"; // O(1)
+  } else if (arr[0] > arr[arr.length - 1]) {
+    return "lower"; // O(1)
+  } else {
+    return "neither"; // O(1)
+  }
+}
+```
+
+It does not matter how large the data set is; this algorithm will always take the same number of steps to complete. Therefore, the time complexity of this algorithm is O(1).
+
+#### Problem 4
+
+We can use the following function to determine the sum of all numbers in an array of n numbers.
+
+```java
+public static int determineSumOfSequentialArray(int[] arr) {
+  int sum = 0;
+
+  for (int i = 0; i < arr.length; i++) {
+    sum += arr[i]; // O(n)
+  }
+
+  return sum; // O(n)
+}
+```
+
+This algorithm needs to loop through the entire array to calculate the sum of all numbers. Therefore, the time complexity of this algorithm is O(n).
+
+#### Problem 5
+
+We can also find the sum of all numbers in an array of n numbers in another way.
+
+```java
+public static int determineSumOfSequentialArray(int[] arr) {
+  return arr.length * (arr.length - 1) / 2; // O(1)
+}
+```
+
+This algorithm uses a mathematical formula to calculate the sum of all numbers in the array. It does not need to loop through the array, so the time complexity of this algorithm is O(1).
+
+#### Problem 6
+
+We can use the following recursive function to search an array of sorted numerical values to find a specific number. The algorithm will return the index of the number if it exists in the array. If the number does not exist in the array, the algorithm will return -1.
+
+```java
+public int recursiveBinarySearch(int[] target, int[] arr, int start, int end) {
+  int mid = (int) Math.floor((start + end) / 2);
+
+  if (arr[mid] == target) {
+    return mid; // O(log n)
+  } else if (start > end) {
+    return -1; // O(log n)
+  } else if (arr[mid] < target) {
+    start = mid + 1; // O(log n)
+    return recursiveBinarySearch(target, arr, start, end); // O(log n)
+  } else {
+    end = mid - 1; // O(log n)
+    return recursiveBinarySearch(target, arr, start, end); // O(log n)
+  }
+
+  return -1; // O(log n)
+}
+```
+
+This algorithm uses a divide and conquer approach to search the array. It repeatedly divides the array in half until it finds the target number or determines that the number does not exist in the array. Therefore, the time complexity of this algorithm is O(log n).
