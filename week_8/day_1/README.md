@@ -164,3 +164,108 @@ UPDATE bank_accounts SET funds = funds - 100.00 WHERE account_no = 'ACC1';
 UPDATE bank_accounts SET funds = funds + 100.00 WHERE account_no = 'ACC2;
 COMMIT;
 ```
+
+## ACID Properties
+
+The ACID properties are a set of principles that ensure reliable processing of database transactions. ACID stands for Atomicity, Consistency, Isolation, and Durability. These properties are essential for maintaining the integrity and reliability of data in a database management system (DBMS).
+
+#### Atomicity
+
+A transaction is considered atomic if it cannot be divided into smaller parts, and all of the operations that occur within the transaction either complete successfully or none of them do as a single unit. If any part of the transaction fails, the entire transaction is rolled back, and the database remains unchanged.
+
+#### Consistency
+
+A transaction is consistent if it takes the database from one valid state to another valid state, maintaining all predefined rules and constraints. This means that any data written to the database must adhere to all integrity constraints, such as unique keys, foreign keys, and data types.
+
+#### Isolation
+
+Isolation ensures that the operations of one transaction are isolated from the operations of other concurrent transactions. This means that the intermediate state of a transaction is not visible to other transactions until the transaction is committed. Isolation levels can be configured to balance performance and consistency, with common levels including Read Uncommitted, Read Committed, Repeatable Read, and Serializable.
+
+#### Durability
+
+Durability guarantees that once a transaction has been committed, it will remain committed even in the event of a system failure. This means that the changes made by the transaction are permanently recorded in the database, and any subsequent failures will not affect the committed data.
+
+### Real World Application
+
+Database transactions are the backbone of many real-world applications. It may be difficult at first to see how each of the ACID properties are applied in practice. Here are some examples of how each property is used in real-world applications:
+
+- **Atomicity**: In an e-commerce application, when a customer places an order, the transaction includes multiple operations such as updating the inventory, creating an order record, and processing payment. If any of these operations fail (e.g., payment processing fails), the entire transaction is rolled back to ensure that the order is not partially processed.
+- **Consistency**: In a banking application, when transferring funds between accounts, the transaction must ensure that the total balance of both accounts remains consistent. If a transfer of $100 is made from Account A to Account B, the system must ensure that Account A's balance decreases by $100 and Account B's balance increases by $100, maintaining the overall consistency of the bank's total funds.
+- **Isolation**: In a multi-user database system, multiple users may be accessing and modifying the same data concurrently. Isolation ensures that each user's transaction is processed independently, preventing issues such as dirty reads or lost updates. For example, if User A is updating a record while User B is reading the same record, User B will not see the uncommitted changes made by User A until User A's transaction is committed.
+- **Durability**: In a financial application, once a transaction is committed (e.g., a deposit or withdrawal), the changes must be permanent and recoverable even in the event of a system crash. This is typically achieved through the use of transaction logs and backup mechanisms that ensure that committed data is not lost.
+
+### Implementation
+
+For the following examples, consider a banking application that allows funds to be transferred between accounts.
+
+#### Atomicity
+
+Consider transferring $50 from an account, `ACC1`, to another account, `ACC2`, where we check if `ACC1` has sufficient funds before proceeding with the transfer.
+
+```sql
+START TRANSACTION;
+UPDATE bank_accounts SET funds = funds - 50.00 WHERE account_no = 'ACC1' AND funds >= 50.00; -- Deduct $50 from ACC1 if sufficient funds
+UPDATE bank_accounts SET funds = funds + 50.00 WHERE account_no = 'ACC2'; -- Add $50 to ACC2
+COMMIT; -- If either update fails, the transaction is rolled back, ensuring atomicity.
+```
+
+#### Consistency
+
+Building off the previous example, let's examine `ACC1` and `ACC2`:
+
+```sql
+SELECT * FROM bank_accounts;
+```
+
+| account_no | funds   |
+| ---------- | ------- |
+| ACC1       | 850.00  |
+| ACC2       | 1150.00 |
+
+From the above table, we can conclude that the sum of funds in both accounts before and after the transaction remains consistent at $2000.00.
+
+#### Isolation
+
+Expanding on the previous example, consider the following steps:
+
+We will create a new bank account, `ACC3`, with $1000.00.
+
+```sql
+INSERT INTO bank_accounts (account_no, funds) VALUES ('ACC3', 1000.00);
+```
+
+We will now start a transaction to add $1000.00 to `ACC3`. During this transaction, if another transaction tries to read the funds in `ACC3`, it will not see the uncommitted changes until the transaction is committed.
+
+```sql
+START TRANSACTION;
+UPDATE bank_accounts SET funds = funds + 1000.00 WHERE account_no = 'ACC3';
+-- Before committing, if another transaction tries to read ACC3, it will not see the uncommitted changes.
+COMMIT;
+```
+
+We will now start a transaction to deduct $100.00 from `ACC2` to `ACC1`. During this transaction, if another transaction tries to read the funds in `ACC2`, it will not see the uncommitted changes until the transaction is committed.
+
+```sql
+START TRANSACTION;
+UPDATE bank_accounts SET funds = funds - 100.00 WHERE account_no = 'ACC2';
+UPDATE bank_accounts SET funds = funds + 100.00 WHERE account_no = 'ACC1';
+COMMIT;
+```
+
+In the above example, the isolation property ensures that concurrent transactions do not interfere with each other, maintaining data integrity.
+
+#### Durability
+
+Let's look at the database state after committing the previous transactions:
+
+```sql
+SELECT * FROM bank_accounts;
+```
+
+| account_no | funds   |
+| ---------- | ------- |
+| ACC1       | 950.00  |
+| ACC2       | 1050.00 |
+| ACC3       | 2000.00 |
+
+From the above table, we can conclude that the changes made by the committed transactions are permanent and will persist even in the event of a system failure, ensuring durability.
