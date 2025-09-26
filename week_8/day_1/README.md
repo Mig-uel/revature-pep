@@ -537,3 +537,73 @@ Finding the maximum value in a set of values:
 ```sql
 SELECT MAX(age) AS oldest_user FROM users;
 ```
+
+## Scalar Functions
+
+Scalar functions operate on a single value and return a single value. They are used to perform operations on individual data values, such as manipulating strings, performing mathematical calculations, or converting data types.
+
+Scalar functions are predefined functions provided by the database management system (DBMS) and operate on individual data values, returning a single value as a result.
+
+#### Common Scalar Functions
+
+| Function   | Description                                                     |
+| ---------- | --------------------------------------------------------------- |
+| `UCASE()`  | Converts a string to uppercase.                                 |
+| `LCASE()`  | Converts a string to lowercase.                                 |
+| `MID()`    | Extracts a substring from a string.                             |
+| `LEN()`    | Returns the length of a string.                                 |
+| `ROUND()`  | Rounds a numeric value to a specified number of decimal places. |
+| `NOW()`    | Returns the current date and time.                              |
+| `FORMAT()` | Formats a number as a string with a specified format.           |
+
+### Real World Application
+
+Scalar functions are commonly used in various real-world applications to manipulate and transform data. Here are some examples:
+
+- In a bank management system, scalar functions can be used to format account numbers, convert customer names to uppercase for consistency, or calculate the age of customers based on their birth dates.
+- In an employee management system, scalar functions can be used to extract the first name from a full name, calculate the length of employee names, or round salary values to the nearest whole number.
+- In a student reporting system, scalar functions can be used to format student IDs, convert course names to lowercase for uniformity, or calculate the current date and time for attendance records.
+
+### Implementation
+
+Converting a string to uppercase:
+
+```sql
+SELECT UCASE(name) AS uppercase_name FROM users;
+```
+
+Converting a string to lowercase:
+
+```sql
+SELECT LCASE(name) AS lowercase_name FROM users;
+```
+
+Extracting a substring from a string:
+
+```sql
+SELECT MID(name, 1, 3) AS name_substring FROM users; -- Extracts first 3 characters
+```
+
+Finding the length of a string:
+
+```sql
+SELECT LEN(name) AS name_length FROM users;
+```
+
+Rounding a numeric value to a specified number of decimal places:
+
+```sql
+SELECT ROUND(age, 0) AS rounded_age FROM users; -- Rounds age to the nearest whole number
+```
+
+Getting the current date and time:
+
+```sql
+SELECT NOW() AS current_datetime;
+```
+
+Formatting a number as a string with a specified format:
+
+```sql
+SELECT FORMAT(age, 'N2') AS formatted_age FROM users; -- Formats age with 2 decimal places
+```
