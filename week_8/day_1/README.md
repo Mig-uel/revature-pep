@@ -88,3 +88,42 @@ To `REVOKE` all of the CRUD privileges on a table named `posts` from a user name
 ```sql
 REVOKE SELECT, INSERT, UPDATE, DELETE ON posts FROM community.manager;
 ```
+
+## TCL
+
+The **Transaction Control Language (TCL)** is a subset of SQL commands used to manage transactions within a database. A transaction is a sequence of one or more SQL operations (e.g., `INSERT`, `UPDATE`, `DELETE`) that are treated as a single unit of work. Transactions ensure data integrity and consistency, especially in multi-user environments.
+
+Transaction are managed using TCL commands to ensure that a series of operations either complete successfully as a whole or fail without making any changes to the database.
+
+#### Common TCL Commands
+
+- `START TRANSACTION` or `BEGIN`: Initiates a new transaction.
+- `COMMIT`: Saves all changes made during the transaction to the database. Whenever we perform any of the DML commands (INSERT, UPDATE, DELETE), the changes can be rolled back if the data is not stored permanently. To be on the safe side, we can use the `COMMIT` command to save the changes permanently.
+- `ROLLBACK`: Undoes all changes made during the transaction, reverting the database to its previous state before the transaction began.
+- `SAVEPOINT`: Sets a savepoint within a transaction, allowing partial rollbacks to that point.
+- `SET TRANSACTION`: Configures transaction properties, such as isolation level and access mode.
+
+### Real World Application
+
+Here is why TCL is important in real world applications:
+
+- **Data Integrity**: TCL commands like `COMMIT`, `ROLLBACK`, and `SAVEPOINT` help maintain data integrity by ensuring that a series of related operations are treated as a single unit. If any operation fails, the entire transaction can be rolled back to prevent partial updates that could lead to inconsistent data.
+- **ACID Properties**: Transactions adhere to the ACID properties (Atomicity, Consistency, Isolation, Durability), which are crucial for reliable database operations. TCL commands help enforce these properties, ensuring that transactions are processed reliably. TCL ensures that transactions are atomic (all or nothing), consistent (data remains valid), isolated (concurrent transactions do not interfere), and durable (once committed, changes are permanent).
+- **Error Handling**: In complex applications, errors can occur during database operations. TCL commands allow developers to handle errors gracefully by rolling back transactions when necessary, preventing data corruption.
+
+Overall, TCL is essential for managing transactions in a way that ensures data integrity, reliability, and consistency in real-world applications.
+
+### Implementation
+
+Consider an example of a transaction where you tried to add a new bank account, ACC3, and set the funds to $10,000. In that same transaction, you tried to create another account, ACC4, and set the funds to $900,000, when it was supposed to be $9,000. If the entire transaction is rolled back, the step of creating ACC3 would also be rolled back. To avoid this, you can set a savepoint after creating ACC3. This way, if there is an error while creating ACC4, you can roll back to the savepoint and keep ACC3 intact.
+
+```sql
+START TRANSACTION;
+INSERT INTO bank_accounts (account_id, balance) VALUES ('ACC3', 10000);
+SAVEPOINT after_ACC3;
+INSERT INTO bank_accounts (account_id, balance) VALUES ('ACC4', 900000);
+-- Oops! There was an error in the amount for ACC4
+ROLLBACK TO after_ACC3; -- Rollback to the savepoint, keeping ACC3 intact
+INSERT INTO bank_accounts (account_id, balance) VALUES ('ACC4', 9000); -- Correct the amount
+COMMIT; -- Commit the transaction, making both ACC3 and ACC4 permanent
+```
