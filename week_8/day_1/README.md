@@ -127,3 +127,40 @@ ROLLBACK TO after_ACC3; -- Rollback to the savepoint, keeping ACC3 intact
 INSERT INTO bank_accounts (account_id, balance) VALUES ('ACC4', 9000); -- Correct the amount
 COMMIT; -- Commit the transaction, making both ACC3 and ACC4 permanent
 ```
+
+## What is a Transaction?
+
+Transactions are a fundamental concept in database management systems (DBMS) that allow you to group multiple SQL operations into a single, atomic unit of work. Transactions ensure the integrity, consistency, and reliability of database operations, especially in multi-user environments.
+
+### Real World Application
+
+An example of a transaction in a banking application could involve transferring funds from one account to another. This operation typically consists of two main steps: debiting the amount from the sender's account and crediting the same amount to the recipient's account. Both steps must be completed successfully for the transaction to be valid. If either step fails (e.g., due to insufficient funds), the entire transaction should be rolled back to maintain data integrity.
+
+### Implementation
+
+Consider an example where there's a `bank_accounts` table, and we are doing an intra-bank transfer of some amount from one account to another. The transaction would look something like this:
+
+#### Create the `bank_accounts` Table
+
+```sql
+CREATE TABLE bank_accounts (
+    account_no VARCHAR(20) PRIMARY KEY,
+    funds DECIMAL(15, 2)
+)
+```
+
+#### Add Two Accounts
+
+```sql
+INSERT INTO bank_accounts (account_no, funds) VALUES ('ACC1', 1000.00);
+INSERT INTO bank_accounts (account_no, funds) VALUES ('ACC2', 1000.00);
+```
+
+#### Perform the Transaction
+
+```sql
+START TRANSACTION;
+UPDATE bank_accounts SET funds = funds - 100.00 WHERE account_no = 'ACC1';
+UPDATE bank_accounts SET funds = funds + 100.00 WHERE account_no = 'ACC2;
+COMMIT;
+```
