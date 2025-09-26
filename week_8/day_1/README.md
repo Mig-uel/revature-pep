@@ -269,3 +269,211 @@ SELECT * FROM bank_accounts;
 | ACC3       | 2000.00 |
 
 From the above table, we can conclude that the changes made by the committed transactions are permanent and will persist even in the event of a system failure, ensuring durability.
+
+## Transaction Commit Rollback Isolation Levels
+
+Isolation levels define the degree to which a transaction must be isolated from the data modifications made by other transactions. Different isolation levels provide different guarantees about the visibility of changes made by concurrent transactions.
+
+The higher the degree of isolation, the more concurrency anomalies are prevented, but this can also lead to reduced performance due to increased locking and blocking of resources.
+
+#### Read Uncommitted
+
+- Read Uncommitted is the lowest isolation level.
+- Transactions can read data that has been modified by other transactions but not yet committed (dirty reads).
+- This level allows for the highest level of concurrency but can lead to data inconsistencies.
+- Transaction phenomena allowed: Dirty Reads, Non-Repeatable Reads, Phantom Reads.
+- Transaction phenomena prevented: None.
+
+#### Read Committed
+
+- Read Committed is a moderate isolation level.
+- Transactions can only read data that has been committed by other transactions.
+- This transaction holds a read and write lock on the data it is reading until the transaction is complete, preventing other transactions from modifying the data being read aka non-repeatable reads.
+- Transaction phenomena allowed: Non-Repeatable Reads, Phantom Reads.
+- Transaction phenomena prevented: Dirty Reads.
+
+#### Repeatable Read
+
+- Repeatable Read is a higher isolation level.
+- Prevents other transactions from modifying or inserting rows that would affect the result set of the current transaction.
+- The transaction holds read locks on all records it references and write locks on any records it modifies until the transaction is complete.
+- Transaction phenomena allowed: Phantom Reads.
+- Transaction phenomena prevented: Dirty Reads, Non-Repeatable Reads.
+
+#### Serializable
+
+- Serializable is the highest isolation level.
+- Transactions are completely isolated from each other, as if they were executed serially.
+- This level prevents all concurrency anomalies, including dirty reads, non-repeatable reads, and phantom reads.
+- Transaction phenomena allowed: None.
+- Transaction phenomena prevented: Dirty Reads, Non-Repeatable Reads, Phantom Reads.
+
+#### Transaction Phenomena Summary
+
+**Dirty Reads**: Occur when a transaction reads data that has been modified by another transaction but not yet committed. If the other transaction is rolled back, the data read by the first transaction becomes invalid.
+
+- Example: Transaction 1 updates a record and leaves it uncommitted. Transaction 2 queries the updated record and reads the uncommitted data. If Transaction 1 is rolled back, Transaction 2 has read invalid data.
+
+**Non-Repeatable Reads**: Occur when a transaction reads the same row twice and gets different data each time because another transaction has modified and committed changes to that row in between the two reads.
+
+- Example: Transaction 1 reads a record. Transaction 2 updates and commits changes to that record. When Transaction 1 reads the record again, it sees the updated data, leading to inconsistency.
+
+**Phantom Reads**: Occur when a transaction reads a set of rows that satisfy a certain condition, and then another transaction inserts or deletes rows that would affect the result set of the first transaction if it were to re-execute the same query.
+
+- Example: Transaction 1 queries for all records with a certain condition. Transaction 2 inserts a new record that satisfies that condition and commits. If Transaction 1 re-executes the query, it sees the new record (phantom) that was not present during the first read.
+
+| Isolation Level  | Dirty Reads | Non-Repeatable Reads | Phantom Reads |
+| ---------------- | ----------- | -------------------- | ------------- |
+| Read Uncommitted | Allowed     | Allowed              | Allowed       |
+| Read Committed   | Prevented   | Allowed              | Allowed       |
+| Repeatable Read  | Prevented   | Prevented            | Allowed       |
+| Serializable     | Prevented   | Prevented            | Prevented     |
+
+### Real World Application
+
+#### Advantages
+
+- Improves concurrency by allowing multiple transactions to run concurrently without the risk of data inconsistencies.
+- Provides control over the level of data consistency required by a particular application or transaction.
+- Reduces phenomena such as dirty reads, non-repeatable reads, and phantom reads, which can lead to data anomalies.
+- Provides flexibility in designing applications that require different levels of data consistency.
+
+#### Disadvantages
+
+- Increases overhead because the database management system must manage locks and ensure isolation between transactions.
+- Some isolation levels can decrease concurrency by locking resources for longer periods, leading to potential performance bottlenecks.
+- Can limit the portability of applications across different database systems, as not all systems support the same isolation levels or implement them in the same way.
+- Adds complexity to the design of database applications, making them more difficult to develop and maintain.
+
+### Implementation
+
+Refer to the following tables for our examples of transaction commit rollback isolation levels:
+
+```sql
+CREATE TABLE users (
+  id INT PRIMARY KEY,
+  name VARCHAR(100),
+  age INT
+);
+
+INSERT INTO users (id, name, age) VALUES (1, 'Sandy', 40), (2, 'Jared', 32), (3, 'Paco', 18), (4, 'Derrick', 25);
+```
+
+#### Read Uncommitted
+
+Transaction 1:
+
+```sql
+BEGIN;
+SELECT age from users WHERE id = 2; -- Returns 32
+-- other operations
+-- transaction 2's update happens here even before transaction 1 commits
+SELECT age from users WHERE id = 2; -- Returns 21
+COMMIT;
+```
+
+Transaction 2:
+
+```sql
+BEGIN;
+UPDATE users SET age = 21 WHERE id = 2;
+-- other operations
+COMMIT;
+```
+
+A dirty read occurs because Transaction 1 reads the uncommitted change made by Transaction 2.
+
+#### Read Committed
+
+Transaction 1:
+
+```sql
+BEGIN;
+SELECT age FROM users WHERE id = 2; -- Returns 32
+-- other operations
+-- transaction 2's UPDATE and COMMIT happens here
+SELECT age FROM users WHERE id = 2; -- Returns 21
+COMMIT;
+```
+
+Transaction 2:
+
+```sql
+BEGIN;
+UPDATE users SET age = 21 WHERE id = 2;
+-- other operations
+COMMIT;
+```
+
+A non-repeatable read occurs because Transaction 1 reads the committed change made by Transaction 2. Although the update was committed successfully and was intended, the same query in Transaction 1 returned different results.
+
+#### Repeatable Read
+
+Transaction 1:
+
+```sql
+BEGIN;
+SELECT age FROM users WHERE id = 2; -- Returns 32
+-- other operations
+-- transaction 2 can start executing here, but cannot commit its changes yet
+SELECT age FROM users WHERE id = 2; -- Returns 32
+COMMIT; -- however, transaction 2 cannot commit until transaction 1 is complete
+```
+
+Transaction 2:
+
+```sql
+BEGIN;
+UPDATE users SET age = 21 WHERE id = 2;
+-- other operations
+COMMIT; -- this will be blocked until transaction 1 is complete
+```
+
+In this example, the first transaction has a lock on the record with an `id` of `2`. It is not until the first transaction is complete that the second transaction can commit its changes. Notice that transaction 2 can still execute concurrently and is only blocked when it tries to interact with the same record as transaction 1.
+
+An issue with this isolation level is that phantom reads can still occur.
+
+Transaction 1:
+
+```sql
+BEGIN;
+SELECT * FROM users WHERE age BETWEEN 10 AND 30; -- Returns Paco, Derrick and Jared
+-- other operations
+-- transaction 2 can start executing here, but cannot commit its changes yet
+SELECT * FROM users WHERE age BETWEEN 10 AND 30; -- Returns Paco, Derrick, Jared and Jenny
+COMMIT; -- however, transaction 2 cannot commit until transaction 1 is complete
+```
+
+Transaction 2:
+
+```sql
+BEGIN;
+INSERT INTO users (id, name, age) VALUES (5, 'Jenny', 20);
+-- other operations
+COMMIT; -- this will be blocked until transaction 1 is complete
+```
+
+In this example, the first transaction reads all users between the ages of 10 and 30. While the first transaction is still active, the second transaction inserts a new user, Jenny, who is 20 years old. When the first transaction re-executes the same query, it sees Jenny as a phantom record that was not present during the initial read.
+
+#### Serializable
+
+Transaction 1:
+
+```sql
+BEGIN;
+SELECT * FROM users WHERE age BETWEEN 10 AND 30; -- Returns Paco, Derrick and Jared
+-- other operations
+SELECT * FROM users WHERE age BETWEEN 10 AND 30; -- Returns Paco, Derrick and Jared
+COMMIT; -- only after this commit can transaction 2 complete
+```
+
+Transaction 2:
+
+```sql
+BEGIN;
+INSERT INTO users (id, name, age) VALUES (5, 'Jenny', 20);
+-- other operations
+COMMIT; -- this will be blocked until transaction 1 is complete
+```
+
+In this isolation level, transactions are completely isolated from each other, as if they were executed serially. This level provides the highest degree of isolation, preventing all concurrency anomalies, including dirty reads, non-repeatable reads, and phantom reads. However, it can also lead to reduced performance due to increased locking and blocking of resources.
