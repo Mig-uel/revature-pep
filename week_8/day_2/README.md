@@ -58,3 +58,70 @@ CREATE SEQUENCE order_id_seq
 ```
 
 This sequence starts at 1000 and decrements by 1, cycling back to 1000 when it reaches 900.
+
+## Trigger
+
+A trigger is a database object that automatically executes a specified action in response to certain events on a table or view. Triggers are often used to enforce business rules, maintain data integrity, and automate tasks.
+
+You can specify the event, whether the trigger should fire before or after the event, and whether the trigger runs for each event or for each row affected by the event.
+
+For example, you can create a trigger that runs every time an `INSERT` statement affects a table, or a trigger that runs every time an `UPDATE` statement modifies a specific column in a table.
+
+### Real World Example
+
+Real-world applications of triggers include:
+
+- Decisions that enforce business rules, such as preventing the deletion of a record if it is referenced by another record.
+- Validating data before it is inserted or updated in a table.
+- Performing cascade operations (e.g., deleting related records in other tables when a record is deleted).
+- Auditing changes to data by logging modifications to a separate audit table.
+
+### Implementation
+
+The syntax to create a trigger may vary depending on the database system you are using. Below is an example of how to create a trigger in PostgreSQL:
+
+```sql
+CREATE TRIGGER trigger_name
+  [BEFORE | AFTER] event {INSERT | UPDATE | DELETE}
+  ON table_name
+  [FOR EACH ROW | FOR EACH STATEMENT]
+  EXECUTE FUNCTION function_name();
+```
+
+- `trigger_name`: The name of the trigger.
+- `BEFORE | AFTER`: Specifies whether the trigger should fire before or after the event.
+- `event`: The event that will cause the trigger to fire (INSERT, UPDATE, DELETE).
+- `table_name`: The name of the table to which the trigger is associated.
+- `FOR EACH ROW | FOR EACH STATEMENT`: Specifies whether the trigger should fire for each affected row or for the entire statement.
+- `function_name()`: The name of the function that contains the logic to be executed when the trigger fires.
+
+We can define six types of triggers for each table:
+
+| Trigger Type  | Description                      |
+| ------------- | -------------------------------- |
+| BEFORE INSERT | Fires before an insert operation |
+| AFTER INSERT  | Fires after an insert operation  |
+| BEFORE UPDATE | Fires before an update operation |
+| AFTER UPDATE  | Fires after an update operation  |
+| BEFORE DELETE | Fires before a delete operation  |
+| AFTER DELETE  | Fires after a delete operation   |
+
+Example of creating a trigger:
+
+```sql
+CREATE TRIGGER student_grade
+BEFORE INSERT
+ON students
+FOR EACH ROW
+-- Here you would define the function to be executed or call an existing function
+SET students.total = students.grade1 + students.grade2 + students.grade3,
+  students.percentage = students.total * 50 / 100; -- Assuming each subject is out of 100
+```
+
+What this trigger does is, before inserting a new record into the `students` table, it calculates the total and percentage based on the grades of three subjects and sets these values in the respective columns.
+
+The syntax for deleting a trigger is as follows:
+
+```sql
+DROP TRIGGER trigger_name ON table_name;
+```
