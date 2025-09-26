@@ -477,3 +477,63 @@ COMMIT; -- this will be blocked until transaction 1 is complete
 ```
 
 In this isolation level, transactions are completely isolated from each other, as if they were executed serially. This level provides the highest degree of isolation, preventing all concurrency anomalies, including dirty reads, non-repeatable reads, and phantom reads. However, it can also lead to reduced performance due to increased locking and blocking of resources.
+
+## Aggregate Functions
+
+Aggregate functions perform a calculation on a set of values and return a single value. They are often used in conjunction with the `GROUP BY` clause to group rows that have the same values in specified columns into summary rows.
+
+#### Common Aggregate Functions
+
+| Function  | Description                                                                                   |
+| --------- | --------------------------------------------------------------------------------------------- |
+| `COUNT()` | Returns the number of rows that match a specified condition, including rows with NULL values. |
+| `SUM()`   | Returns the total sum of a numeric column.                                                    |
+| `AVG()`   | Returns the average value of a numeric column.                                                |
+| `MIN()`   | Returns the smallest value in a set of values.                                                |
+| `MAX()`   | Returns the largest value in a set of values.                                                 |
+
+### Real World Application
+
+Aggregate functions are commonly used in various real-world applications to analyze and summarize data. Here are some examples:
+
+- Bank management systems use aggregate functions to calculate the total balance of all accounts, the average transaction amount, or the maximum withdrawal limit.
+- Employee management systems use aggregate functions to determine the total number of employees, the average salary, or the highest and lowest salaries within a department.
+- Student reporting systems use aggregate functions to calculate the average grades of students, the total number of students enrolled in a course, or the highest and lowest scores achieved in an exam.
+
+### Implementation
+
+Counting the number of records in a table:
+
+```sql
+SELECT COUNT(*) AS total_users FROM users;
+```
+
+Counting the number of values in a specific column, excluding NULL values:
+
+```sql
+SELECT COUNT(age) AS total_ages FROM users;
+```
+
+Finding the sum of all values in a numeric column:
+
+```sql
+SELECT SUM(age) AS total_age FROM users;
+```
+
+Finding the average value of a numeric column:
+
+```sql
+SELECT AVG(age) AS average_age FROM users;
+```
+
+Finding the minimum value in a set of values:
+
+```sql
+SELECT MIN(age) AS youngest_user FROM users;
+```
+
+Finding the maximum value in a set of values:
+
+```sql
+SELECT MAX(age) AS oldest_user FROM users;
+```
