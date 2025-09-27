@@ -125,3 +125,193 @@ The syntax for deleting a trigger is as follows:
 ```sql
 DROP TRIGGER trigger_name ON table_name;
 ```
+
+## What is a Stored Procedure?
+
+A stored procedure is a precompiled collection of one or more SQL statements that are stored in the database and can be executed as a single unit. Stored procedures are used to encapsulate complex logic, improve performance, and promote code reuse.
+
+A stored procedure is similar to a function in programming languages, in which a set of instructions is defined, named, and stored to be executed later. These stored procedures are stored inside a database schema and can be invoked from within an SQL query or from an application.
+
+A stored procedure can provide additional layers of security between the user interface and the database by abstracting data access because end users may manipulate data through the stored procedure without exposing embedded queries in a front-end application. Additionally, stored procedures can be used to provide an easier interface for complex or batch operations to be executed on the database.
+
+Unlike user defined functions, stored procedures do not necessarily return a value. Rather, procedures are used to perform many and/or complex operations, such as modifying data in multiple tables, performing calculations, or executing conditional logic. Additionally, stored procedures are not called through queries (e.g., `SELECT` statements) and are instead invoked using the `CALL`, `EXECUTE`, or `EXEC` statements, depending on the database system.
+
+### Real World Example
+
+Real-world applications of stored procedures include:
+
+- Updating database records in a batch process.
+- Providing an interface for complex but frequently used operations.
+- Database error handling and logging.
+- Performance optimization by reducing network traffic between the application and the database server.
+- Transaction management to ensure data integrity.
+
+### Implementation
+
+Stored procedures are created using the DML `CREATE PROCEDURE` statement. For the following examples, we are showcasing MySQL, but many other databases support stored procedures with similar syntax.
+
+The syntax to create a stored procedure in MySQL is as follows:
+
+```sql
+CREATE PROCEDURE procedure_name (IN | OUT | INOUT parameter_name datatype, ...) -- Define parameters
+BEGIN
+  -- SQL statements go here
+END;
+```
+
+- `procedure_name`: The name of the stored procedure.
+- `IN | OUT | INOUT`: Specifies the mode of the parameter (input, output, or both).
+- `parameter_name`: The name of the parameter.
+- `datatype`: The data type of the parameter.
+- `BEGIN ... END`: The block that contains the SQL statements to be executed.
+
+Note: MySQL allows data to be returned from a stored procedure using `OUT` or `INOUT` parameters, but it does not support returning values directly like functions. Instead, you can use `SELECT` statements within the procedure to return result sets. This functionality is not supported in all database systems.
+
+Example of creating a stored procedure:
+
+The following showcases how to create a stored procedure named `UpdateEmployeeSalaries` that will update the `salary` column of all records in an `employees` table based on a `PercentageIncrease` parameter.
+
+```sql
+DELIMITER ;; -- Change the delimiter to allow for semicolons within the procedure
+CREATE PROCEDURE UpdateEmployeeSalaries (IN PercentageIncrease DECIMAL(5,2))
+BEGIN
+  -- Update the salary of all employees by the given percentage increase
+  UPDATE employees
+  SET salary = salary + (salary * PercentageIncrease / 100);
+
+  -- Logging the update action
+  INSERT INTO audit_log (update_time, percentage_increase)
+  VALUES (NOW(), PercentageIncrease);
+END ;; -- Use ;; to terminate the procedure definition
+DELIMITER ; -- Reset the delimiter back to the default
+```
+
+- `DELIMITER ;;`: Changes the statement delimiter to `;;` to allow semicolons within the procedure body.
+- `CREATE PROCEDURE UpdateEmployeeSalaries`: Defines a new stored procedure named `UpdateEmployeeSalaries`.
+- `(IN PercentageIncrease DECIMAL(5,2))`: Declares an input parameter named `PercentageIncrease` of type `DECIMAL(5,2)`.
+- `BEGIN ... END`: Encloses the SQL statements that make up the procedure.
+- `UPDATE employees ...`: Updates the `salary` column for all employees based on the provided percentage increase.
+- `INSERT INTO audit_log ...`: Logs the update action with the current timestamp and the percentage increase.
+- `END ;;`: Ends the procedure definition using `;;` as the delimiter.
+- `DELIMITER ;`: Resets the statement delimiter back to the default semicolon.
+
+Note: A delimiter is a sequence of one or more characters that marks the end of a statement in SQL. The default delimiter in SQL is a semicolon (`;`), but it can be changed to another character or sequence of characters using the `DELIMITER` command.
+
+To call or execute the stored procedure, you can use the following syntax:
+
+```sql
+CALL UpdateEmployeeSalaries(10.00); -- Example call with a 10% increase
+```
+
+This command invokes the `UpdateEmployeeSalaries` stored procedure and passes `10.00` as the value for the `PercentageIncrease` parameter, which will increase all employee salaries by 10%.
+
+To delete a stored procedure, you can use the following syntax:
+
+```sql
+DROP PROCEDURE [IF EXISTS] procedure_name;
+```
+
+- `IF EXISTS`: Optional clause to avoid an error if the procedure does not exist.
+- `procedure_name`: The name of the stored procedure to be deleted.
+
+## What is a User Defined Function (UDF)?
+
+A User Defined Function (UDF) is a custom function created by users to perform specific operations that are not available in the built-in functions provided by the database management system. UDFs allow users to encapsulate complex logic, calculations, or operations into a reusable function that can be called within SQL queries.
+
+A function in SQL serves a similar purpose as functions in programming languages, where a set of instructions is defined, named, and stored to be executed later. It performs a set of operations and returns a result.
+
+When creating a function, you define its name, parameters (if any), return type, and the logic that the function will execute. Once created, the function can be invoked in SQL statements, such as `SELECT`, `WHERE`, or `HAVING` clauses.
+
+Characteristics of UDFs include:
+
+- Functions are separate blocks mainly used for calculations or bundling frequently used logic.
+- Functions with DML statements (like `INSERT`, `UPDATE`, `DELETE`) can be called from other blocks, but functions without DML statements are typically called using `SELECT` statements.
+- Arguments (inputs) can be passed into functions when called by defining function parameters.
+  - These parameters should be included when calling the function.
+- A function uses the `RETURN` statement to return a single value or raise an exception.
+  - The `RETURN` statement is mandatory to create SQL functions, as it will always return a value.
+
+Many database systems provide built-in functions for common operations, such as string manipulation, mathematical calculations, and date/time operations. However, UDFs allow users to create their own functions to address specific needs that are not covered by the built-in functions.
+
+### Real World Example
+
+Real-world applications of user defined functions include:
+
+- Development of a password validation function to enforce password complexity rules.
+- Maintenance of student or bank account details.
+- Performing complex calculations that are not available in built-in functions.
+- Data transformation and formatting.
+
+### Implementation
+
+Functions are created using the DML `CREATE FUNCTION` statement. For the following examples, we are showcasing MySQL, but many other databases support user defined functions with similar syntax.
+
+The syntax to create a user defined function in MySQL is as follows:
+
+```sql
+CREATE FUNCTION function_name [(parameter_name datatype, ...)] -- Define parameters
+RETURNS return_datatype -- Specify the return type
+BEGIN
+  -- declaration section (optional)
+  -- function body (SQL statements)
+  RETURN return_value; -- Return a value
+END;
+```
+
+- `function_name`: The name of the function.
+- `parameter_name`: The name of the parameter (optional).
+- `datatype`: The data type of the parameter (optional).
+- `RETURNS return_datatype`: Specifies the data type of the value that the function will return.
+- `BEGIN ... END`: The block that contains the SQL statements to be executed.
+- `RETURN return_value`: The statement that returns a value from the function.
+
+Similar to other functions, optional parameter lists can be defined within parentheses after the function name. The parameters can be of various data types, such as `INT`, `VARCHAR`, `DATE`, etc.
+
+Example of creating a user defined function `get_balance`:
+
+```sql
+DELIMITER ;; -- Change the delimiter to allow for semicolons within the function
+
+CREATE FUNCTION get_balance (account_id INT)
+RETURNS DECIMAL(10,2)
+BEGIN
+  DECLARE balance DECIMAL(10,2); -- Declare a variable to hold the balance
+
+  -- Retrieve the balance for the given account_id
+  SELECT account_balance INTO balance -- Store the result in the balance variable
+  FROM accounts
+  WHERE id = account_id;
+
+  RETURN balance; -- Return the balance
+END ;;
+
+DELIMITER ; -- Reset the delimiter back to the default
+```
+
+In this example:
+
+- `DELIMITER ;;`: Changes the statement delimiter to `;;` to allow semicolons within the function body.
+- `CREATE FUNCTION get_balance (account_id INT)`: Defines a new function named `get_balance` that takes an integer parameter `account_id`.
+- `RETURNS DECIMAL(10,2)`: Specifies that the function will return a decimal value with a precision of 10 and a scale of 2.
+- `DECLARE balance DECIMAL(10,2);`: Declares a variable named `balance` to hold the account balance.
+- `SELECT account_balance INTO balance FROM accounts WHERE id = account_id;`: Retrieves the account balance for the specified `account_id` and stores it in the `balance` variable.
+- `RETURN balance;`: Returns the value of the `balance` variable.
+- `END ;;`: Ends the function definition using `;;` as the delimiter.
+- `DELIMITER ;`: Resets the statement delimiter back to the default semicolon.
+
+To call or execute the user defined function, you can use the following syntax:
+
+```sql
+SELECT get_balance(12345) AS account_balance; -- Example call with account_id 12345
+```
+
+This command invokes the `get_balance` function with `12345` as the argument for `account_id` and retrieves the account balance for that account and aliases it as `account_balance`.
+
+To delete a user defined function, you can use the following syntax:
+
+```sql
+DROP FUNCTION [IF EXISTS] function_name;
+```
+
+- `IF EXISTS`: Optional clause to avoid an error if the function does not exist.
+- `function_name`: The name of the user defined function to be deleted.
