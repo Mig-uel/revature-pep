@@ -145,3 +145,130 @@ public class Main {
   }
 }
 ```
+
+## Runnable Interface
+
+The `Runnable` interface is a functional interface in Java that represents a task that can be executed by a thread. It contains a single abstract method, `run()`, which defines the code to be executed when the thread is started. The `Runnable` interface is often used to create threads in a more flexible way compared to extending the `Thread` class, as it allows a class to implement multiple interfaces and still be used as a thread.
+
+#### Creating Threads with Runnable
+
+- Create a class that implements the `Runnable` interface.
+  - Override the `run()` method to define the task to be performed by the thread.
+  - Pass an instance of the class to a `Thread` object.
+- Call the `start()` method on the `Thread` object to begin execution.
+
+```java
+public class MyRunnable implements Runnable {
+  @Override
+  public void run() {
+    // Code to be executed in the new thread
+    System.out.println("Runnable thread is running");
+  }
+}
+```
+
+#### Runnable and Lambda Expressions
+
+Because `Runnable` is a functional interface, we can use lambda expressions to define thread behavior inline instead of creating a separate class. We can directly pass a lambda expression as the `Runnable` type required by the `Thread` constructor.
+
+```java
+public class Main {
+  public static void main(String[] args) {
+    // Using a lambda expression to create a Runnable
+    Thread t = new Thread(() -> {
+      System.out.println("Runnable thread is running");
+    });
+
+    // Start the thread
+    t.start(); // Calls the run() method in a new thread
+  }
+}
+```
+
+In the above example, we create a new thread by passing a lambda expression that implements the `Runnable` interface to the `Thread` constructor. We then call the `start()` method to begin execution in a new thread.
+
+### Real World Example
+
+Here are some real-world examples where the `Runnable` interface can be effectively used:
+
+- **Web Servers**: In web server applications, the `Runnable` interface is used to handle incoming client requests concurrently. Each client request is encapsulated in a `Runnable` task, which is then executed by a thread from a thread pool to ensure efficient handling of multiple requests simultaneously.
+- **Background Tasks**: Many applications perform background tasks, such as batch data processing, data synchronization, or periodic updates. The `Runnable` interface allows you to encapsulate these tasks as separate `Runnable` units of work, which can be asynchronously or on separate threads.
+- **Parallel Processing**: In parallel processing applications, such as scientific computing or data analysis, the `Runnable` interface can be used to divide a large task into smaller subtasks. Each subtask can be implemented as a `Runnable` and executed concurrently to improve performance and reduce processing time.
+- **Testing and Mocking**: In unit testing scenarios, the `Runnable` interface can be used to create mock implementations of tasks or services. This allows for easy testing of concurrent behavior without the need for complex thread management.
+
+Overall, the `Runnable` interface is a versatile and widely used construct in Java for implementing multithreading and concurrent programming, making it suitable for various real-world applications that require parallel execution of tasks.
+
+### Implementation
+
+#### Creating a New Thread Using Runnable
+
+- Create a `Runnable` implementer and implement the `run()` method.
+- Instantiate the `Thread` class and pass the implementer to the `Thread`. `Thread` has a constructor that takes a `Runnable` object as an argument.
+- Invoke the `start()` method of the `Thread` instance, which internally calls the `run()` method of the `Runnable` implementer in a new thread. Invoking the `run()` method directly will not create a new thread; it will execute in the current thread.
+
+#### Example 1
+
+```java
+public class RunnableDemo {
+  public static void main(String[] args) {
+    System.out.println("Main thread is " + Thread.currentThread().getName());
+
+    // Create a Thread
+    Thread t = new Thread(new RunnableDemo().new RunnableImpl());
+
+    // Start the thread
+    t.start();
+  }
+
+  private class RunnableImpl implements Runnable {
+    @Override
+    public void run() {
+      System.out.println("Runnable thread is " + Thread.currentThread().getName());
+    }
+  }
+}
+```
+
+The example above demonstrates how to create a new thread using the `Runnable` interface. We define a class `RunnableImpl` that implements the `Runnable` interface and overrides the `run()` method. We then create a new `Thread` object, passing an instance of `RunnableImpl` to its constructor, and start the thread using the `start()` method.
+
+#### Example 2
+
+What happens when `Runnable` encounters an exception? `Runnable` cannot throw checked exceptions, but `RuntimeException` can be thrown from the `run()` method. Uncaught exceptions are handled by the exception handler of the thread, and if JVM can't handle or catch the exception, it will terminate the thread and print the stack trace to the console.
+
+```java
+import java.io.FileNotFoundException;
+
+public class RunnableDemo {
+  public static void main(String[] args) {
+    System.out.println("Main thread is " + Thread.currentThread().getName());
+
+    // Create a Thread
+    Thread t = new Thread(new RunnableDemo().new RunnableImpl());
+
+    // Start the thread
+    t.start();
+  }
+
+  private class RunnableImpl implements Runnable {
+    public void run() {
+      System.out.println("Runnable thread is " + Thread.currentThread().getName());
+
+      /**
+       * Checked exceptions cannot be thrown from the run() method of Runnable.
+       * Instead Runnable must handle them within the run() method.
+       */
+      try {
+        throw new FileNotFoundException("File not found");
+      } catch (FileNotFoundException e) {
+        e.printStackTrace();
+      }
+
+      int r = 1 / 0; // This will throw ArithmeticException (a RuntimeException)
+
+      // throw new NullPointerException("Null pointer exception"); // This will throw NullPointerException (a RuntimeException)
+    }
+  }
+}
+```
+
+In the above example, we demonstrate how to handle checked exceptions within the `run()` method of a `Runnable` implementation. We also show that unchecked exceptions, such as `ArithmeticException`, can be thrown and will terminate the thread if not caught.
