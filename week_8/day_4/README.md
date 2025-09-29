@@ -482,3 +482,211 @@ public class Main {
 - If we extend the `Thread` class, we cannot extend any other class because Java does not support multiple inheritance. However, if we implement the `Runnable` interface, we can still extend another class.
 - We can achieve basic functionality of a thread by extending the `Thread` class because it provides some built-in methods like `yield()`, `interrupt()`, `join()`, etc. that are not available in the `Runnable` interface.
 - Using the `Runnable` interface will give you an object that can be passed around, shared, and reused by multiple threads. This is not possible when you extend the `Thread` class.
+
+## Synchronization
+
+In Java, synchronization is a mechanism that ensures that only one thread can access a shared resource or critical section of code at a time. This is important in multithreaded applications to prevent data inconsistencies and race conditions.
+
+#### `synchronized` Keyword
+
+In a multithreaded environment, a race condition occurs when two or more threads try to access a shared resource simultaneously, leading to unpredictable results. Using the `synchronized` keyword on a piece of logic ensures that only one thread can access the resource at any given time. This keyword is used to mark a block of code or a method as a critical section, ensuring that only one thread can execute that code at a time. This is achieved by automatically acquiring an intrinsic lock (or monitor lock) associated associated with the object or class on which the synchronized method or block is defined. When a thread encounters a synchronized method or block, it must first acquire the lock before it can proceed. If another thread already holds the lock, the requesting thread will be blocked until the lock is released.
+
+`synchronized` blocks or methods can be created using the `synchronized` keyword.
+
+```java
+// Synchronized block
+synchronized(object) {
+    // Critical section code
+}
+```
+
+```java
+// Synchronized method
+public synchronized void synchronizedMethod() {
+    // Critical section code
+}
+```
+
+In the above examples, the `synchronized` keyword is used to mark a block of code or a method as synchronized. When a thread enters a synchronized block or method, it acquires the lock associated with the specified object or class. Other threads that attempt to enter the same synchronized block or method will be blocked until the lock is released.
+
+### Real World Example
+
+Here are some key reasons why it is important to know how to use synchronization in Java:
+
+- **Thread Safety**: Synchronization ensures that only one thread can access a shared resource or critical section of code at a time, preventing data inconsistencies and race conditions. This guarantees thread safety and maintains the integrity of shared data.
+- **Avoiding Race Conditions**: Race conditions occur when multiple threads access shared data concurrently, leading to unpredictable results. Synchronization helps avoid race conditions by ensuring that only one thread can access the shared data at a time.
+- **Concurrent Data Structures**: Java provides various concurrent data structures, such as `ConcurrentHashMap` and `CopyOnWriteArrayList`, that are designed to be thread-safe. Understanding synchronization is essential for effectively using these data structures in multithreaded applications.
+
+In summary, knowing how to use synchronization in Java is crucial for developing robust and reliable multithreaded applications that can safely share data and resources among multiple threads.
+
+### Implementation
+
+Below is an example of using synchronization. We have a class that creates two. Both threads print statements before and after a loop. One thread's loop increments a shared variable by 1, while the other thread's loop increments the same shared variable by 2. Without synchronization, the output will be inconsistent and unpredictable. By using the `synchronized` keyword, we can ensure that only one thread can access the critical section of code at a time, resulting in consistent and predictable output.
+
+```java
+public class Main {
+  int value = 0;
+
+  public static void main(String[] args) {
+    // Create an instance of Main
+    Main obj = new Main();
+
+    // Create two threads
+    Thread t1 = new Thread(() -> {
+      try {
+        obj.updateValueFiveTimesByAddingOne();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    });
+
+    Thread t2 = new Thread(() -> {
+      try {
+        obj.updateValueFiveTimesByAddingTwo();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    });
+
+    // Start the threads
+    t1.start();
+    t2.start();
+  }
+}
+```
+
+The methods called by the threads without using synchronization:
+
+```java
+public void updateValueFiveTimesByAddingOne() throws InterruptedException {
+  System.out.println("Thread 1: Before adding 1 loop");
+
+  // Iterate 5 times, incrementing value by 1 each time
+  for (int i = 0; i < 5; i++) {
+    System.out.println(++value);
+    Thread.sleep(500); // Simulate some work with sleep
+  }
+
+  System.out.println("Print statement after adding 1 loop");
+}
+
+public void updateValueFiveTimesByAddingTwo() throws InterruptedException {
+  System.out.println("Thread 2: Before adding 2 loop");
+
+  // Iterate 5 times, incrementing value by 2 each time
+  for (int i = 0; i < 5; i++) {
+    value += 2;
+    System.out.println(value);
+    Thread.sleep(500); // Simulate some work with sleep
+  }
+
+  System.out.println("Print statement after adding 2 loop");
+}
+```
+
+The output of the above code without synchronization will be inconsistent and unpredictable, as both threads are accessing and modifying the shared variable `value` concurrently. The output may look something like this:
+
+```plaintext
+Thread 1: Before adding 1 loop
+1
+Thread 2: Before adding 2 loop
+3
+4
+6
+7
+9
+10
+12
+13
+15
+Print statement after adding 1 loop
+Print statement after adding 2 loop
+```
+
+Notice how the output is jumbled and inconsistent as both threads take turns accessing and modifying the shared variable `value`. The value sometimes increments by 1 and sometimes by 2, leading to unpredictable results. `Thread.sleep(500)` is used to slow down the execution and make the interleaving of thread outputs more apparent.
+
+To fix this issue, we can use the `synchronized` keyword to ensure that only one thread can access the critical section of code at a time. Here is the updated code with synchronization:
+
+```java
+public void updateValueFiveTimesByAddingOne() throws InterruptedException {
+  System.out.println("Thread 1: Before adding 1 loop");
+
+  // Synchronize the critical section
+  synchronized (this) {
+    // Iterate 5 times, incrementing value by 1 each time
+    for (int i = 0; i < 5; i++) {
+      System.out.println(++value);
+      Thread.sleep(500); // Simulate some work with sleep
+    }
+  }
+
+  System.out.println("Print statement after adding 1 loop");
+}
+public void updateValueFiveTimesByAddingTwo() throws InterruptedException {
+  System.out.println("Thread 2: Before adding 2 loop");
+
+  // Synchronize the critical section
+  synchronized (this) {
+    // Iterate 5 times, incrementing value by 2 each time
+    for (int i = 0; i < 5; i++) {
+      value += 2;
+      System.out.println(value);
+      Thread.sleep(500); // Simulate some work with sleep
+    }
+  }
+
+  System.out.println("Print statement after adding 2 loop");
+}
+```
+
+The output of the above code with synchronization will be consistent and predictable, as only one thread can access the critical section of code at a time. The output will look something like this:
+
+```plaintext
+Thread 1: Before adding 1 loop
+Thread 2: Before adding 2 loop
+1
+2
+3
+4
+5
+Print statement after adding 1 loop
+7
+9
+11
+13
+15
+Print statement after adding 2 loop
+```
+
+We see that once a synchronized block is entered by one thread, the other thread must wait until the first thread exits the synchronized block. This ensures that the shared variable `value` is accessed and modified in a consistent and predictable manner, preventing data inconsistencies and race conditions.
+
+We can also synchronize entire methods by using the `synchronized` keyword in the method declaration. Here is the updated code with synchronized methods:
+
+```java
+public synchronized void updateValueFiveTimesByAddingOne() throws InterruptedException {
+  System.out.println("Thread 1: Before adding 1 loop");
+
+  // Iterate 5 times, incrementing value by 1 each time
+  for (int i = 0; i < 5; i++) {
+    System.out.println(++value);
+    Thread.sleep(500); // Simulate some work with sleep
+  }
+
+  System.out.println("Print statement after adding 1 loop");
+}
+
+public synchronized void updateValueFiveTimesByAddingTwo() throws InterruptedException {
+  System.out.println("Thread 2: Before adding 2 loop");
+
+  // Iterate 5 times, incrementing value by 2 each time
+  for (int i = 0; i < 5; i++) {
+    value += 2;
+    System.out.println(value);
+    Thread.sleep(500); // Simulate some work with sleep
+  }
+
+  System.out.println("Print statement after adding 2 loop");
+}
+```
+
+Output will be the same as the previous synchronized block example except now the print statements are also synchronized, ensuring that the shared variable `value` is accessed and modified in a consistent and predictable manner.
