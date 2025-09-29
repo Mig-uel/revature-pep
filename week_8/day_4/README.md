@@ -272,3 +272,111 @@ public class RunnableDemo {
 ```
 
 In the above example, we demonstrate how to handle checked exceptions within the `run()` method of a `Runnable` implementation. We also show that unchecked exceptions, such as `ArithmeticException`, can be thrown and will terminate the thread if not caught.
+
+## States of a Thread
+
+At any given time, a thread can be in one of the following states:
+
+- **NEW**: A thread that has been created but not yet started is in this state.
+- **RUNNABLE**: A thread that is ready to run and is waiting for CPU time is in this state.
+- **BLOCKED**: A thread that is blocked waiting for a monitor lock is in this state.
+- **WAITING**: A thread that is waiting indefinitely for another thread to perform a particular action is in this state.
+- **TIMED_WAITING**: A thread that is waiting for another thread to perform an action for up to a specified waiting time is in this state.
+- **TERMINATED**: A thread that has exited is in this state.
+
+#### Lifecycle of a Thread
+
+- **New Thread**: When a thread is created using the `Thread` class or by implementing the `Runnable` interface, it is in the **NEW** state. The thread has not yet started to run when the thread is in this state. When a thread lies in the new state, its code is yet to be executed.
+- **Runnable State**: A thread that is ready to run is moved to the **RUNNABLE** state. In this state, a thread might actually be running or it might ready to run but waiting for CPU time. It is the responsibility of the thread scheduler to give the thread, time to run. A multithreaded program allocates a fixed amount of time to each individual thread. Each and every thread runs for a short period of time and the pauses and relinquishes the CPU to another thread so that other threads can get a chance to run. This process is called context switching. When this happens, all such threads that are ready to run, waiting for the CPU time, are in the **RUNNABLE** state.
+- **Blocked/Waiting State**: When a thread is temporarily inactive, is is in one the following states:
+  - **BLOCKED**: A thread is in the **BLOCKED** state when it is waiting to acquire a monitor lock to enter or re-enter a synchronized block/method.
+  - **WAITING**: A thread is in the **WAITING** state when it is waiting indefinitely for another thread to perform a particular action. This can happen when a thread calls methods like `Object.wait()`, `Thread.join()` without a timeout, or `LockSupport.park()`.
+  - **TIMED_WAITING**: A thread is in the **TIMED_WAITING** state when it is waiting for another thread to perform an action for up to a specified waiting time. This can happen when a thread calls methods like `Thread.sleep()`, `Object.wait(long timeout)`, `Thread.join(long millis)`, or `LockSupport.parkNanos()`/`LockSupport.parkUntil()`.
+- **Terminated State**: A thread is in the **TERMINATED** state when it has completed its execution or has been terminated. Once a thread enters this state, it cannot be restarted. A thread can enter the terminated state either by completing its `run()` method or by being terminated due to an uncaught exception.
+
+### Real World Example
+
+Knowing the different thread states is important for understanding and debugging multithreaded and concurrent applications. Here are several reasons why understanding thread states is important:
+
+- **Debugging**: When troubleshooting concurrency issues, understanding thread states can help identify the cause of problems such as deadlocks, livelocks, or race conditions. By examining the states of threads, developers can gain insights into the behavior of concurrent code and diagnose issues more effectively.
+- **Performance Optimization**: Understanding thread states can aid in performance optimization by identifying bottlenecks and inefficiencies in thread management. By analyzing the state transitions of threads, developers can identify areas where threads spend excessive time in certain states, such as waiting or blocked, and optimize the code to reduce contention and improve overall performance.
+- **Concurrency Control**: Thread states are closely related to synchronization and concurrency control mechanisms, such as locks, monitors, and atomic operations. Understanding thread states helps developers reason about the correctness and effectiveness of synchronization strategies used to coordinate access to shared resources among multiple threads.
+
+In summary, knowing the different thread states is crucial for effectively managing and debugging multithreaded applications, optimizing performance, and ensuring correct concurrency control.
+
+### Implementation
+
+#### Implementing Thread States
+
+In Java, to get the current state of a thread, you can use the `getState()` method of the `Thread` class. This method returns an instance of the `Thread.State` enum, which represents the current state of the thread.
+
+```java
+class WorkerThread implements Runnable {
+  public void run() {
+    // Moving thread2 to times waiting state
+    try {
+      Thread.sleep(2000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
+    System.out.println("State of thread1 while it called join() method on thread2 - " + ThreadStateDemo.thread1.getState());
+
+    try {
+      Thread.sleep(200);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+  }
+}
+
+public class ThreadStateDemo {
+  public static Thread thread1;
+  public static ThreadStateDemo instance;
+
+  public static void main(String[] args) {
+    instance = new ThreadStateDemo();
+    thread1 = new Thread(instance);
+
+    // thread1 is in new state
+    System.out.println("State of thread1 after creating it - " + thread1.getState());
+    thread1.start();
+
+    // thread1 is in runnable state
+    System.out.println("State of thread1 after calling .start() method on it - " + thread1.getState());
+  }
+
+  public void run() {
+    WorkerThread worker = new WorkerThread();
+    Thread thread2 = new Thread(worker);
+
+    // thread2 is in new state
+    System.out.println("State of thread2 after creating it - " + thread2.getState());
+    thread2.start();
+
+    // thread2 is in runnable state
+    System.out.println("State of thread2 after calling .start() method on it - " + thread2.getState());
+
+    // moving thread1 to waiting state
+    try {
+      Thread.sleep(200);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
+    System.out.println("State of thread2 after calling .sleep() method on it - " + thread2.getState());
+
+    // moving thread1 to waiting state
+    try {
+      // thread1 is waiting for thread2 to complete its task
+      thread2.join();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
+    System.out.println("State of thread2 when it has completed it's execution - " + thread2.getState());
+  }
+}
+```
+
+In the above example, we demonstrate the different states of a thread in Java. We create two threads, `thread1` and `thread2`, and print their states at various points in their lifecycle. The output will show the transitions between the different thread states, such as NEW, RUNNABLE, TIMED_WAITING, WAITING, and TERMINATED.
