@@ -690,3 +690,98 @@ public synchronized void updateValueFiveTimesByAddingTwo() throws InterruptedExc
 ```
 
 Output will be the same as the previous synchronized block example except now the print statements are also synchronized, ensuring that the shared variable `value` is accessed and modified in a consistent and predictable manner.
+
+## Deadlocks
+
+#### What is a Deadlock?
+
+A deadlock is a situation in concurrent programming where two or more threads are blocked forever, waiting for each other to release resources. In a deadlock, each thread holds a resource and waits for another resource held by another thread, creating a cycle of dependencies that prevents any of the threads from proceeding.
+
+#### Four Conditions for Deadlock
+
+- **Mutual Exclusion**: At least one resource must be held in a non-shareable mode, meaning that only one thread can use the resource at any given time. If another thread requests the resource, it must wait until the resource is released.
+- **Hold and Wait**: A thread must be holding at least one resource and waiting to acquire additional resources that are currently being held by other threads.
+- **No Preemption**: Resources cannot be forcibly taken away from a thread holding them. A resource can only be released voluntarily by the thread holding it.
+- **Circular Wait**: A set of threads must exist such that each thread is waiting for a resource held by the next thread in the set, forming a circular chain of dependencies.
+
+#### Deadlock Detection
+
+We can use Java's built-in `ThreadMXBean` class to detect deadlocks programmatically. The `findDeadlockedThreads()` method returns an array of thread IDs that are deadlocked, or `null` if no threads are deadlocked.
+
+#### Prevention Strategies
+
+- **Avoid Nested Locks**: Avoid acquiring multiple locks at the same time. If a thread needs to acquire multiple locks, it should do so in a predefined order to prevent circular wait conditions.
+- **Lock Timeout**: Use a timeout when trying to acquire a lock. If a thread cannot acquire a lock within a specified time, it should release any locks it holds and retry later.
+- **Resource Hierarchy**: Establish a global order for acquiring locks and ensure that all threads acquire locks in that order. This prevents circular wait conditions.
+
+### Real World Example
+
+A simple real-time example of a deadlock: supposed there two friends, John and Jerry, who are drawing a diagram together. During drawing, John needs an eraser, so he will use (lock) the eraser.
+
+Meanwhile, Jerry needs a ruler, so he will use (lock) the ruler. Currently, eraser and ruler are not occupied by any of the friends. Now, Jon needs a ruler to complete his drawing, but Jerry will not give the ruler because he is using it.
+
+Later on, Jerry needs an eraser but John will not give it as his drawing is not completed because he is waiting for the ruler. Thus, none of the friends will release their resources, and they will infinitely wait for each other to release the resources. This is a classic example of a deadlock.
+
+Similarly, assume that there are two threads, `t1` and `t2`. Both threads are running concurrently (simultaneously). During execution, thread `t1` is waiting for data that is locked by thread `t2`, and thread `t2` is waiting for data that is locked by thread `t1`.
+
+In this case, none of the threads will unlock because both threads are waiting for each other to release the resources. This situation is called a deadlock.
+
+When thread deadlock occurs in a program, the further execution of the program is halted, and the program becomes unresponsive. Therefore, thread deadlock is a serious issue in concurrent programming that needs to be handled carefully.
+
+### Implementation
+
+We will see an example of a deadlock in Java taken from the [Concurrency Java Tutorial](https://docs.oracle.com/javase/tutorial/essential/concurrency/deadlock.html).
+
+```java
+public class Deadlock {
+  public static void main(String[] args) {
+    // Two Friend objects
+    Friend john = new Friend("John");
+    Friend jerry = new Friend("Jerry");
+
+    // Two threads each using an object
+    Thread t1 = new Thread(() -> john.bow(jerry));
+    Thread t2 = new Thread(() -> jerry.bow(john));
+
+    // Start the threads
+    t1.start();
+    t2.start();
+
+    // Debugging statement
+    // Use main thread to check state of other threads periodically
+    for (int i = 0; i <= 5; i++) {
+      Thread.sleep(1000);
+      System.out.println(t1.getName() + "- State: " + t1.getState() + " & IsAlive: " + t1.isAlive());
+      System.out.println(t2.getName() + "- State: " + t2.getState() + " & IsAlive: " + t2.isAlive());
+    }
+  }
+}
+
+
+class Friend {
+  private String name;
+
+  public Friend(String name) {
+    this.name = name;
+  }
+
+  public String getName() {
+    return this.name;
+  }
+
+  public synchronized void bow(Friend bower) {
+    System.out.format("%s: %s has bowed to me!%n", this.name, bower.getName());
+
+    // debugging statement
+    System.out.println(Thread.currentThread().getName() + " hold lock on " + this.name + "? " + Thread.holdsLock(this) + "\n" + Thread.currentThread().getName() + " hold lock on " + bower.getName() + "? " + Thread.holdsLock(bower) + "\n");
+
+    bower.bowBack(this); // deadlock happens here
+  }
+
+  public synchronized void bowBack(Friend bower) {
+    System.out.format("%s: %s has bowed back to me!%n", this.name, bower.getName());
+  }
+}
+```
+
+In the above example, we have two `Friend` objects, `john` and `jerry`. Each friend has a method `bow()` that is synchronized, meaning that only one thread can execute it at a time for a given `Friend` object. When `john` bows to `jerry`, he acquires the lock on `john` and then tries to acquire the lock on `jerry` by calling `jerry.bowBack(john)`. Similarly, when `jerry` bows to `john`, he acquires the lock on `jerry` and then tries to acquire the lock on `john` by calling `john.bowBack(jerry)`. This creates a circular wait condition, where `john` is waiting for `jerry` to release the lock, and `jerry` is waiting for `john` to release the lock. As a result, both threads are blocked forever, leading to a deadlock.
