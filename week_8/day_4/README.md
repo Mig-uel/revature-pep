@@ -380,3 +380,105 @@ public class ThreadStateDemo {
 ```
 
 In the above example, we demonstrate the different states of a thread in Java. We create two threads, `thread1` and `thread2`, and print their states at various points in their lifecycle. The output will show the transitions between the different thread states, such as NEW, RUNNABLE, TIMED_WAITING, WAITING, and TERMINATED.
+
+## Multithreading
+
+#### Concurrency
+
+**Concurrency** is the ability of a program to execute multiple tasks or processes simultaneously or in overlapping time periods. In a concurrent system, multiple tasks can make progress independently, even if they are not executing at the exact same time. Concurrency is often achieved through techniques such as multithreading, multiprocessing, or asynchronous programming.
+
+It refers to breaking up as task or piece of computation into different parts that can be executed independently, out of order, or in partial order, without affecting the final outcome. One way -- but not the only way -- to achieve concurrency is by using multiple threads within a single process.
+
+Operating systems use concurrency to manage the many different programs that run on them. For example, the GUI of an operating system us ran at the same time as other processes. Without this, any process that took too long in the background, like reading/writing to files, or making an HTTP request, would cause the GUI to freeze up and become unresponsive.
+
+#### Multi-core Processing
+
+Most computers today have multiple CPU cores. Each core can be thought of as a separate processor that can execute its own thread of instructions. Multi-core processing allows a computer to perform multiple tasks simultaneously, improving overall performance and responsiveness. Without multiple cores, operating systems would have to rely on time-slicing to give the illusion of concurrency, which can lead to inefficiencies and delays. Time-slicing means running one process for a short period of time, then switching to another process, and so on rapidly. This ensures that no process or application hogs the CPU, but it can also lead to delays and inefficiencies, especially if a process needs to wait for I/O operations or other resources.
+
+#### Intro to Threads
+
+A thread is a subset of a process that is also an independent sequence of execution, but threads of the main process run in the same memory space, managed independently by a scheduler. We can think of a thread as a "path of execution", but they can access the same objects and variables as other threads in the same process. This means that threads can share data and resources, but it also means that they can interfere with each other if they are not properly synchronized.
+
+Every thread has its own call stack, program counter, and local variables, but they share the same heap memory space. This means that threads can access and modify the same objects and variables in the heap memory, which can lead to data inconsistencies and race conditions if not handled properly.
+
+#### Multithreading
+
+**Multithreading** extends the idea of multitasking into applications and processes. Each thread can have its own task that it is responsible for, and the operating system's scheduler will allocate CPU time to each thread as needed. Multi-core processors can actually run multiple different processes and threads concurrently, enabling true parallelism.
+
+In Java, multithreading is achieved through the `Thread` class and the `Runnable` interface. Java provides built-in support for creating and managing threads, allowing developers to create multithreaded applications easily.
+
+#### Note on Best Practices
+
+In general, it is best to avoid implementing multithreading unless absolutely necessary. The benefit of multithreading is better performance due to non-blocking execution. However, you should always measure or attempt to estimate the performance benefit you will get by using threads versus the tradeoff of increased complexity and potential for bugs. Usually there are frameworks, tools, or libraries that have implemented the problem you are trying to solve, and you can leverage those instead of trying to implement it yourself. For example, web servers like Apache Tomcat have already implemented thread pools to handle multiple requests concurrently, so you don't have to implement your own thread management system.
+
+### Real World Example
+
+Understanding multithreading is crucial for developing modern software applications that need to efficiently utilize available hardware resources, improve performance, and enhance user experience. Here's why understanding multithreading is important:
+
+- **Concurrency**: Multithreading allows programs to perform multiple tasks concurrently, making better use of available CPU resources and reducing idle time. This concurrency is essential for applications that need to handle multiple tasks simultaneously, such as web servers, databases, and user interfaces.
+- **Responsiveness**: Multithreading enabled applications to remain responsive to user input while performing background tasks. For example, in GUI applications, background threads can handle time-consuming operations such as file I/O or network requests, while the main thread remains responsive to user interactions.
+- **Parallelism**: Multithreading enabled parallel execution of tasks on multi-core processors, where tasks can execute independently and asynchronously without blocking the main thread of execution. Asynchronous programming is crucial for building responsive and non-blocking applications, such as web servers and real-time systems.
+- **Fault Tolerance**: Multithreading can enhance fault tolerance and robustness in distributed systems by isolating failure-prone components or tasks in separate threads. By decoupling tasks and handling failures gracefully, multithreaded applications can continue to operate even when some threads encounter errors or exceptions.
+
+In summary, understanding multithreading is essential for building efficient, responsive, and robust software applications that can effectively utilize modern hardware capabilities and meet the demands of concurrent and parallel processing.
+
+### Implementation
+
+Multithreading is a Java feature that allows concurrent execution of two or more parts of a program for maximum utilization of CPU. Each part of such a program is called a thread, and each thread defines a separate path of execution. So, threads are lightweight processes within a process.
+
+There are two ways to create a thread in Java:
+
+1. By extending the `Thread` class
+2. By implementing the `Runnable` interface
+
+Both approaches have their use cases, and the choice between them depends on the specific requirements of the application.
+
+#### Example 1: Extending the Thread Class
+
+We create a class that extends the `java.lang.Thread` class and override its `run()` method to define the task that the thread will perform. We then create an instance of the class and call the `start()` method to begin execution in a new thread.
+
+```java
+class MyThread extends Thread {
+    public void run() {
+        System.out.println("Thread is running");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        int n = 5; // Number of threads
+        for (int i = 0; i < n; i++) {
+            MyThread t = new MyThread();
+            t.start(); // Calls the run() method in a new thread
+        }
+    }
+}
+```
+
+#### Example 2: Implementing the Runnable Interface
+
+We create a class that implements the `Runnable` interface and override its `run()` method to define the task that the thread will perform. We then create an instance of the class, pass it to a `Thread` object, and call the `start()` method to begin execution in a new thread.
+
+```java
+class MyRunnable implements Runnable {
+    public void run() {
+        System.out.println("Thread is running");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        int n = 5; // Number of threads
+        for (int i = 0; i < n; i++) {
+            Thread t = new Thread(new MyRunnable());
+            t.start(); // Calls the run() method in a new thread
+        }
+    }
+}
+```
+
+#### Thread Class vs Runnable Interface
+
+- If we extend the `Thread` class, we cannot extend any other class because Java does not support multiple inheritance. However, if we implement the `Runnable` interface, we can still extend another class.
+- We can achieve basic functionality of a thread by extending the `Thread` class because it provides some built-in methods like `yield()`, `interrupt()`, `join()`, etc. that are not available in the `Runnable` interface.
+- Using the `Runnable` interface will give you an object that can be passed around, shared, and reused by multiple threads. This is not possible when you extend the `Thread` class.
