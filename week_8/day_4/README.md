@@ -785,3 +785,291 @@ class Friend {
 ```
 
 In the above example, we have two `Friend` objects, `john` and `jerry`. Each friend has a method `bow()` that is synchronized, meaning that only one thread can execute it at a time for a given `Friend` object. When `john` bows to `jerry`, he acquires the lock on `john` and then tries to acquire the lock on `jerry` by calling `jerry.bowBack(john)`. Similarly, when `jerry` bows to `john`, he acquires the lock on `jerry` and then tries to acquire the lock on `john` by calling `john.bowBack(jerry)`. This creates a circular wait condition, where `john` is waiting for `jerry` to release the lock, and `jerry` is waiting for `john` to release the lock. As a result, both threads are blocked forever, leading to a deadlock.
+
+## Livelock
+
+Livelock is another concurrency issue that is similar to deadlock, but instead of threads being blocked and unable to proceed, they are actively trying to avoid a deadlock situation but end up in a state where they cannot make any progress. In a livelock, threads are not blocked, but they are continuously changing their state in response to each other, preventing them from completing their tasks.
+
+A great example is a messaging system where, when an exception occurs, the message consumer rolls back the transaction and puts the message back to the head of the queue. Then, the same message is repeatedly read from the queue, only to cause another exception and be put back on the head of the queue. The consumer will never be able to process any other messages in the queue because it is stuck in a loop of processing the same message that causes an exception.
+
+### Real World Example
+
+#### Example 1
+
+A simple example of livelock would be two people trying to pass each other in a narrow hallway. If both people try to move to the same side at the same time, they will end up blocking each other and neither will be able to pass. To avoid this, they may both try to move to the opposite side, but if they both do this at the same time, they will again block each other. This can continue indefinitely, with both people continuously trying to avoid each other but never being able to pass.
+
+#### Example 2
+
+Another example of livelock is when two cars stop at a 4-way stop sign at the same time. Both drivers may try to be polite and let the other driver go first, but if they both do this at the same time, they will end up blocking each other and neither will be able to proceed. This can continue indefinitely, with both drivers continuously trying to avoid each other but never being able to move.
+
+### Implementation
+
+The example below demonstrates a livelock situation in Java.
+
+#### Criminal Class
+
+```java
+public class Criminal {
+  private boolean hostageReleased = false;
+
+  public synchronized void releaseHostage(Police police) {
+    while (!police.isRansomSent()) {
+      System.out.println("Criminal: Waiting for ransom to be sent...");
+
+      try {
+        Thread.sleep(1000);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    }
+
+    System.out.println("Criminal: Releasing hostage...");
+    hostageReleased = true;
+  }
+
+  public boolean isHostageReleased() {
+    return hostageReleased;
+  }
+}
+```
+
+#### Police Class
+
+```java
+public class Police {
+  private boolean ransomSent = false;
+
+  public synchronized void giveRansom(Criminal criminal) {
+    while (!criminal.isHostageReleased()) {
+      System.out.println("Police: Waiting for hostage to be released...");
+
+      try {
+        Thread.sleep(1000);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    }
+
+    System.out.println("Police: Sending ransom...");
+    ransomSent = true;
+  }
+
+  public boolean isRansomSent() {
+    return ransomSent;
+  }
+}
+```
+
+#### Main Class
+
+```java
+public class Main {
+  static final Police police = new Police();
+  static final Criminal criminal = new Criminal();
+
+  private static Thread t1;
+  private static Thread t2;
+
+  // Notice that the code will never terminate
+  public static void main(String[] args) throws Exception {
+    t1 = new Thread(() ->{
+      t1.setName("Thread 1");
+      police.giveRansom(criminal);
+    });
+    t1.start();
+
+    t2 = new Thread(() ->{
+      t2.setName("Thread 2");
+      criminal.releaseHostage(police);
+    });
+    t2.start();
+
+    // debugging: print state and name of threads over time
+    for (int i = 0; i <= 10; i++) {
+      System.out.print("-----------------\n" +
+          "Name: " + t1.getName() + "\n" +
+          "State: " + t1.getState() + "\n" +
+          "-----------------\n");
+
+      System.out.print("-----------------\n" +
+          "Name: " + t2.getName() + "\n" +
+          "State: " + t2.getState() + "\n" +
+          "-----------------\n");
+      Thread.sleep(1000);
+    }
+  }
+}
+```
+
+The output of the above code will be:
+
+```plaintext
+Police: Waiting for hostage to be released...
+Criminal: Waiting for ransom to be sent...
+-----------------
+Name: Thread 1
+State: TIMED_WAITING
+-----------------
+-----------------
+Name: Thread 2
+State: TIMED_WAITING
+-----------------
+Police: Waiting for hostage to be released...
+Criminal: Waiting for ransom to be sent...
+-----------------
+Name: Thread 1
+State: TIMED_WAITING
+-----------------
+-----------------
+Name: Thread 2
+State: TIMED_WAITING
+-----------------
+...
+```
+
+In the above example, we have two classes, `Criminal` and `Police`, each with a method that waits for a condition to be met before proceeding. The `Criminal` class waits for the ransom to be sent before releasing the hostage, while the `Police` class waits for the hostage to be released before sending the ransom. This creates a livelock situation where both threads are continuously waiting for each other to take action, preventing either from making progress.
+
+## Producer Consumer Problem
+
+The Producer-Consumer problem is a classic example of a multi-process synchronization problem. It involves two types of processes, the producer and the consumer, which share a common, fixed-size buffer used as a queue. The producer's job is to generate data, put it into the buffer, and start again. At the same time, the consumer is consuming the data (i.e., removing it from the buffer), one piece at a time.
+
+The producer and consumer are two classes of threads that share a common, fixed-size buffer used as a queue.
+
+**Problem** - The producer should produce dfata only when the buffer is not full. If the buffer is full, the producer must wait until the consumer consumes some data from the buffer. Similarly, the consumer should consume data only when the buffer is not empty. If the buffer is empty, the consumer must wait until the producer produces some data.
+
+**Solution** - We can solve this problem using the `wait()` and `notify()` methods provided by the Object class in Java. This will communicate between the producer and consumer threads to ensure that they do not access the buffer at the same time. The `wait()` method will be used to pause the producer or consumer thread when the buffer is full or empty, respectively. The `notify()` method will be used to wake up the waiting thread when the buffer state changes.
+
+- The Producer thread will keep on producing data for Consumer to consume. It will use `wait()` method when the queue is full and use `notify()` method to send notification to the Consumer thread when it produces an item.
+- The Consumer thread will consume the data from the queue. It will use `wait()` method when the queue is empty and use `notify()` method to send notification to the Producer thread when it consumes an item.
+
+### Real World Example
+
+A very typical application of the Producer-Consumer problem is a message passing between applications which happens all the time in today's multi-processing operating systems.
+
+Consider the printing of documents. You can print from several applications, i.e. multiple producers can create printing "messages" that are enqueued by a printer spooler and later consumed by a printer. Many kinds of shared access to resources are producer consumer problems.
+
+In real-time critical applications with multi-tasking there also may be some kind of events that are passed from one task to another which requires synchronization mechanism to avoid race conditions, especially in event-triggered systems. For example, an embedded real-time system may receive a message from the producer, which one or multiple tasks (consumers) may be waiting for.
+
+### Implementation
+
+Below is an example of a program that avoids the Producer-Consumer problem by using synchronization and the `wait()` and `notify()` methods. This example is of a cookie store that has a baker (producer) and cashier (consumer).
+
+#### Cookie Class
+
+```java
+public class Cookie {
+}
+```
+
+#### Main Class
+
+```java
+import java.util.ArrayDeque;
+
+public class Main {
+  public static ArrayDeque<Cookie> cookies = new ArrayDeque<>();
+  public static final int MAX_COOKIES = 5;
+
+  public static void main(String[] args) {
+    // Create producer and consumer threads
+    Baker baker = new Baker();
+    Cashier cashier = new Cashier();
+
+    // Create threads that produce and consume cookies
+    Thread producerThread = new Thread(() -> {
+      try {
+        for (int i = 0; i < 5; i++) {
+          baker.produce(new Cookie());
+        }
+      } catch (InterruptedException e) {
+        System.out.println("Producer interrupted");
+        e.printStackTrace();
+      }
+    });
+
+    Thread consumerThread = new Thread(() -> {
+      try {
+        for (int i = 0; i < 5; i++) {
+          cashier.consume();
+        }
+      } catch (InterruptedException e) {
+        System.out.println("Consumer interrupted");
+        e.printStackTrace();
+      }
+    });
+
+    // Start the threads
+    producerThread.start();
+    consumerThread.start();
+  }
+}
+```
+
+The `Main` class has a queue that contains cookies, a maximum number of cookies that can be in the queue at any time, and two threads: one for the baker (producer) and one for the cashier (consumer). When the program starts, it creates a `Baker` and `Cashier` object, then creates two threads that will produce and consume cookies, respectively.
+
+#### Baker Class
+
+```java
+public class Baker {
+  ArrayDeque<Cookie> cookies = Main.cookies;
+
+  public void produce(Cookie cookie) throws InterruptedException {
+    synchronized (cookies) {
+      // Check if baker can produce more cookies
+      while (cookies.size() == Main.MAX_COOKIES) {
+        // if not, wait
+        System.out.println("Baker: Waiting, cookie tray is full...");
+        cookies.wait();
+      }
+
+      // If we reach here, it means we can produce a cookie
+      cookies.add(cookie);
+      System.out.println("Baker: Produced a cookie. Total cookies: " + cookies.size());
+      cookies.notify();
+    }
+  }
+}
+```
+
+The `Baker` class has a method `produce()` that takes a `Cookie` object as an argument. The method is synchronized on the `cookies` queue to ensure that only one thread can access it at a time. If the queue is full, the baker thread will wait until the cashier consumes some cookies. When a cookie is produced, it is added to the queue, and the cashier thread is notified that a new cookie is available.
+
+#### Cashier Class
+
+```java
+public class Cashier {
+  ArrayDeque<Cookie> cookies = Main.cookies;
+
+  public void consume() throws InterruptedException {
+    synchronized (cookies) {
+      // Check if there are cookies to consume
+      while (cookies.isEmpty()) {
+        // if not, wait
+        System.out.println("Cashier: Waiting, no cookies to sell...");
+        cookies.wait();
+      }
+
+      // If we reach here, it means we can consume a cookie
+      cookies.remove();
+      System.out.println("Cashier: Sold a cookie. Total cookies: " + cookies.size());
+      cookies.notify();
+    }
+  }
+}
+```
+
+The `Cashier` class has a method `consume()` that is also synchronized on the `cookies` queue. If the queue is empty, the cashier thread will wait until the baker produces some cookies. When a cookie is consumed, it is removed from the queue, and the baker thread is notified that there is space available to produce more cookies.
+
+When you run the above code, you will see output similar to the following:
+
+```plaintext
+Baker: Produced a cookie. Total cookies: 1
+Cashier: Sold a cookie. Total cookies: 0
+Baker: Produced a cookie. Total cookies: 1
+Cashier: Sold a cookie. Total cookies: 0
+Baker: Produced a cookie. Total cookies: 1
+Cashier: Sold a cookie. Total cookies: 0
+Baker: Produced a cookie. Total cookies: 1
+Cashier: Sold a cookie. Total cookies: 0
+Baker: Produced a cookie. Total cookies: 1
+Cashier: Sold a cookie. Total cookies: 0
+```
