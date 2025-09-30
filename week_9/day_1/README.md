@@ -821,3 +821,107 @@ Wait, so we did not have to create any configuration class? How does Spring know
 Yes, in this example, we did not create a separate configuration class. Instead, we used the `AnnotationConfigApplicationContext` constructor that takes a base package name as an argument. This tells Spring to scan the specified package and its sub-packages for classes annotated with Spring stereotypes such as `@Component`, `@Service`, `@Repository`, and `@Controller`.
 
 When you call `new AnnotationConfigApplicationContext("com.example.annotationbased")`, Spring performs component scanning in the `com.example.annotationbased` package. It automatically detects and registers all the classes annotated with the relevant annotations as beans in the application context.
+
+## Component Scanning
+
+In Spring, component scanning is a mechanism that allows the framework to automatically discover and register beans in the application context based on classpath scanning. This means that instead of manually defining each bean in a configuration file (XML or Java-based), you can use annotations to mark classes as components, and Spring will automatically detect and register them as beans.
+
+This allows you to annotate your classes with stereotypes such as `@Component`, `@Service`, `@Repository`, and `@Controller`, and Spring will automatically detect and register them as beans in the application context.
+
+When the application starts, Spring scans the specified packages and their sub-packages for classes annotated with these stereotypes. It then creates instances of these classes and manages their lifecycle, including dependency injection.
+
+This automated process greatly simplifies the configuration of a Spring application by reducing the need for explicit bean definitions in XML or Java configuration files. It also encourages a convention-over-configuration approach, making it easier to develop and maintain Spring applications.
+
+The `@ComponentScan` annotation or `<context:component-scan>` element in XML configuration is used to specify the base packages to scan for annotated components. If no specific packages are provided, Spring will scan the package of the class that declares the `@ComponentScan` annotation.
+
+### Real World Example
+
+Here are some real-world applications types where component scanning in Spring is commonly used:
+
+- **Web Applications**: Component scanning is extensively used in web applications developed using Spring MVC or Spring Boot. Controllers, services, and repositories are often marked with stereotypes annotations (`@Controller`, `@Service`, `@Repository`), and are automatically detected and registered by Spring.
+- **RESTful Services**: When developing RESTful services using Spring Boot, classes annotated with `@RestController` are automatically detected and registered as beans in the application context. This allows for a clean and organized structure, making it easy to manage the different components of the service.
+- **Enterprise Applications**: Larger enterprise applications benefit from component scanning to help manage the complexity of numerous service and repository classes.
+- **Microservices**: In a Spring Boot microservices architecture, component scanning is used to automatically detect and register beans, streamlining the development process and reducing boilerplate code.
+- **Spring Data JPA Applications**: In applications that use Spring Data JPA, repositories are often defined as interfaces annotated with `@Repository`. Component scanning automatically detects these interfaces and creates proxy implementations for them, simplifying data access layer configuration.
+
+### Implementation
+
+Below is a step-by-step guide on how to implement component scanning in a Spring application. The guide assumes you have a basic understanding of Java and Maven, as well as an IDE like IntelliJ IDEA or Eclipse.
+
+In the following example, we will outline the steps of using a Maven project with Spring context dependency and utilize Java-based configuration (`@Configuration` and `@ComponentScan` annotations) to illustrate component scanning. Note that Spring Boot makes this process even simpler, but for educational purposes, we will use plain Spring.
+
+Let's assume we have a Maven project with the following Spring context dependency in the `pom.xml` file:
+
+```xml
+<dependencies>
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>5.3.10</version> <!-- use the latest version available -->
+    </dependency>
+</dependencies>
+```
+
+#### Step 1: Create a Service Class
+
+In `src/main/java/com/example`, under the root package, create a new package named `service` and create a class named `GreetingService` inside it.
+
+```java
+com.example.service;
+
+import org.springframework.stereotype.Service;
+
+@Service // Marks this class as a Spring service component
+public class GreetingService {
+  public String greet() {
+    return "Hello, World!";
+  }
+}
+```
+
+The `@Service` annotation indicates that this class is a service component, and Spring will automatically detect and register it as a bean during component scanning.
+
+#### Step 2: Create a Configuration Class
+
+In `src/main/java/com/example`, under the root package, create a new package named `config` and create a class named `AppConfig` inside it.
+
+```java
+package com.example.config;
+
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration // Indicates that this class contains Spring bean definitions
+@ComponentScan(basePackages = "com.example") // Specifies the base package to scan for components
+public class AppConfig {
+}
+```
+
+The `@Configuration` annotation indicates that this class contains bean definitions, and the `@ComponentScan` annotation specifies the base package to scan for annotated components. The `basePackages` attribute can be set to the root package or any specific package you want to scan.
+
+#### Step 3: Create the Application Entry Point
+
+Create a `Main` class with a `main` method to bootstrap the Spring application context and retrieve the `GreetingService` bean.
+
+```java
+package com.example;
+
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import com.example.config.AppConfig;
+import com.example.service.GreetingService;
+
+public class Main {
+  public static void main(String[] args) {
+    // Create the application context using the configuration class
+    AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+
+    // Retrieve the GreetingService bean from the context
+    GreetingService greetingService = (GreetingService) context.getBean(GreetingService.class);
+
+    // Use the GreetingService bean
+    System.out.println(greetingService.greet()); // Output: Hello, World!
+  }
+}
+```
+
+When you run the `Main` class, it will create the Spring application context, scan the specified package for components, and automatically register the `GreetingService` bean. The `greet` method of the `GreetingService` bean is then called to print "Hello, World!" to the console.
