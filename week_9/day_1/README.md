@@ -515,3 +515,162 @@ public class MyApp {
 ```
 
 Now, when you run the `MyApp` class, it will load the Spring context from the `applicationContext.xml` file, retrieve the `MyService` bean, and call its `sayHello` method, which will print "Hello, Spring with XML Configuration!" to the console.
+
+## Injection Using Java Based Configuration
+
+Java-based configuration is an alternative to XML-based configuration for Dependency Injection (DI) in Spring. It offers a type-safe and more flexible way to define beans and their dependencies using Java classes and annotations. Java-based configuration uses annotations to configure your beans.
+With Java-based configuration, you create a configuration class that defines your beans using the `@Bean` annotation. This class is typically annotated with `@Configuration`, indicating that it contains bean definitions. These classes are similar to XML configuration files but are written in Java code.
+
+- `@Configuration`: This annotation indicates that the class contains bean definitions and is a source of bean definitions for the Spring container.
+- `@Bean`: This annotation is used to define a bean in the configuration class. The method annotated with `@Bean` returns an instance of the bean, and the method name serves as the bean ID.
+- `@Qualifier`: This annotation is used to specify which bean should be injected when multiple beans of the same type are available. It helps to resolve ambiguity in dependency injection.
+- `@Scope`: This annotation is used to define the scope of a bean, such as singleton, prototype, request, or session. It allows you to control the lifecycle of the bean.
+- `@ComponentScan`: This annotation is used to specify the base packages to scan for annotated components (e.g., `@Component`, `@Service`, `@Repository`, `@Controller`). It enables automatic detection and registration of beans in the Spring context.
+- `@Autowired`: This annotation is used to automatically wire dependencies into a bean. It can be applied to constructors, setter methods, or fields to indicate that the dependency should be injected by Spring.
+
+#### Benefits of Java-Based Configuration
+
+- Type Safety: As everything is defined in Java code, you get compile-time checking, reducing the chances of errors that might occur in XML configuration.
+- Autocompletion and Debugging: IDEs can provide better autocompletion and debugging support for Java code compared to XML.
+- Flexibility: Java-based configuration allows for more dynamic and complex configurations that might be cumbersome in XML.
+
+Despite these benefits, Java-based configuration might not be the best choice for all scenarios, such as when the configuration is shared among multiple projects or when there is a need to separate configuration from code for organizational purposes. It is always important to choose the appropriate configuration method based on the specific needs of your project.
+
+### Real World Example
+
+Java-based Dependency Injection (DI) and configuration is Spring offer several advantages over XML-based configuration, making it a popular choice for modern Spring applications. Here are some real-world examples of when and why you might choose Java-based DI and configuration:
+
+- **Improved Readability and Maintainability**: Java-based configuration allows you to define your beans and their dependencies using Java code, which can be more readable and maintainable than XML. This is especially true for complex configurations where the relationships between beans can be more easily expressed in code.
+- **Type Safety**: Java-based configuration provides type safety, meaning that the compiler can catch type-related errors at compile time rather than at runtime. This can help prevent issues that might arise from typos or incorrect bean definitions in XML.
+- **Easier Refactoring**: With Java-based configuration, refactoring your code is often easier. You can use your IDE's refactoring tools to rename classes, methods, or variables, and the changes will be automatically reflected in your configuration code. This is not the case with XML, where you would need to manually update the configuration file.
+- **Easy Integration with Java Libraries and Frameworks**: Java-based configuration seamlessly integrates with other Java libraries and frameworks. You can easily use Java features such as generics, lambdas, and streams in your configuration code, making it more powerful and expressive.
+- **Dynamic and Conditional Configuration**: Java-based configuration allows you to use conditional logic to define beans based on certain conditions. For example, you can create beans only if a specific property is set or if a certain class is present on the classpath. This level of flexibility is harder to achieve with XML configuration.
+- **Annotation-Driven Development**: Java-based configuration works well with Spring's annotation-driven development model. You can use annotations like `@Component`, `@Service`, and `@Repository` to automatically register beans in the Spring context, reducing the need for explicit bean definitions in XML.
+- **Faster Development and Deployment**: Java-based configuration can lead to faster development and deployment cycles. Since the configuration is part of the codebase, you can leverage build tools and continuous integration pipelines to automate the deployment process, reducing the chances of configuration drift between environments.
+
+It is important to note that both XML and Java-based configuration have their merits, and the choice between the two often depends on the specific needs and preferences of your project. In some cases, a hybrid approach that combines both XML and Java-based configuration may be appropriate. For modern Spring applications, Java-based configuration is often the preferred choice due to its advantages in readability, maintainability, and flexibility.
+
+### Implementation
+
+Below is a demonstration of defining a Dependency Injection (DI) using Java-based configuration with `@Configuration` and `@Bean` annotations in Spring.
+
+We will have an `Employee` entity and a basic controller-service-repository architecture.
+
+#### Step 1: Setting Up the Project
+
+To begin, we can set up a project in Java by utilizing the build tool of our choice, such as Maven or Gradle. For this example, we will use Maven.
+
+```xml
+<dependencies>
+  <!-- Other dependencies -->
+  <dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-context</artifactId>
+    <version>5.3.27</version> <!-- Replace with the desired Spring version -->
+  </dependency>
+</dependencies>
+```
+
+#### Step 2: Creating the Bean Classes
+
+We need to identify the beans that need to be managed by the Spring container and create the corresponding classes. In this example, we will create an `Employee` class, a `EmployeeRepository` class, a `EmployeeService` class, and an `EmployeeController` class.
+
+```java
+public class Employee {
+  private Integer id;
+  private String firstName;
+  private String lastName;
+
+  // other fields, constructors, getters, and setters
+}
+```
+
+```java
+public class EmployeeController {
+  private EmployeeService employeeService;
+
+  // Constructor Injection
+  public EmployeeController(EmployeeService employeeService) {
+    this.employeeService = employeeService;
+  }
+}
+```
+
+```java
+public class EmployeeService {
+  private EmployeeRepository employeeRepository;
+
+  // Setter Injection
+  public void setEmployeeRepository(EmployeeRepository employeeRepository) {
+    this.employeeRepository = employeeRepository;
+  }
+}
+```
+
+```java
+public class EmployeeRepository {
+  // Repository methods
+}
+```
+
+#### Step 3: Creating the Configuration Class
+
+Within the configuration class, we can define methods annotated with `@Bean` to create and configure our beans. We can also specify the scope of the beans using the `@Scope` annotation if needed.
+
+```java
+import org.springframework.context.annotation.*;
+
+@Configuration // Indicates that this class contains Spring bean definitions
+public class EmployeeConfig {
+  // Uses constructor injection
+  @Bean
+  public EmployeeController employeeController(EmployeeService employeeService) {
+    return new EmployeeController(employeeService);
+  }
+
+  // Uses setter injection
+  @Bean
+  public EmployeeService employeeService(EmployeeRepository employeeRepository) {
+    EmployeeService bean = new EmployeeService();
+    bean.setEmployeeRepository(employeeRepository);
+    return bean;
+  }
+
+  @Bean
+  public EmployeeRepository employeeRepository() {
+    return new EmployeeRepository();
+  }
+}
+```
+
+In the above code, we define three beans: `EmployeeController`, `EmployeeService`, and `EmployeeRepository`. The `EmployeeController` bean is created using constructor injection, while the `EmployeeService` bean is created using setter injection. The `EmployeeRepository` bean is created without any dependencies.
+
+#### Step 4: Applying the Configuration
+
+In the main method of our application's entry point, we can create an instance of the `ApplicationContext` and use it to get and use the beans defined in our configuration class.
+
+```java
+package com.myapp;
+
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+public class Main {
+  public static void main(String[] args) {
+    // #1. Create the application context using the configuration class
+    AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(EmployeeConfig.class);
+
+    // #2. Get and use beans from the context
+    String[] beansNames = ctx.getBeanDefinitionNames();
+
+    System.out.println("Beans in the context:");
+    for (String beanName : beansNames) {
+      System.out.println(beanName);
+    }
+
+    // #3. Close the context
+    ctx.close();
+  }
+}
+```
+
+By following these steps and customizing the code according to your specific requirements, you can effectively implement Dependency Injection using Java-based configuration in a Spring application. This approach provides a type-safe and flexible way to manage your beans and their dependencies, leading to more maintainable and testable code.
