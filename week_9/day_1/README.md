@@ -674,3 +674,150 @@ public class Main {
 ```
 
 By following these steps and customizing the code according to your specific requirements, you can effectively implement Dependency Injection using Java-based configuration in a Spring application. This approach provides a type-safe and flexible way to manage your beans and their dependencies, leading to more maintainable and testable code.
+
+## Annotation Based Configuration
+
+The Spring Framework is a robust and versatile framework that is widely used in the Java ecosystem for building enterprise-level applications. In Spring, the application configuration can be done either using XML files or using annotations. Annotation-based configuration is a more modern and convenient way to configure Spring applications, as it allows developers to define beans and their dependencies directly in the Java code using annotations.
+
+Annotation-based configuration is another type of configuration that uses component annotations only, such as `@Component`, `@Service`, `@Repository`, and `@Controller`, to define beans and their dependencies. `@Autowired` is used to inject dependencies into the beans.
+
+- `@Component`: This annotation is used to indicate that a class is a Spring component. It is a generic stereotype for any Spring-managed component and can be used on any class.
+- `@Service`: This annotation is a specialization of `@Component` and is used to indicate that a class is a service component in the business layer.
+- `@Repository`: This annotation is a specialization of `@Component` and is used to indicate that a class is a repository component in the data access layer.
+- `@Controller`: This annotation is a specialization of `@Component` and is used to indicate that a class is a controller component in the presentation layer, typically in a web application.
+- `@Autowired`: This annotation is used to automatically wire dependencies into a bean. It can be applied to constructors, setter methods, or fields to indicate that the dependency should be injected by Spring.
+- `@Qualifier`: This annotation is used in conjunction with `@Autowired` to specify which bean should be injected when multiple beans of the same type are available. It helps to resolve ambiguity in dependency injection.
+- `@Scope`: This annotation is used to define the scope of a bean, such as singleton, prototype, request, or session. It allows you to control the lifecycle of the bean.
+- `@ComponentScan`: This annotation is used to specify the base packages to scan for annotated components (e.g., `@Component`, `@Service`, `@Repository`, `@Controller`). It enables automatic detection and registration of beans in the Spring context.
+
+#### Benefits of Annotation-Based Configuration
+
+- Simplicity: Using annotations often leads to cleaner and readable code as the metadata (annotations) are placed right next to the code they configure.
+- Elimination of XML: Reduces the need for large XML configuration files, making the configuration more concise and easier to manage.
+- Type Safety: Since the configuration is done in Java code, it benefits from compile-time checking, reducing the chances of errors that might occur in XML configuration.
+- Better for Collaboration and Control: Annotations are part of the codebase, making it easier for teams to collaborate and manage configurations through version control systems.
+- Contextual Configuration: Annotations allow for more contextual and dynamic configurations, as they can be applied directly to classes and methods.
+
+### Real World Example
+
+Here are some real-world applications types where annotation-based configuration in Spring is commonly used:
+
+- **Web Applications**: In web applications, controllers are often annotated with `@Controller`, and services with `@Service`. This allows for a clear separation of concerns and makes it easy to manage the different layers of the application. For example, a RESTful API might have controllers handling HTTP requests, services containing business logic, and repositories managing data access.
+- **Restful Services**: In the development of RESTful services using Spring Boot, annotation-based configuration is widely used. Controllers are annotated with `@RestController`, and services with `@Service`. This allows for a clean and organized structure, making it easy to manage the different components of the service.
+- **Enterprise Applications**: Annotation-based configuration are extensively used in large-scale enterprise applications. Spring's `@Service`, `@Repository`, and `@Component` annotations are used to denote service classes, data access objects (DAOs), and other components, respectively. This helps in organizing the codebase and managing dependencies effectively.
+
+#### Implementation
+
+Below is a demonstration of defining Dependency Injection (DI) using annotation-based configuration with `@Controller`, `@Service`, `@Repository`, and `@Autowired` annotations in Spring.
+
+We will have a `Gallery` entity and a basic controller-service-repository architecture.
+
+#### Step 1: Setting Up the Project
+
+To begin, we can set up a project in Java by utilizing the build tool of our choice, such as Maven or Gradle. For this example, we will use Maven.
+
+```xml
+<dependencies>
+    <!-- Other dependencies -->
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>5.3.9</version> <!-- Replace with the desired version -->
+    </dependency>
+</dependencies>
+```
+
+#### Step 2: Creating the Bean Classes
+
+We need to identify the beans that need to be managed by the Spring container and create the corresponding classes. In this example, we will create a `Gallery` class, a `GalleryRepository` class, a `GalleryService` class, and a `GalleryController` class.
+
+```java
+package com.example.annotationbased;
+
+public class Gallery {
+  private Integer id;
+  private String name;
+  private String description;
+
+  // other fields, constructors, getters, and setters
+}
+```
+
+```java
+package com.example.annotationbased;
+
+import org.springframework.stereotype.Controller;
+
+@Controller // Indicates that this class is a Spring MVC controller
+public class GalleryController {
+  private final GalleryService galleryService;
+
+  // Constructor Injection
+  public GalleryController(GalleryService galleryService) {
+    this.galleryService = galleryService;
+  }
+}
+```
+
+```java
+package com.example.annotationbased;
+
+import org.springframework.beans.factory.annotation.Service;
+
+@Service // Indicates that this class is a Spring service component
+public class GalleryService {
+  private GalleryRepository galleryRepository;
+
+  // Setter Injection
+  public void setGalleryRepository(GalleryRepository galleryRepository) {
+    this.galleryRepository = galleryRepository;
+  }
+}
+```
+
+```java
+package com.example.annotationbased;
+
+import org.springframework.stereotype.Repository;
+
+@Repository // Indicates that this class is a Spring repository component
+public class GalleryRepository {
+  // Repository methods
+}
+```
+
+#### Step 3: Application Entry Point
+
+In the main method of our application's entry point, we can create an instance of the `ApplicationContext` and use it to get and use the beans defined in our annotated classes.
+
+```java
+package com.example.annotationbased;
+
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+public class AnnotationBasedApplication {
+  public static void main(String[] args) {
+    // #1. Create the container and configure it to scan the specified package for annotated components
+    AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext("com.example.annotationbased");
+
+    // #2. Get and use beans from the context
+    String[] beansNames = ctx.getBeanDefinitionNames();
+
+    System.out.println("Beans in the context:");
+    for (String beanName : beansNames) {
+      System.out.println(beanName);
+    }
+
+    // #3. Close the context
+    ctx.close();
+  }
+}
+```
+
+In this example, we define three beans: `GalleryController`, `GalleryService`, and `GalleryRepository`. The `GalleryController` bean is created using constructor injection, while the `GalleryService` bean is created using setter injection. The `GalleryRepository` bean is created without any dependencies.
+
+Wait, so we did not have to create any configuration class? How does Spring know where to look for the beans?
+
+Yes, in this example, we did not create a separate configuration class. Instead, we used the `AnnotationConfigApplicationContext` constructor that takes a base package name as an argument. This tells Spring to scan the specified package and its sub-packages for classes annotated with Spring stereotypes such as `@Component`, `@Service`, `@Repository`, and `@Controller`.
+
+When you call `new AnnotationConfigApplicationContext("com.example.annotationbased")`, Spring performs component scanning in the `com.example.annotationbased` package. It automatically detects and registers all the classes annotated with the relevant annotations as beans in the application context.
