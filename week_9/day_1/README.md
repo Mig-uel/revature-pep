@@ -925,3 +925,65 @@ public class Main {
 ```
 
 When you run the `Main` class, it will create the Spring application context, scan the specified package for components, and automatically register the `GreetingService` bean. The `greet` method of the `GreetingService` bean is then called to print "Hello, World!" to the console.
+
+## Stereotype Annotations
+
+Spring provides several stereotype annotations that are used to define the roles of different components in a Spring application. These annotations help to categorize and organize the various layers of an application, making it easier to manage and maintain the codebase. The most commonly used stereotype annotations in Spring are:
+
+- `@Component`: This is a generic stereotype annotation that indicates that a class is a Spring component. It can be used on any class that you want to be managed by the Spring container.
+- `@Service`: This annotation is a specialization of `@Component` and is used to indicate that a class is a service component in the business layer. It is typically used for classes that contain business logic and operations.
+- `@Repository`: This annotation is a specialization of `@Component` and is used to indicate that a class is a repository component in the data access layer. It is typically used for classes that interact with the database or other data sources.
+- `@Controller`: This annotation is a specialization of `@Component` and is used to indicate that a class is a controller component in the presentation layer, typically in a web application. It is used to handle HTTP requests and responses.
+
+These stereotype annotations help to clearly define the roles and responsibilities of different components in a Spring application, making it easier to understand the architecture and flow of the application. They also enable Spring to automatically detect and register these components during component scanning, simplifying the configuration process.
+
+### Real World Example
+
+Consider an application that is used to get and display student data. An entity named `Student` is created to represent the student data. Service classes are created for services such as getting students with percentages above a certain threshold, getting students by their first name, and adding new students. A repository class is created to handle data access operations, such as fetching student data from a database or an in-memory list. Finally, a controller class is created to handle HTTP requests and responses related to student data.
+
+### Implementation
+
+#### `@Component` Example
+
+```java
+package com.sample.controller;
+
+@Component // Marks this class as a Spring
+public class Student {
+  // Fields, constructors, getters, and setters
+}
+```
+
+#### `@Controller` Example
+
+```java
+package com.sample.controller;
+
+@Controller // Marks this class as a Spring MVC controller
+public class StudentController {
+  @RequestMapping(value = "") // Maps HTTP requests to handler methods
+  // Method to handle HTTP requests
+}
+```
+
+#### `@Service` Example
+
+```java
+package com.sample.service;
+
+@Service // Marks this class as a Spring service component
+public class StudentService {
+  // Business logic methods
+}
+```
+
+#### `@Repository` Example
+
+```java
+package com.sample.repository;
+
+@Repository // Marks this class as a Spring repository component
+public class StudentDAO {
+  // Data access methods
+}
+```
