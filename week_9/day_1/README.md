@@ -319,3 +319,199 @@ public class ProductService {
 ```
 
 In this example, the `ProductService` class has a dependency on the `ProductRepository` class. The dependency is injected directly into the field using the `@Autowired` annotation, reducing boilerplate code. However, this method of injection can make the code harder to read, understand, and test, as dependencies are not explicitly defined in the class's constructor or methods.
+
+## Injection Using XML Based Configuration
+
+In addition to using annotations, Spring also supports XML-based configuration for Dependency Injection (DI). This approach allows you to define your beans and their dependencies in an XML file, providing a clear separation between configuration and code.
+
+In Spring, the beans and their dependencies can be defined and configured in an XML file, typically named `beans.xml` or `applicationContext.xml`. This file is placed in the `src/main/resources` directory of your project. This file serves as the centerpiece for configuring your Spring application.
+
+In the XML configuration file, each bean is defined using the `<bean>` element, where you specify the class of the bean and its properties. Dependencies can be injected using constructor arguments or property elements.
+
+The `id` attribute is used to uniquely identify each bean, while the `class` attribute specifies the fully qualified class name of the bean.
+
+```xml
+<bean id="bookService" class="com.example.BookService"/>
+```
+
+Constructor injection can be achieved using the `<constructor-arg>` element, where you specify the index or name of the constructor parameter and the reference to the bean to be injected. The `ref` attribute is used to reference another bean defined in the XML configuration.
+
+```xml
+<bean id="bookStore" class="com.example.BookStore">
+    <!-- Constructor Injection -->
+    <constructor-arg ref="bookService"/>
+</bean>
+```
+
+Setter injection can be achieved using the `<property>` element, where you specify the name of the property (matching the setter method) and the reference, `ref`, to the bean to be injected.
+
+```xml
+<bean id="notificationService" class="com.example.NotificationService">
+    <!-- Setter Injection -->
+    <property name="emailService" ref="emailService"/>
+</bean>
+```
+
+Spring XML configuration also supports the injection of complex data types such as lists, sets, maps, and properties using specific XML elements like `<list>`, `<set>`, `<map>`, and `<props>`.
+
+```xml
+<bean id="productService" class="com.example.ProductService">
+    <!-- Setter Injection -->
+    <property name="productRepository" ref="productRepository"/>
+    <!-- Injecting a list of supported currencies -->
+    <property name="supportedCurrencies">
+        <list>
+            <value>USD</value>
+            <value>EUR</value>
+            <value>GBP</value>
+        </list>
+    </property>
+</bean>
+```
+
+XML configuration also allows setting bean scopes (singleton, prototype, request, session) using the `scope` attribute in the `<bean>` element.
+
+```xml
+<bean id="sessionBean" class="com.example.SessionBean" scope="session"/>
+```
+
+Spring provides a set of XML namespaces to simplify the configuration process. For instance, the context namespace can be used to enable component scanning, allowing Spring to automatically detect and register beans based on annotations and property placeholder configuration.
+
+```xml
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- Enable component scanning -->
+    <context:component-scan base-package="com.example"/>
+
+    <!-- Bean definitions go here -->
+</beans>
+```
+
+This XML-based configuration approach provides a clear, centralized, and structured way to manage your Spring application's beans and their dependencies, making the application easier to configure and maintain.
+
+### Real World Example
+
+In real-world applications, the use of XML configuration in Spring has become less common with the rise of annotation-based configuration. However, there are still scenarios where using XML configuration might be beneficial or necessary:
+
+- **Legacy Systems**: Many older Spring applications were built using XML configuration, and updating them to annotation-based configuration may not be feasible due to time or resource constraints, or the risk of introducing bugs. Maintaining and extending such applications often requires knowledge of XML configuration.
+- **Highly Configurable Applications**: XML configuration can be useful in applications where a high degree of configurability is required. With XML, it is easier to switch out implementations or change configurations without modifying the source code. This can be particularly useful in enterprise applications where different environments (development, testing, production) may require different configurations.
+- **Fine-Grained Control**: XML configuration provides a more explicit and fine-grained control over bean definitions and their dependencies. This can be a good choice when precise control over the beans and their lifecycle is needed, such as in complex applications with intricate dependency graphs.
+- **Sharing Configuration**: XML configuration files can be shared across multiple projects or modules, making it easier to maintain consistent configurations. This can be particularly useful in large organizations where multiple teams are working on different parts of a system.
+
+Remember, the choice between XML and annotation-based configuration often depends on the specific needs and constraints of your project. While annotation-based configuration is more modern and widely used, XML configuration still has its place in certain scenarios.
+
+### Implementation
+
+Below is a simple example of using XML-based configuration for Dependency Injection (DI) in a Spring application.
+
+#### Step 1: Setting Up the Project
+
+We are going to use Maven as our build tool. We will need to set up a basic Maven project with the necessary Spring dependencies.
+
+Here's a simple structure of the project:
+
+```
+/myapp
+|-- pom.xml
+|-- src
+    |-- main
+        |-- java
+            |-- com
+                |-- myapp
+                    |-- App.java
+                    |-- MyService.java
+        |-- resources
+            |-- applicationContext.xml
+```
+
+#### Step 2: Configuring `pom.xml`
+
+The `pom.xml` file should include the Spring dependencies:
+
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.myapp</groupId>
+  <artifactId>myapp</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>myapp</name>
+  <url>http://maven.apache.org</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <spring.version>5.3.27</spring.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <version>${spring.version}</version>
+    </dependency>
+  </dependencies>
+</project>
+```
+
+#### Step 3: Creating a Bean Class
+
+We'll create a simple service class (`MyService`) that we will later define as a bean in our XML configuration.
+
+```java
+package com.myapp;
+
+public class MyService {
+  public void sayHello() {
+    System.out.println("Hello, Spring with XML Configuration!");
+  }
+}
+```
+
+#### Step 4: Configuring Beans in XML
+
+In the `applicationContext.xml` file, we will `MyService` as a bean.
+
+```xml
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <!-- Define MyService bean -->
+    <bean id="myService" class="com.myapp.MyService"/>
+</beans>
+```
+
+#### Step 5: Using the Bean in the Application
+
+Finally, in our main application class (`MyApp`), we will load the Spring application context from the XML configuration file and retrieve our `MyService` bean to use it.
+
+```java
+package com.myapp;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class MyApp {
+  public static void main(String[] args) {
+    // Load the Spring context from the XML configuration file
+    ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+
+    // Retrieve the MyService bean from the context
+    MyService myService = (MyService) context.getBean("myService");
+
+    // Use the MyService bean
+    myService.sayHello();
+  }
+}
+```
+
+Now, when you run the `MyApp` class, it will load the Spring context from the `applicationContext.xml` file, retrieve the `MyService` bean, and call its `sayHello` method, which will print "Hello, Spring with XML Configuration!" to the console.
