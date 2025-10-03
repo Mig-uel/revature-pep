@@ -411,3 +411,824 @@ myBean.performAction();
 ```
 
 By following these steps, you can define and instantiate beans in a Spring application, leveraging the powerful features of the Spring Framework for managing dependencies and promoting modular design.
+
+## Video - Spring Beans - Wiring
+
+### General Information
+
+- To create a Spring Bean, we create a method annotated with `@Bean` inside a class annotated with `@Configuration`.
+- The method name is the bean name, and the return type is the bean type.
+- It should return an instance of the object to be managed as a bean.
+- By default the name of the bean is the method name, but we can specify a different name using the `name` attribute of the `@Bean` annotation.
+
+```java
+@Bean(name="myBeanName")
+public MyBean myBean() {
+    return new MyBean();
+}
+```
+
+### Bean Scope
+
+- The scope of a bean defines its lifecycle and visibility.
+- The scope of the beans determines the number of instances created by the container and how long they are retained.
+  - Whenever you need a bean from the container, it checks the scope of the bean to decide whether to create a new instance or return an existing one.
+- The default scope of a bean is `singleton`, which means that only one instance of the bean is created and shared across the application.
+- A bean can have 1 of 5 scopes, three of which are only available in a web-aware Spring ApplicationContext:
+  - `singleton`: A single instance of the bean is created, shared, and returns the same instance every time it is requested.
+  - `prototype`: A new instance of the bean is created each time it is requested.
+  - `request`: A new instance is created for each HTTP request (web-aware scope).
+  - `session`: A new instance is created for each HTTP session (web-aware scope).
+  - `application`: A single instance is created for the entire application (web-aware scope).
+- The scope of a bean can be specified using the `@Scope` annotation.
+
+```java
+@Bean
+@Scope("prototype")
+public MyBean myBean() {
+    return new MyBean();
+}
+```
+
+### Initialization and Destruction Methods
+
+- The initialization method is called after the bean is created and all its properties are set.
+- The destruction method is called before the bean is destroyed.
+- Use the `initMethod` and `destroyMethod` attributes of the `@Bean` annotation to specify the initialization and destruction methods that the container should call.
+
+```java
+@Bean(initMethod = "init", destroyMethod = "cleanup")
+public MyBean myBean() {
+    return new MyBean();
+}
+```
+
+- The name you provide for the `initMethod` and `destroyMethod` attributes should match the method names in the bean class.
+
+```java
+public class MyBean {
+    public void init() {
+        // Initialization logic
+    }
+    public void cleanup() {
+        // Cleanup logic
+    }
+}
+```
+
+- These methods must be public, take no arguments, and return void.
+- Note: only singleton-scoped beans have their destruction methods called by the container. For prototype-scoped beans, the container does not manage their lifecycle beyond instantiation and dependency injection.
+
+## Bean Lifecycle
+
+The lifecycle of a Spring bean refers to the various stages that a bean goes through from its creation to its destruction within the Spring IoC container.
+
+The lifecycle of a Spring bean typically includes the following stages:
+
+- Spring IoC Container starts
+- Bean instance is created
+- Dependencies are injected (Dependency Injection)
+- Internal Spring processing (e.g., AOP proxies, lifecycle callbacks)
+- Custom initialization methods are called
+- Container shuts down
+- Custom destruction methods are called
+
+#### Custom Init Method
+
+In any Spring application, for most classes, some methods should be implemented before the main logic of the class is executed. For example, in a database connection class, a method to establish a connection to the database should be executed before any other method.
+
+Method calls for these methods are grouped in the custom `init` method.
+
+With the help of Spring, the `init` method can be invoked automatically after the bean is instantiated and dependencies are injected.
+
+#### Custom Destroy Method
+
+After executing the `init` method and the main logic of the class, before shutdown of the container, the custom `destroy` method is invoked to release resources or perform cleanup tasks.
+
+Similar to the `init` method, the destroy methods of the beans are grouped in the custom `destroy` method.
+
+With the help of Spring, the `destroy` method can be invoked automatically before the bean is destroyed.
+
+#### Configuration
+
+The configuration for the custom `init` and `destroy` methods can be done in three ways:
+
+- XML Configuration
+- Annotations
+- Interface configuration
+
+Note: The interface configuration method is not recommended or commonly used.
+
+### Real World Example
+
+An object for a class that is instantiated, assembled, and managed by the Spring IoC container is called a Spring Bean.
+
+Consider a DAO (Data Access Object) class with a JDBC connection to a database. In the bean lifecycle, the first process is bean initialization. The second step is dependency injection, where the JDBC connection is injected into the DAO class. The third step is the custom `init` method, which establishes the connection to the database. Creating the connection is a common and repeated step when using JDBC; this can be added to the custom `init` method.
+The next step is bean execution, where the main logic of the DAO class is executed. Operations like fetching and manipulating data from the database are performed in this step. The next step is container shutdown, where the Spring IoC container is shut down. Before the container is shut down, the custom `destroy` method is invoked to close the database connection and release resources. Finally, the container is completely shut down.
+
+### Implementation
+
+In this example, we will be working with a `Student` entity and database. We have a `StudentDAO` class allows the application to connect to the database and perform operations related to the `Student` entity. We also have an XML file for configuring our Spring beans.
+
+#### Setting Up Our Files
+
+> `Student.java` - Entity class representing a student.
+
+```java
+public class Student {
+  private int id;
+  private String firstName;
+  private String lastName;
+  private String major;
+
+  // ...other methods omitted for brevity
+}
+```
+
+> `StudentDAO.java` - Data Access Object class for managing student data.
+
+```java
+package studentdata;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.ResultSet;
+
+import javax.annotation.PostConstruct; // For custom init method
+import javax.annotation.PreDestroy; // For custom destroy method
+
+public class StudentDAO {
+  static String driver;
+  static Connection conn;
+  static String url;
+  static String username;
+  static String password;
+
+  static void createConnection() throws ClassNotFoundException, SQLException {
+    Class.forName(driver); // Load the JDBC driver using the driver class name
+    conn = DriverManager.getConnection(url, username, password); // Establish the connection
+    System.out.println("Connection established successfully");
+  }
+
+  static void closeConnection() throws SQLException {
+    if (conn != null && !conn.isClosed()) {
+      conn.close(); // Close the connection
+      System.out.println("Connection closed successfully");
+    }
+  }
+
+  void getAllRecords() throws SQLException {
+    String sql = SELECT * FROM students;
+    PreparedStatement ps = conn.prepareStatement(sql);
+    ResultSet rs = ps.executeQuery();
+
+    while (rs.next()) {
+      System.out.println("ID: " + rs.getInt(1) + ", Name: " + rs.getString(2) + " " + rs.getString(3) + ", Major: " + rs.getString(4));
+    }
+  }
+}
+```
+
+The bean configuration for the `StudentDAO` class is done in the `beans.xml` file.
+
+> `beans.xml` - Spring bean configuration file.
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-3.0.xsd
+    http://www.springframework.org/schema/aop
+    http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+    <bean id="StudentDAO" class="StudentData.StudentDAO"></bean>
+</beans>
+```
+
+#### Setting Up Injection
+
+Fields like driver name, URL, username, and password can be considered properties to be injected into the `StudentDAO` class. To do this, setter and getter methods are created for each property in the `StudentDAO` class. A print statement is added in every setter method to confirm that the property has been injected.
+
+```java
+public void setDriver(String driver) {
+    this.driver = driver;
+    System.out.println("Driver property injected: " + driver);
+}
+public String getDriver() {
+    return driver;
+}
+public void setUrl(String url) {
+    this.url = url;
+    System.out.println("URL property injected: " + url);
+}
+public String getUrl() {
+    return url;
+}
+public void setUsername(String username) {
+    this.username = username;
+    System.out.println("Username property injected: " + username);
+}
+public String getUsername() {
+    return username;
+}
+public void setPassword(String password) {
+    this.password = password;
+    System.out.println("Password property injected: " + password);
+}
+public String getPassword() {
+    return password;
+}
+```
+
+In the `beans.xml` file, the properties are injected using the `<property>` tag inside the `<bean>` tag. We add the value for each property which will be injected into the `StudentDAO` class.
+
+```xml
+<bean id="StudentDAO" class="StudentData.StudentDAO">
+    <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+    <property name="url" value="jdbc:mysql://localhost:3306/school"/>
+    <property name="username" value="root"/>
+    <property name="password" value="password"/>
+</bean>
+```
+
+So now, when the `StudentDAO` bean is created, the properties will be injected, and the print statements in the setter methods will confirm that the properties have been injected successfully. Being that is injected, the properties will not change unless explicitly modified.
+
+#### Setting Up Custom Init and Destroy Methods
+
+The process of creating a connection to the database is common and repeated for every method that interacts with the database. If new methods like `getRecordById()` or `deleteRecord()` are added to the `StudentDAO` class, the connection creation code would need to be repeated in each of those methods. To avoid this redundancy, a new method for connection is created and named `init()`. This method will be called automatically after the bean is instantiated and all properties are injected.
+
+```java
+// Inside StudentDAO class
+void init() throws ClassNotFoundException, SQLException {
+    createConnection(); // Call the method to create the connection
+    System.out.println("Custom init method called - Connection created");
+}
+```
+
+The process of closing the connection to the database is also common and repeated. To avoid this redundancy, a new method for closing the connection is created and named `destroy()`. This method will be called automatically before the bean is destroyed.
+
+```java
+// Inside StudentDAO class
+void destroy() throws SQLException {
+    closeConnection(); // Call the method to close the connection
+    System.out.println("Custom destroy method called - Connection closed");
+}
+```
+
+#### Using Annotations Configuration
+
+##### Configuring the Custom Init Method
+
+`@PostConstruct` is an annotation used to specify a method that should be executed after the bean's properties have been set and the bean has been fully initialized. This annotation is part of the `javax.annotation` package.
+
+Before using annotations, `<context:annotation-config/>` or `<bean class="org.springframework.context.annotation.CommonAnnotationBeanPostProcessor"/> ` must be added to the `beans.xml` file to enable support for common annotations like `@PostConstruct` and `@PreDestroy`.
+
+> `StudentDAO.java` - Updated with `@PostConstruct` annotation.
+
+```java
+@PostConstruct
+void init() throws ClassNotFoundException, SQLException {
+    createConnection(); // Call the method to create the connection
+    System.out.println("Custom init method called - Connection created");
+}
+```
+
+##### Configuring the Custom Destroy Method
+
+`@PreDestroy` is an annotation used to specify a method that should be executed before the bean is destroyed. In a web application, the application context is closed implicitly, but in a desktop application, the application context must be closed explicitly to ensure that the `@PreDestroy` method is called.
+This annotation is also part of the `javax.annotation` package.
+
+> `StudentDAO.java` - Updated with `@PreDestroy` annotation.
+
+```java
+@PreDestroy
+void destroy() throws SQLException {
+    closeConnection(); // Call the method to close the connection
+    System.out.println("Custom destroy method called - Connection closed");
+}
+```
+
+---
+
+By using the below Java code, the application context is closed:
+
+```java
+((AbstractApplicationContext) context).close();
+```
+
+What this does is cast the `ApplicationContext` to an `AbstractApplicationContext`, which has the `close()` method. This ensures that the `@PreDestroy` method is called before the application context is closed.
+
+A lifecycle hook `registerShutdownHook()` can also be used to destroy the beans when the JVM shuts down. `registerShutdownHook()` is preferred over `context.close()` because it is called once the main thread ends and closes the container. So irrespective of the line where `registerShutdownHook()` is placed, a new `getBean()` can be called anywhere in the main method, and the bean will be destroyed when the main thread ends.
+
+> `registerShutdownHook()` - Using the lifecycle hook to destroy beans.
+
+```java
+((AbstractApplicationContext) context).registerShutdownHook();
+```
+
+What this does is register a shutdown hook with the JVM runtime, which ensures that the `close()` method of the `AbstractApplicationContext` is called when the JVM shuts down. This will trigger the destruction of all singleton beans in the application context, including calling any `@PreDestroy` methods.
+
+#### XML Configuration
+
+For XML-based configuration, rather than using `@PostConstruct` and `@PreDestroy` annotations, the `init-method` and `destroy-method` attributes are added to the `<bean>` tag in the `beans.xml` file to specify the custom initialization and destruction methods.
+
+```xml
+<bean id="studentDAO" class="com.example.StudentDAO" init-method="init" destroy-method="destroy"/>
+```
+
+If there are multiple classes, the init and destroy methods are standardized to `init` and `destroy` respectively, and `default-init-method` and `default-destroy-method` attributes are added to the `<beans>` tag in the `beans.xml` file.
+
+```xml
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd"
+    default-init-method="init" default-destroy-method="destroy">
+    <!-- Bean definitions go here -->
+</beans>
+```
+
+#### Interface Configuration
+
+The `InitializingBean` and `DisposableBean` interfaces can be implemented in the bean class to define custom initialization and destruction methods. The `afterPropertiesSet()` method of the `InitializingBean` interface and the `destroy()` method of the `DisposableBean` interface are overridden to provide the custom logic.
+
+> `StudentDAO.java` - Implementing `InitializingBean` and `DisposableBean` interfaces.
+
+```java
+public class StudentDAO implements InitializingBean, DisposableBean {
+  static String driver;
+  static Connection conn;
+  static String url;
+  static String username;
+  static String password;
+
+  public static void setDriver(String driver) {
+    this.driver = driver;
+    System.out.println("Driver property injected: " + driver);
+  }
+  public static String getDriver() {
+    return driver;
+  }
+  public static void setUrl(String url) {
+    this.url = url;
+    System.out.println("URL property injected: " + url);
+  }
+  public static String getUrl() {
+    return url;
+  }
+  public static void setUsername(String username) {
+    this.username = username;
+    System.out.println("Username property injected: " + username);
+  }
+  public static String getUsername() {
+    return username;
+  }
+  public static void setPassword(String password) {
+    this.password = password;
+    System.out.println("Password property injected: " + password);
+  }
+  public static String getPassword() {
+    return password;
+  }
+
+  static void createConnection() throws ClassNotFoundException, SQLException {
+    Class.forName(driver); // Load the JDBC driver using the driver class name
+    conn = DriverManager.getConnection(url, username, password); // Establish the connection
+    System.out.println("Connection established successfully");
+  }
+
+  // Custom initialization method
+  void init() throws ClassNotFoundException, SQLException {
+      createConnection(); // Call the method to create the connection
+      System.out.println("Custom init method called - Connection created");
+  }
+
+  static void closeConnection() throws SQLException {
+    if (conn != null && !conn.isClosed()) {
+      conn.close(); // Close the connection
+      System.out.println("Connection closed successfully");
+    }
+  }
+
+  // Custom destruction method
+  void destroy() throws SQLException {
+    closeConnection(); // Call the method to close the connection
+    System.out.println("Custom destroy method called - Connection closed");
+  }
+
+  void getAllRecords() throws SQLException {
+    String sql = "SELECT * FROM students";
+    PreparedStatement ps = conn.prepareStatement(sql);
+    ResultSet rs = ps.executeQuery();
+
+    while (rs.next()) {
+      System.out.println("ID: " + rs.getInt(1) + ", Name: " + rs.getString(2) + " " + rs.getString(3) + ", Major: " + rs.getString(4));
+    }
+  }
+
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    init(); // Call the custom init method
+    System.out.println("Custom afterPropertiesSet method called");
+  }
+
+  @Override
+  public void destroy() throws Exception {
+    destroy(); // Call the custom destroy method
+    System.out.println("Custom destroy method called from DisposableBean");
+  }
+}
+```
+
+The output of the above code will be:
+
+```
+Driver property injected: com.mysql.cj.jdbc.Driver
+URL property injected: jdbc:mysql://localhost:3306/school
+Username property injected: root
+Password property injected: password
+Connection established successfully
+Custom init method called - Connection created
+Custom afterPropertiesSet method called
+ID: 1, Name: John Doe, Major: Computer Science
+ID: 2, Name: Jane Smith, Major: Mathematics
+Connection closed successfully
+Custom destroy method called - Connection closed
+Custom destroy method called from DisposableBean
+```
+
+## Scopes of Spring Beans
+
+The scope of a bean defines its lifecycle and visibility within the Spring IoC container. The scope determines how many instances of a bean are created and how long they are retained.
+
+#### Bean Scopes
+
+Spring provides several built-in scopes for beans, each with its own characteristics and use cases:
+
+- **Singleton**
+  - This is the default scope of a bean in Spring.
+  - In this scope, only one instance of the bean is created and shared across the entire application context.
+  - It is defined explicitly by using the `@Scope("singleton")` annotation or the enum value `ConfigurableBeanFactory.SCOPE_SINGLETON`, or by setting the `scope` attribute to `singleton` in the XML configuration.
+  - All requests for that bean name will return the same instance, which is cached by the container.
+  - Any modifications made to that bean will be reflected in all references to that bean.
+- **Prototype**
+  - In this scope, a new instance of the bean is created each time it is requested from the container.
+  - It is defined explicitly by using the `@Scope("prototype")` annotation or the enum value `ConfigurableBeanFactory.SCOPE_PROTOTYPE`, or by setting the `scope` attribute to `prototype` in the XML configuration.
+  - A prototype-scoped bean is not initialized by Spring IoC container until it is requested.
+  - If a singleton class has a dependency on a prototype bean, the prototype bean will be created only once when the singleton is created, and the same instance will be shared across all requests to the singleton. This can be avoided by using an `AOP` proxy and `@Lookup` annotation or `ObjectFactory` or `Provider` injection.
+
+##### Web-Aware Scopes
+
+These scopes are only available in a web-aware Spring ApplicationContext, such as `WebApplicationContext`.
+
+- **Request**
+  - In this scope, a new instance of the bean is created for each HTTP request.
+  - It is defined explicitly by using the `@Scope("request")` annotation or the enum value `WebApplicationContext.SCOPE_REQUEST`, or by setting the `scope` attribute to `request` in the XML configuration.
+  - The bean is only valid for the duration of the HTTP request and is destroyed once the request is completed.
+- **Session**
+  - In this scope, a new instance of the bean is created for each HTTP session.
+  - It is defined explicitly by using the `@Scope("session")` annotation or the enum value `WebApplicationContext.SCOPE_SESSION`, or by setting the `scope` attribute to `session` in the XML configuration.
+  - The bean is valid for the duration of the HTTP session and is destroyed once the session is invalidated or expires.
+- **Application**
+  - In this scope, a single instance of the bean is created for the entire application.
+  - It is defined explicitly by using the `@Scope("application")` annotation or the enum value `WebApplicationContext.SCOPE_APPLICATION`, or by setting the `scope` attribute to `application` in the XML configuration.
+  - The bean is shared across all requests and sessions within the application context and is destroyed when the application context is closed.
+- **WebSocket**
+  - In this scope, a new instance of the bean is created for each WebSocket session.
+  - It is defined explicitly by using the `@Scope("websocket")` annotation or the enum value `WebSocketScope.SCOPE_WEBSOCKET`, or by setting the `scope` attribute to `websocket` in the XML configuration.
+  - The bean is valid for the duration of the WebSocket session and is destroyed once the session is closed.
+
+### Real World Example
+
+Singleton scope is used for stateless beans (business logic), and prototype scope is used for stateful beans (business logic and state).
+
+Request scope is used for web applications where a new instance of the bean is required for each HTTP request.
+
+Session scope is used for web applications where a new instance of the bean is required for each HTTP session.
+
+Application scope is used for web applications where a single instance of the bean is required for the entire application.
+
+WebSocket scope is used for web applications that use WebSocket communication, where a new instance of the bean is required for each WebSocket session.
+
+### Implementation
+
+#### Singleton Scope
+
+A class named `Singleton` is created with singleton scope:
+
+> `Singleton.java`
+
+```java
+package com.bean.app;
+
+@Component
+public class Singleton {
+  Singleton() {
+    System.out.println("Singleton instance created");
+  }
+}
+```
+
+> `App.java`
+
+```java
+package com.bean.app;
+
+public class App {
+  public static void main(String[] args) {
+    // Assuming we specified our bean configuration in an XML file named "spring.xml"
+    ApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
+    Singleton s1 = (Singleton) context.getBean("singleton");
+    Singleton s2 = (Singleton) context.getBean("singleton");
+
+    System.out.println(s1 == s2); // true
+  }
+}
+```
+
+#### Prototype Scope
+
+A class named `Prototype` is created with prototype scope:
+
+> `Prototype.java`
+
+```java
+package com.bean.app;
+
+@Component
+@Scope("prototype")
+public class Prototype {
+  Prototype() {
+    System.out.println("Prototype instance created");
+  }
+
+  void printMessage() {
+    System.out.println("Hello from Prototype bean");
+  }
+}
+```
+
+> `App.java`
+
+```java
+package com.bean.app;
+
+public class App {
+  public static void main(String[] args) {
+    ApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
+    Prototype p1 = (Prototype) context.getBean("prototype");
+    Prototype p2 = (Prototype) context.getBean("prototype");
+
+    System.out.println(p1 == p2); // false
+  }
+}
+```
+
+#### Injecting Prototype Dependency into Singleton
+
+When a singleton bean has a dependency on a prototype bean, the prototype bean will be created only once when the singleton is created, and the same instance will be shared across all requests to the singleton.
+
+> `SingletonWithPrototype.java`
+
+```java
+package com.bean.app;
+
+@Component
+// @Scope("singleton")
+// We don't need to specify scope here as singleton is the default scope
+public class SingletonWithPrototype {
+  @Autowired
+  private Prototype prototype;
+
+  public Prototype getPrototype() {
+    return prototype;
+  }
+
+  public void setPrototype(Prototype prototype) {
+    this.prototype = prototype;
+  }
+
+  SingletonWithPrototype() {
+    System.out.println("SingletonWithPrototype instance created");
+  }
+
+  void printMessage() {
+    System.out.println("Hello from SingletonWithPrototype bean");
+  }
+}
+```
+
+> `App.java`
+
+```java
+package com.bean.app;
+
+public class App {
+  public static void main(String[] args) {
+    ApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
+    SingletonWithPrototype sp1 = (SingletonWithPrototype) context.getBean("singletonWithPrototype");
+    SingletonWithPrototype sp2 = (SingletonWithPrototype) context.getBean("singletonWithPrototype");
+
+    System.out.println(sp1 == sp2); // true
+    System.out.println(sp1.getPrototype() == sp2.getPrototype()); // true
+  }
+}
+```
+
+#### Using AOP Proxy to Inject Prototype Bean into Singleton Bean
+
+An AOP proxy is a design pattern used in Aspect-Oriented Programming (AOP) to create a proxy object that wraps around a target object. This proxy object intercepts method calls to the target object and allows additional behavior to be added before or after the method execution, such as logging, security checks, or transaction management.
+
+When using an AOP proxy, the proxy object is created instead of the actual target object. The proxy object implements the same interface as the target object and delegates method calls to the target object while adding additional behavior.
+
+> `PrototypeWithAOPProxy.java`
+
+```java
+package com.bean.app;
+
+@Component
+@Scope(value = "prototype", proxyMode = ScopedProxyMode.TARGET_CLASS) // Using AOP proxy
+public class PrototypeWithAOPProxy {
+  PrototypeWithAOPProxy() {
+    System.out.println("PrototypeWithAOPProxy instance created");
+  }
+
+  void printMessage() {
+    System.out.println("Hello from PrototypeWithAOPProxy bean");
+  }
+}
+```
+
+#### Using `@Lookup` Annotation to Inject Prototype Bean into Singleton Bean
+
+The `@Lookup` annotation is used in Spring Framework to indicate that a method should be overridden by the Spring container to return a bean from the application context. This is particularly useful when you want to inject a prototype-scoped bean into a singleton-scoped bean.
+
+When a method is annotated with `@Lookup`, Spring will create a proxy for that method, and when the method is called, it will look up the bean in the application context and return a new instance of the bean each time it is called.
+
+> `SingletonWithLookup.java`
+
+```java
+package com.bean.app;
+
+@Component
+public class SingletonWithLookup {
+  @Autowired
+  private Prototype prototype;
+
+  @Lookup
+  public Prototype createPrototype() {
+    // Spring will override this method to return a new instance of Prototype bean
+    return null; // This implementation will be ignored by Spring
+  }
+
+  public Prototype getPrototype() {
+    return prototype;
+  }
+
+  public void setPrototype(Prototype prototype) {
+    this.prototype = prototype;
+  }
+
+  SingletonWithLookup() {
+    System.out.println("SingletonWithLookup instance created");
+  }
+
+  void printMessage() {
+    System.out.println("Hello from SingletonWithLookup bean");
+  }
+}
+```
+
+> `App.java`
+
+```java
+package com.bean.app;
+
+public class App {
+  public static void main(String[] args) {
+    ApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
+    SingletonWithLookup sl1 = (SingletonWithLookup) context.getBean("singletonWithLookup");
+    SingletonWithLookup sl2 = (SingletonWithLookup) context.getBean("singletonWithLookup");
+
+    System.out.println(sl1 == sl2); // true
+    System.out.println(sl1.createPrototype() == sl2.createPrototype()); // false
+  }
+}
+```
+
+## Lombok Library
+
+Lombok is a Java library that helps to reduce boilerplate code by generating commonly used methods and constructors at compile time using annotations. It simplifies the code and improves readability by eliminating the need to write repetitive code manually.
+
+It provides a set of annotations that can be added to your Java classes to automatically generate code for common tasks such as:
+
+- Getters and Setters
+- Constructors
+- `toString()`, `equals()`, and `hashCode()` methods
+- Logging
+- Builders
+- And more
+
+Lombok works by plugging into the build process and auto-generating Java bytecode into the `.class` files. This means that the generated code is not visible in the source code but is present in the compiled bytecode.
+
+#### Features of Lombok
+
+- **Getters, Setters, and Constructors**: In many IDEs, you can generate getters, setters, and constructors automatically. However, the code is present in the class, and if a new field is added, the getters and setters can be forgotten. Lombok provides annotations like `@Getter`, `@Setter`, and `@AllArgsConstructor` to automatically generate these methods, reducing the chances of human error.
+  - `@Getter` and `@Setter`: Generates getter and setter methods for all fields in the class.
+  - **Lazy Getters**: By default, Lombok generates getters for all fields. However, if you want to generate a getter for a specific field only when it is accessed, you can use the `@Getter(lazy=true)` annotation. This will create a lazy-initialized getter that initializes the field only when it is accessed for the first time. Why is this useful? It can help improve performance by avoiding unnecessary object creation and initialization until the field is actually needed.
+  - `@AllArgsConstructor`: Generates a constructor with parameters for all fields in the class.
+  - `@NoArgsConstructor`: Generates a no-argument constructor.
+  - `@RequiredArgsConstructor`: Generates a constructor with parameters for all final fields and fields marked with `@NonNull`.
+- **Core Java Methods**: Lombok provides annotations like `@ToString`, `@EqualsAndHashCode`, and `@Data` to automatically generate these commonly used methods.
+- **Value Classes/DTOs**: In some situations, a data type is defined to represent complex values as Data Transfer Objects (DTOs). In most cases. these are immutable objects. Instead of adding the code for the constructor to take all the fields and check that they are not null, Lombok annotations like `@RequiredArgsConstructor` and `@NonNull` can be used to generate the constructor and null checks automatically.
+- **Configuring API**: Instead of providing getters, setters, and constructors, Lombok provides a `@Builder` annotation to implement the Builder design pattern. This allows for more readable and maintainable code when creating complex objects with many fields.
+- **Checked Exceptions**: Instead of using catch blocks or throws, Lombok provides the `@SneakyThrows` annotation to handle checked exceptions without explicitly declaring them in the method signature. This can help reduce boilerplate code and improve readability.
+- **Logging**: Lombok provides annotations like `@Log`, `@Slf4j`, and others to automatically generate logging code for your classes. This can help reduce boilerplate code and improve readability.
+- **Closing Resources**: The `@Cleanup` annotation can be used to automatically close resources like streams, readers, and writers. It is a good alternative for `try-with-resources` statements and the `close()` method of Spring's `DisposableBean` interface.
+- **Thread Safety**: The `@Synchronized` annotation can be used to make methods thread-safe by synchronizing access to them. It us used to get an auto-generated, private, unexposed field to lock on, instead of locking on `this`, which can be a security risk.
+
+### Real World Example
+
+In any application, entities need setters, getters, or constructors to access or modify the fields of the class. Consider an entity class, `Student`, with fields like `id`, `firstName`, `lastName`, and `major`. All these fields need getters and setters to access and modify their values.
+
+The process of generating getters and setters and maintaining those methods can be tedious and error-prone, especially when the class has many fields. Lombok can be used to automatically generate these methods, reducing boilerplate code and improving readability.
+
+### Implementation
+
+Below is an of using Lombok in a `Student` entity class.
+
+#### Adding Lombok Dependency
+
+The Lombok dependency can be added to the `pom.xml` file for Maven projects:
+
+```xml
+<dependency>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok</artifactId>
+    <version>1.18.24</version>
+    <scope>provided</scope>
+</dependency>
+```
+
+#### Using Lombok
+
+> `Student.java` - Using Lombok annotations.
+
+```java
+package com.student.entity;
+
+import lombok.*;
+
+@Entity // JPA annotation to mark this class as a database entity
+@Getter // Lombok annotation to generate getters for all fields
+@Setter // Lombok annotation to generate setters for all fields
+@NoArgsConstructor // Lombok annotation to generate a no-argument constructor
+public class Student {
+  @Id // JPA annotation to mark this field as the primary key
+  public String studentId;
+  public String firstName;
+  public String lastName;
+  public String major;
+
+  public Student(String studentId, String firstName, String lastName, String major) {
+    this.studentId = studentId;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.major = major;
+  } // This can be replaced with @AllArgsConstructor
+}
+```
+
+The getters, setters, and no-argument constructor will be automatically generated by Lombok at compile time.
+
+The `@Id` and `@Entity` annotations are from JPA (Java Persistence API) and are used to mark the class as a database entity and the `studentId` field as the primary key. Is it necessary to add `@Id` and `@Entity` annotations? Yes, if you are using JPA to map the `Student` class to a database table, these annotations are necessary. The `@Entity` annotation tells JPA that this class should be treated as a database entity, and the `@Id` annotation specifies which field is the primary key for the entity.
+
+#### Lazy Getters
+
+> `StudentWithLazyGetter.java` - Using Lombok lazy getter.
+
+```java
+package com.student.entity;
+
+import lombok.*;
+
+@Entity // JPA annotation to mark this class as a database entity
+@Getter(lazy=true) // Lombok annotation to generate lazy getters for all fields
+@Setter // Lombok annotation to generate setters for all fields
+@NoArgsConstructor // Lombok annotation to generate a no-argument constructor
+@AllArgsConstructor // Lombok annotation to generate an all-argument constructor
+public class StudentWithLazyGetter {
+  @Id // JPA annotation to mark this field as the primary key
+  public String studentId;
+  public String firstName;
+  public String lastName;
+  public String major;
+}
+```
+
+The getters will be generated as lazy-initialized getters, which means that the fields will only be initialized when they are accessed for the first time. This can help improve performance by avoiding unnecessary object creation and initialization until the field is actually needed.
