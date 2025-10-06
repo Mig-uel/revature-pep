@@ -373,3 +373,113 @@ To achieve this, we can leverage Spring Boot starters:
 - Finally, the `spring-boot-starter-test` starter can be used to set up a testing environment, allowing us to write unit tests and integration tests to ensure the reliability of our application.
 
 By using these Spring Boot starters, we can significantly reduce the amount of boilerplate code and configuration required to set up our application. This allows us to focus more on implementing the unique features of our social media application, ultimately speeding up the development process and improving productivity.
+
+## Overview of Spring MVC & Architecture
+
+#### MVC Architecture
+
+MVC (Model-View-Controller) is a design pattern used in software development to separate the application into three interconnected components: Model, View, and Controller. This separation of concerns helps in organizing code, improving maintainability, and facilitating collaboration among developers.
+
+- **Model**: Represents the data and business logic of the application. It encapsulates the application's state and behavior, and it is responsible for managing data, performing calculations, and enforcing business rules. The Model is independent of the user interface and can be reused across different views.
+- **View**: Represents the user interface of the application. It is responsible for displaying data to the user and capturing user input. The View is typically a visual representation of the Model and is designed to be user-friendly and intuitive. It can be implemented using various technologies, such as HTML, CSS, and JavaScript for web applications.
+- **Controller**: Acts as an intermediary between the Model and the View. It receives user input from the View, processes it (often by interacting with the Model), and determines the appropriate response. The Controller is responsible for handling user actions, updating the Model, and selecting the appropriate View to render the response.
+
+#### Spring MVC
+
+Spring MVC (Model-View-Controller) is a web framework that is part of the Spring Framework. It provides a robust and flexible way to build web applications following the MVC design pattern. Spring MVC allows developers to create web applications that are easy to maintain, test, and extend.
+
+In Spring MVC, the Model is typically represented by Java classes (POJOs) or domain objects that represent the entities in the application. The View is typically implemented using templating engines like Thymeleaf, JSP, or FreeMarker. The Controller is implemented using Java classes annotated with `@Controller` or other stereotype annotations such as `@RestController` for creating RESTful web services.
+
+In scenarios where views are not needed, such as building RESTful APIs, you can create controller methods that return data directly (e.g., JSON or XML) instead of rendering a view. This is commonly done using the `@RestController` annotation, which combines `@Controller` and `@ResponseBody`, allowing you to create RESTful endpoints easily.
+
+Key features of Spring MVC include:
+
+- **Annotation-Based Configuration**: Spring MVC provides support for annotating controllers and mapping request URLs to controller methods using annotations like `@RequestMapping`, `@GetMapping`, `@PostMapping`, etc. This allows for clean and concise configuration of request handling.
+- **Data Binding and Validation**: Spring MVC supports automatic data binding between HTTP request parameters and Java objects. It also provides validation support using annotations like `@Valid` and `@NotNull`, allowing developers to validate user input easily.
+- **View Resolution**: Spring MVC supports view resolvers, which are responsible for resolving logical view names to actual View implementations. This allows for flexible and configurable rendering of views, supporting various templating engines.
+
+Spring MVC also follows the Front Controller pattern, where a single dispatcher servlet handles all incoming requests and delegates them to the appropriate controllers based on the request URL. This centralizes request handling and provides a consistent way to manage the flow of requests and responses in the application.
+
+In Spring MVC, the Front Controller is represented by the `DispatcherServlet`, which acts as the central point for handling all incoming HTTP requests. The `DispatcherServlet` is configured in the web application's deployment descriptor (web.xml) or through Java configuration.
+
+When a request is received, the `DispatcherServlet` consults the request mappings configured in the application to determine which controller method should handle the request. It then invokes the appropriate controller method, passing in any necessary parameters extracted from the request.
+
+#### Example Flow of a Spring MVC Application
+
+- The request from the client is sent to our embedded server (like Tomcat), which forwards it to the `DispatcherServlet`.
+- Based on the request, the `DispatcherServlet` identifies the appropriate controller method to handle the request.
+  - The Front Controller (DispatcherServlet) is aware of all the controllers annotated with `@Controller` or `@RestController` and their request mappings.
+- The response from the controller is a model, returned to the Front Controller, which then interacts with the View Resolver to determine the appropriate view to render.
+  - The model can be either in raw data formats (like JSON or XML) or as a view name that the View Resolver can use to render the response.
+
+In this architecture, the `DispatcherServlet` handles all requests and sends the response, there is no direct interaction between the client and the controllers or views. As the `DispatcherServlet` interacts with the view template, at any point in time, the developer can change the view technology without affecting the controllers or models.
+
+### Real World Example
+
+The Model-View-Controller (MVC) architecture plays a crucial role in modern web application development, and Spring MVC is a widely adopted framework that implements this architecture.
+
+Here are some key reasons why understanding MVC architecture and Spring MVC is important for modern Java developers:
+
+- **Separation of Concerns**: MVC architecture promotes a clear separation of concerns by dividing an application into three distinct components: Model, View, and Controller. This separation allows developers to work on different aspects of the application independently, making it easier to maintain and scale the codebase.
+- **Modularity and Reusability**: By separating the application into different components, MVC architecture encourages modularity and reusability. Developers can create reusable components for the Model, View, and Controller, which can be easily integrated into other applications or projects.
+- **Testability**: The separation of concerns in MVC architecture makes it easier to write unit tests for individual components. Developers can test the Model, View, and Controller independently, ensuring that each component behaves as expected.
+- **Scalability**: MVC architecture allows for better scalability of applications. As the application grows, developers can add new features or modify existing ones without affecting other components. This makes it easier to manage large codebases and adapt to changing requirements.
+- **User Interface Design**: MVC facilitates the design and development of user interfaces by separating presentation logic (View) from application logic (Controller and Model). Designers and frontend developers can work on the View independently, allowing for a more collaborative development process.
+- **Flexibility and Adaptability**: MVC provides flexibility and adaptability to changing requirements and technologies. Because each component is independent, developers can easily swap out or update components without affecting the entire application. For example, it is possible to change the view layer from HTML-based views to a JavaScript framework like React or Angular without modifying the underlying business logic.
+
+Overall, the MVC architecture pattern is essential for building robust, maintainable, and scalable web applications. It promotes best practices in software development and helps developers create applications that are easier to understand, test, and evolve over time. Spring MVC, as a popular implementation of the MVC pattern, provides a powerful framework for building web applications in Java, making it a valuable skill for modern Java developers to master.
+
+### Implementation
+
+Example Spring MVC setup:
+
+> We can configure a `Controller` class with the appropriate `@Controller` annotation above the class definition. This annotation indicates that the class is a Spring MVC controller and will handle incoming HTTP requests. We can include a `@RequestMapping` annotation and `@ResponseBody` annotation above the method definition to map HTTP requests to specific handler methods and indicate that the return value of the method should be used as the response body.
+
+```java
+@Controller // Marks this class as a Spring MVC controller
+public class MyController {
+  @RequestMapping("/hello") // Maps HTTP requests to /hello to this method
+  public @ResponseBody String sayHello() { // Indicates that the return value should be used as the response body
+    return "Hello, World!"; // Returns a simple greeting message as the response body
+  }
+}
+```
+
+The above code defines a simple Spring MVC controller with a single method that handles HTTP requests to the `/hello` endpoint. When a request is made to this endpoint, the `sayHello` method is invoked, and it returns a greeting message as the response body.
+
+## Dev Tools in Spring Boot
+
+Spring Boot DevTools is a module that provides additional development-time features to enhance the developer experience when building Spring Boot applications. It is designed to improve productivity by enabling features such as automatic restarts, live reload, and enhanced logging.
+
+Here are some key aspects of Spring Boot DevTools:
+
+- **Automatic Restart**: DevTools automatically restarts the Spring Boot application whenever it detects changes in the classpath. This means that developers can make changes to their code and see the effects immediately without having to manually restart the application.
+- **Live Reload**: DevTools integrates with popular web browsers to enable live reload functionality. When a change is made to the application, DevTools can automatically refresh the browser to reflect the changes, providing a seamless development experience.
+- **Remote Debugging**: DevTools supports remote debugging, allowing developers to connect to a running Spring Boot application and debug it using their IDE. This is particularly useful for diagnosing issues in production-like environments.
+- **Development-time Configuration**: DevTools provides a set of default configurations that are optimized for development environments. For example, it enables caching for static resources and disables template caching, allowing developers to see changes to templates immediately.
+- **Property Defaults**: DevTools sets sensible defaults for development properties, such as disabling caching and enabling detailed error messages. These defaults can be overridden in the `application.properties` or `application.yml` file if needed.
+
+### Real World Example
+
+Understanding Spring Boot DevTools is important for developers working on Spring Boot applications because it offers several benefits that can significantly improve the development experience:
+
+- **Faster Development**: Spring Boot DevTools automates many tasks that developers would otherwise have to perform manually, such as restarting the application and refreshing the browser. This leads to a more efficient development process, allowing developers to focus on writing code rather than managing the application lifecycle.
+- **Improved Productivity**: By providing features like automatic restarts and live reload, DevTools helps developers see the effects of their changes immediately. This instant feedback loop can lead to faster iteration and experimentation, ultimately improving productivity.
+- **Enhanced Debugging Experience**: DevTools' support for remote debugging allows developers to diagnose and fix issues in their applications more effectively. Being able to connect to a running application and inspect its state can be invaluable when troubleshooting complex problems.
+- **Enhanced Collaboration**: DevTools simplifies the setup process for new developers joining a project by automatically adding development-specific dependencies and setting sensible defaults for development properties. This makes it easier for new team members to get up and running quickly.
+
+### Implementation
+
+Setting up Spring Boot DevTools is as simple as adding the dependency to your project's build configuration file.
+
+> For Maven, add the following dependency to your `pom.xml` file:
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-devtools</artifactId>
+    <optional>true</optional> <!-- Marks this dependency as optional, so it won't be included in the production build -->
+</dependency>
+```
+
+Now, when modifications are made to the codebase, the application will automatically restart, and any changes to static resources will trigger a live reload in the browser.
