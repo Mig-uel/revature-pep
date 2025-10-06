@@ -340,3 +340,36 @@ public class Application {...}
 In this example, the `DataSourceAutoConfiguration` class is excluded, meaning Spring Boot will not attempt to auto-configure a `DataSource` bean, even if it sees database-related dependencies/jars in the classpath.
 
 Remember, Spring Boot's auto-configuration is a powerful feature that makes it easier and quicker to create Spring applications, allowing developers to focus on the unique parts of their applications rather than boilerplate configuration.
+
+## Common Spring Boot Starters
+
+Spring Boot starters are pre-configured dependency descriptors that you can include in your project to quickly set up common functionalities. They provide a convenient way to add a set of related dependencies to your project without having to manually specify each one.
+
+Here are some of the most commonly used Spring Boot starters:
+
+- `spring-boot-starter-web`: This starter is used for building web applications, including RESTful services. It includes dependencies for Spring MVC, Jackson (for JSON processing), and an embedded Tomcat server.
+- `spring-boot-starter-data-jpa`: This starter is used for working with relational databases using JPA (Java Persistence API). It includes dependencies for Spring Data JPA, Hibernate, and a connection pool (HikariCP).
+- `spring-boot-starter-security`: Offers security features for your application, including authentication and authorization. It includes dependencies for Spring Security.
+- `spring-boot-starter-test`: Provides testing support for Spring Boot applications. It includes dependencies for JUnit, Mockito, and Spring Test.
+
+Spring Boot started are highly customizable, allowing developers to override defaults, exclude specific dependencies, and add additional dependencies as needed. This flexibility makes Spring Boot starters a powerful tool for quickly setting up and configuring Spring applications.
+
+### Real World Example
+
+Spring Boot starters are widely used in the industry to accelerate the development of Spring applications. Here's an example scenarios:
+
+Let's consider the development of a social media application. In this application, we would like to include the following functionalities:
+
+- A web interface for user registration, login, and posting updates.
+- Database persistence for storing user data and posts.
+- Security measures to protect user information and authenticate users.
+- Automated testing to ensure the application's reliability.
+
+To achieve this, we can leverage Spring Boot starters:
+
+- We can use the `spring-boot-starter-web` starter to quickly set up the web interface for our application with Spring MV, handle user registration and login endpoints, and server static resources.
+- The `spring-boot-starter-data-jpa` starter can be used for easy integration with a relational database, allowing us to persist user data and posts using Spring Data JPA and Hibernate.
+- For security, we can include the `spring-boot-starter-security` starter to implement authentication and authorization mechanisms, ensuring that user information is protected.
+- Finally, the `spring-boot-starter-test` starter can be used to set up a testing environment, allowing us to write unit tests and integration tests to ensure the reliability of our application.
+
+By using these Spring Boot starters, we can significantly reduce the amount of boilerplate code and configuration required to set up our application. This allows us to focus more on implementing the unique features of our social media application, ultimately speeding up the development process and improving productivity.
