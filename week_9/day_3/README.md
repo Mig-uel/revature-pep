@@ -483,3 +483,47 @@ Setting up Spring Boot DevTools is as simple as adding the dependency to your pr
 ```
 
 Now, when modifications are made to the codebase, the application will automatically restart, and any changes to static resources will trigger a live reload in the browser.
+
+## Spring Environments
+
+An application environment refer to the context in which an application is running, such as the configuration settings, system properties, and environment variables that influence the behavior of the application.
+
+Spring Boot allows us to externalize configuration properties, making it easy to manage different environments (e.g., development, testing, production) without changing the application code. This is typically done using property files, YAML files, or environment variables.
+
+#### Configuration Annotations
+
+Spring introduces the new `@PropertySource` annotation, which is used to specify the location of property files to be loaded into the Spring Environment. This annotation can be applied to a configuration class to load properties from a specified file.
+
+```java
+@Configuration // Indicates that the class can be used by the Spring IoC container as a source of bean definitions
+@PropertySource("classpath:application.properties") // Specifies the location of the property file to be loaded
+public class AppConfig {}
+```
+
+In this example, the `@PropertySource` annotation is used to load properties from the `application.properties` file located in the classpath. The properties defined in this file will be available in the Spring Environment and can be accessed using the `@Value` annotation or through the `Environment` object.
+
+Another very useful way to register a new properties file is by using a placeholder in the `@PropertySource` annotation, which allow us to dynamically specify the properties file based on the active Spring profile.
+
+```java
+@Configuration // Indicates that the class can be used by the Spring IoC container as a source of bean definitions
+@PropertySource("classpath:persistence-${envTarget:mysql}.properties") // Dynamically loads the property file based on the active Spring profile
+public class AppConfig {}
+```
+
+In this example, the `${envTarget:mysql}` placeholder will be replaced with the value of the `envTarget` property, allowing us to load different property files based on the active profile. For instance, if the `envTarget` property is set to `mysql`, the `persistence-mysql.properties` file will be loaded.
+
+Property values can be injected into Spring beans using the `@Value` annotation. This annotation allows us to specify a property key, and Spring will automatically inject the corresponding value from the loaded properties.
+
+```java
+@Value("${database.url}") // Injects the value of the "database.url" property into this field
+private String databaseUrl; // Field to hold the injected property value
+```
+
+### Real World Example
+
+Externalized configuration provides several benefits that are important for modern application development:
+
+- **Flexibility**: Externalized configuration allows developers to change application settings without modifying the codebase. This flexibility is crucial for adapting to different environments and requirements.
+- **Security**: Externalizing sensitive configuration properties, such as database credentials or API keys, helps to keep them secure and separate from the application code. This reduces the risk of exposing sensitive information in version control systems.
+- **Portability**: By separating configuration from code, you can deploy the same application binary to different environments (e.g., development, testing, production) with different configurations. This makes it easier to manage deployments and ensures consistency across environments.
+- **Easy of Management**: Managing configuration settings in external files or environment variables makes it easier to maintain and update them. Configuration files can be versioned, shared, and updated independently of the application code.
