@@ -207,3 +207,140 @@ With this setup, you are now able to:
 - Serve dynamic web pages with MVC.
 - Handle API request with REST endpoints.
 - Bind and validate request data cleanly using DTOs.
+
+## `@RequestMapping` & `@ResponseBody`
+
+#### `@RequestMapping`
+
+In Spring MVC, the `@RequestMapping` annotation is used to map HTTP requests to handler methods in controller classes. It can be applied at both the class level and the method level. It allows developers to define which method should handle a particular URL pattern and HTTP method (such as GET, POST, PUT, DELETE). The `@RequestMapping` annotation can also specify additional attributes such as headers, parameters, and content types.
+
+You can use `@RequestMapping` at the class level to specify a common base URL for all methods in the controller, and then use it at the method level to define specific endpoints. This is useful for organizing related endpoints within a single controller.
+
+```java
+@Controller
+@RequestMapping("/api") // Base path for all endpoints in this controller
+public class ApiController {
+    // Handler methods go here...
+}
+```
+
+You can use `@RequestMapping` at the method level to further specify the HTTP method and path for each endpoint. This allows you to have multiple handler methods within the same controller, each handling different HTTP methods or paths.
+
+```java
+@Controller // Indicates that this class is a Spring MVC controller
+@RequestMapping("/api") // Base path for all endpoints in this controller
+public class ApiController {
+    @RequestMapping("/hello", method = RequestMethod.GET) // Maps GET requests to /api/hello to this method
+    public String hello() {
+        // Handle GET request
+        return "Hello, World!";
+    }
+
+    @RequestMapping("/save", method = RequestMethod.POST) // Maps POST requests to /api/save to this method
+    public String saveData() {
+        // Handle POST request
+        return "Data saved!";
+    }
+}
+```
+
+The `@RequestMapping` annotation provides attributes for configuring request mappings to further refine the mapping conditions. Some commonly used attributes include:
+
+- `value` or `path`: Specifies the URL pattern to which the method should respond. You can use either `value` or `path`, but not both.
+
+```java
+@RequestMapping(value = "/example") // or @RequestMapping(path = "/example")
+```
+
+- `method`: Specifies the HTTP method (e.g., GET, POST, PUT, DELETE) that the method should handle. This is typically set using the `RequestMethod` enum provided by Spring (e.g., `RequestMethod.GET`, `RequestMethod.POST`).
+
+```java
+@RequestMapping(value = "/example", method = RequestMethod.GET)
+```
+
+- `params`: Specifies request parameters that must be present for the method to be invoked. This can be useful for differentiating between methods that handle the same URL but require different parameters.
+
+```java
+@RequestMapping(value = "/example", method = RequestMethod.GET, params = "type=admin")
+```
+
+- `headers`: Specifies request headers that must be present for the method to be invoked. This can be useful for handling requests with specific headers.
+
+```java
+@RequestMapping(value = "/example", method = RequestMethod.GET, headers = "X-Custom-Header=Value")
+```
+
+- `consumes`: Specifies the media types that the method can consume. This is useful for handling requests with specific content types (e.g., `application/json`).
+
+```java
+@RequestMapping(value = "/example", method = RequestMethod.POST, consumes = "application/json")
+```
+
+- `produces`: Specifies the media types that the method can produce. This is useful for handling responses with specific content types (e.g., `application/json`).
+
+```java
+@RequestMapping(value = "/example", method = RequestMethod.GET, produces = "application/json")
+```
+
+#### `@ResponseBody`
+
+The `@ResponseBody` annotation in Spring MVC is used to indicate that the return value of a method should be written directly to the HTTP response body, rather than being interpreted as a view name. This is particularly useful for creating RESTful web services where you want to return data (such as JSON or XML) directly to the client.
+
+This annotation is typically used at the class level or method level within a controller. When applied at the class level, it indicates that all methods in the class will return data directly in the response body. When applied at the method level, it indicates that only that specific method will return data in the response body.
+
+When a method is annotated with `@ResponseBody`, Spring will automatically convert the return value to the appropriate format based on the client's request (e.g., JSON, XML) using message converters. This allows you to easily create endpoints that return data without needing to create separate view templates.
+
+```java
+@Controller
+public class MyController {
+    @GetMapping("/data")
+    @ResponseBody // Indicates that the return value should be written directly to the response body
+    public Map<String, String> getData() {
+        Map<String, String> data = new HashMap<>();
+        data.put("key", "value");
+        return data; // This will be converted to JSON and sent in the response body
+    }
+}
+```
+
+### Real World Application
+
+URLs like `/login`, `/register`, `/user`, `/admin`, and `/addProduct` can be mapped to specific controller methods using `@RequestMapping` or its specialized variants like `@GetMapping`, `@PostMapping`, etc. These mappings help in organizing the endpoints of a web application and defining how different HTTP requests should be handled.
+
+The `@ResponseBody` annotation ensures that the view type returned for each of the above requests generate the appropriate response format (e.g., JSON, XML) directly in the HTTP response body, making it suitable for RESTful APIs.
+
+### Implementation
+
+Below is an example of using `@RequestMapping` and `@ResponseBody` annotations.
+
+```java
+@Controller // Indicates that this class is a Spring MVC controller
+@RequestMapping("/api/users") // Base path for all endpoints in this controller
+public class UserController {
+    @RequestMapping("/register", method = RequestMethod.POST) // Maps POST requests to /api/users/register to this method
+    public @ResponseBody User register(@RequestBody User user) {
+        // Simulate user registration logic
+        user.setId(1L); // Simulate setting an ID after registration
+        return user; // Returns the registered user as JSON in the response body
+    }
+
+    @RequestMapping("/login", method = RequestMethod.POST) // Maps POST requests to /api/users/login to this method
+    public @ResponseBody User login(@RequestBody LoginRequest loginRequest) {
+        // Login logic here
+    }
+
+    @RequestMapping("/{userId}", method = RequestMethod.GET) // Maps GET requests to /api/users/{userId} to this method
+    public @ResponseBody User getUserProfile(@PathVariable Long userId) {
+        // Fetch user profile logic here
+    }
+
+    @RequestMapping("/{userId}", method = RequestMethod.PUT) // Maps PUT requests to /api/users/{userId} to this method
+    @ResponseBody
+    public User updateUserProfile(@PathVariable Long userId, @RequestBody User updatedUser) {
+        // Update user profile logic here
+        return updatedUser;
+    }
+}
+```
+
+Clients can perform requests such as a `POST` request to `/api/users/register` or a `GET` request to `/api/users/{userId}` to interact with the user management functionality of the application.
