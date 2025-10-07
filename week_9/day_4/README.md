@@ -653,3 +653,91 @@ public class StudentController {
     }
 }
 ```
+
+## ResponseEntity Class
+
+`ResponseEntity` is a class that is meant to represent the entire HTTP response, including the status code, headers, and body. It is a generic class that can be used to return any type of object as the response body. This allows for much more flexibility when it comes to the following:
+
+- The body is includes and can be given a generic type to help ensure the type safety of the API's HTTP responses.
+- Optionally, we can include header information without requiring direct access to the `HttpServletResponse` object.
+- Incorporating status codes, especially for handler methods that may not always behave as expected.
+
+```java
+@GetMapping("/example")
+public ResponseEntity<String> example() {
+    String responseBody = "Hello, World!";
+    return ResponseEntity.ok(responseBody); // Returns a 200 OK response with the response body
+}
+```
+
+#### HTTP Status Codes
+
+`ResponseEntity` allows you to specify the HTTP status code to be returned in the response. You can use predefined constants from the `HttpStatus` enum or use the `ResponseEntity` builder methods to set the status code or provide a custom status code.
+
+```java
+@GetMapping("/custom")
+public ResponseEntity<String> customResponse() {
+    String responseBody = "Custom Response";
+    return ResponseEntity.status(HttpStatus.CREATED).body(responseBody); // Returns a 201 Created response with the response body
+}
+```
+
+#### HTTP Headers
+
+You can also set custom HTTP headers in the response using the `ResponseEntity` class. This can be done using the `headers` method of the `ResponseEntity` builder.
+
+```java
+@GetMapping("/headers")
+public ResponseEntity<String> responseWithHeaders() {
+    String responseBody = "Response with Headers";
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("Custom-Header", "HeaderValue");
+    return ResponseEntity.ok().headers(headers).body(responseBody); // Returns a 200 OK response with custom headers and the response body
+}
+```
+
+#### Body
+
+`ResponseEntity` supports returning a response body along with the status code and headers. You can pass the body content as a parameter to the constructor or use the `body` method of the `ResponseEntity` builder. The body can be of any type, including Java objects, collections, strings, etc.
+
+```java
+@GetMapping("/body")
+public ResponseEntity<List<String>> responseWithBody() {
+    List<String> responseBody = Arrays.asList("Item1", "Item2", "Item3");
+    return ResponseEntity.ok(responseBody); // Returns a 200 OK response with a list of strings as the response body
+}
+```
+
+The `ResponseEntity` class offers flexible control of our HTTP responses through several static methods such as:
+
+- The `.status()` method, which takes either an `HttpStatus` enum value or an integer representing the status code.
+- The `.body()` method, which sets the body of the response.
+- The `.header()` and `.headers()` methods, which allow us to set individual headers or multiple headers at once.
+- The `.build()` method, which constructs the `ResponseEntity` object.
+
+### Real World Application
+
+`ResponseEntity` helps build flexible responses by providing complete control over our HTTP responses. This is particularly useful in RESTful APIs where we may need to return different status codes based on the outcome of an operation (e.g., 200 OK for success, 201 Created for resource creation, 400 Bad Request for client errors, 404 Not Found for missing resources, etc.). Additionally, we can include custom headers and response bodies as needed.
+
+### Implementation
+
+Consider an example application where we have students who can submit their information. ResponseEntity<Object> will replace the method signature return type of our handler method, and Object would be replaced with the type that we intend to return. Our return statement will now contain ResponseEntity static methods for constructing our HTTP response.
+
+```java
+@RestController("/student") // Combines @Controller and @ResponseBody, meaning methods return data directly and sets base path for all endpoints in this controller
+public class StudentController {
+    private List<Student> studentList = new ArrayList<>();
+
+    {
+        studentList.add(new Student("John", "Doe", "john.doe@example.com"));
+        studentList.add(new Student("Jane", "Smith", "jane.smith@example.com"));
+    }
+
+    @PostMapping("/submit") // Maps POST requests to /student/submit to this method
+    public ResponseEntity<String> submitInfo(@RequestBody Student student) {
+        studentList.add(student);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("Student information submitted successfully.");
+    }
+}
+```
