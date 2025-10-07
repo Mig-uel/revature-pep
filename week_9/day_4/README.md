@@ -599,3 +599,57 @@ In this example:
 - The `displayInfo` method is mapped to handle GET requests to the `/student/info/{email}` endpoint using the `@GetMapping` annotation. It takes an `email` path variable from the URL and searches for a student with that email in the `studentList`. If found, it returns the student object; otherwise, it returns `null`.
 - The `submit` method is mapped to handle POST requests to the `/student/submit` endpoint using the `@PostMapping` annotation. It takes four request parameters: `email`, `major`, `age`, and `password`. It creates a new `Student` object with the provided values and adds it to the `studentList`. Finally, it returns a success message.
 - The `Student` class is a simple model class that represents a student with fields for email, major, age, and password. It includes a constructor and getter methods for each field.
+
+## Request Body & `@RequestBody` Annotation
+
+The `@RequestBody` annotation in Spring MVC is used to bind the body of an HTTP request to a method parameter in a controller method. It is typically used in controller methods to extract data from the request body and convert it into a Java object. This is particularly useful for handling POST, PUT, and PATCH requests where the request body contains data that needs to be processed.
+
+When a method parameter is annotated with `@RequestBody`, Spring will automatically deserialize the incoming request body (which is usually in JSON or XML format) into the specified Java object using message converters. This allows you to work with strongly typed objects in your controller methods, making it easier to handle and manipulate the data.
+
+`@RequestBody` requires that the information provided matches the structure of the Java object it is being mapped to. If the structure does not match, Spring will throw an error.
+
+```java
+@PostMapping("/create")
+public User createUser(@RequestBody User user) {
+    // Logic to create a new user
+    return user; // Returns the created user as JSON in the response body
+}
+```
+
+### Real World Application
+
+A simple application of `@RequestBody` could be in a user registration endpoint where the user details (such as name, email, and password) are sent in the request body as JSON. The controller method can then use `@RequestBody` to bind the incoming JSON data to a `User` object, which can be processed and saved to a database.
+
+### Implementation
+
+Consider an example application where we have students who can register using their email as a unique identifier. `@RequestBody` will help users request updates to their student information through the `update` handler method by sending a JSON object in the request body and binding it to a `Student` object.
+
+Note: we will need a JSON processing library like Jackson to handle the serialization and deserialization of JSON data. Spring Boot includes Jackson by default when you use the `spring-boot-starter-web` dependency.
+
+> Student Controller
+
+```java
+@RestController("/student") // Combines @Controller and @ResponseBody, meaning methods return data directly and sets base path for all endpoints in this controller
+public class StudentController {
+    private List<Student> studentList = new ArrayList<>();
+
+    {
+        studentList.add(new Student("john.doe@example.com", "Computer Science", 20, "password123"));
+        studentList.add(new Student("jane.smith@example.com", "Mathematics", 22, "password456"));
+        studentList.add(new Student("alice.johnson@example.com", "Physics", 21, "password789"));
+    }
+
+    @PutMapping("/update") // Maps PUT requests to /student/update to this method
+    public String updateStudent(@RequestBody Student updatedStudent) {
+        for (Student student : studentList) {
+            if (student.getEmail().equals(updatedStudent.getEmail())) {
+                student.setMajor(updatedStudent.getMajor());
+                student.setAge(updatedStudent.getAge());
+                student.setPassword(updatedStudent.getPassword());
+                return "Student information updated successfully.";
+            }
+        }
+        return "Student not found.";
+    }
+}
+```
