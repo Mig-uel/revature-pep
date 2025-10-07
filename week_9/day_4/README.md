@@ -344,3 +344,99 @@ public class UserController {
 ```
 
 Clients can perform requests such as a `POST` request to `/api/users/register` or a `GET` request to `/api/users/{userId}` to interact with the user management functionality of the application.
+
+## HTTP Method Annotations
+
+Spring MVC includes several specialized annotations for mapping HTTP methods to controller methods. These annotations all `@RequestMapping` under the hood but provide a more concise and readable way to define request mappings for specific HTTP methods. They all have the same attributes as `@RequestMapping`, such as `value`, `path`, `params`, `headers`, `consumes`, and `produces`, but they are specifically designed for common HTTP methods.
+
+Here are the commonly used HTTP method annotations in Spring MVC:
+
+- `@GetMapping`: Maps HTTP GET requests to a specific handler method. It is typically used for retrieving resources or data.
+
+```java
+@GetMapping("/items") // Maps GET requests to /items to this method
+public List<Item> getItems() {
+    // Logic to retrieve and return a list of items
+}
+```
+
+- `@PostMapping`: Maps HTTP POST requests to a specific handler method. It is typically used for creating new resources.
+
+```java
+@PostMapping("/items") // Maps POST requests to /items to this method
+public Item createItem(@RequestBody Item item) {
+    // Logic to create and return the new item
+}
+```
+
+- `@PutMapping`: Maps HTTP PUT requests to a specific handler method. It is typically used for updating existing resources.
+
+```java
+@PutMapping("/items/{id}") // Maps PUT requests to /items/{id} to this method
+public Item updateItem(@PathVariable Long id, @RequestBody Item item) {
+    // Logic to update and return the item with the specified ID
+}
+```
+
+- `@DeleteMapping`: Maps HTTP DELETE requests to a specific handler method. It is typically used for deleting resources.
+
+```java
+@DeleteMapping("/items/{id}") // Maps DELETE requests to /items/{id} to this method
+public void deleteItem(@PathVariable Long id) {
+    // Logic to delete the item with the specified ID
+}
+```
+
+- `@PatchMapping`: Maps HTTP PATCH requests to a specific handler method. It is typically used for partially updating resources.
+
+```java
+@PatchMapping("/items/{id}") // Maps PATCH requests to /items/{id} to this method
+public Item partiallyUpdateItem(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
+    // Logic to partially update and return the item with the specified ID
+}
+```
+
+These annotations provide a more intuitive way to define request mappings for specific HTTP methods, making the code easier to read and maintain. They are commonly used in RESTful web services to handle different types of operations on resources.
+
+### Real World Application
+
+Each controller method can instead now include the convenience annotations like `@GetMapping`, `@PostMapping`, etc., to clearly indicate the HTTP method being handled. This improves code readability and makes it easier to understand the purpose of each method at a glance.
+
+- `@PostMapping` for adding a new product.
+- `@GetMapping` to find all products or a specific product by ID.
+- `@DeleteMapping` to remove a product by ID.
+
+### Implementation
+
+Below is an example of using HTTP method annotations.
+
+```java
+@RestController("/api/users") // Combines @Controller and @ResponseBody, meaning methods return data directly and sets base path for all endpoints in this controller
+public class UserController {
+    @PostMapping("/register") // Maps POST requests to /api/users/register to this method
+    public User register(@RequestBody User user) {
+        // Logic to register user
+        return user;
+    }
+
+    @PostMapping("/login") // Maps POST requests to /api/users/login to this method
+    public User login(@RequestBody LoginRequest loginRequest) {
+        // Login logic here
+        return user;
+    }
+
+    @GetMapping("/{userId}") // Maps GET requests to /api/users/{userId} to this method
+    public User getUserProfile(@PathVariable Long userId) {
+        // Fetch user profile logic here
+        return user;
+    }
+
+    @PutMapping("/{userId}") // Maps PUT requests to /api/users/{userId} to this method
+    public User updateUserProfile(@PathVariable Long userId, @RequestBody User updatedUser) {
+        // Update user profile logic here
+        return updatedUser;
+    }
+}
+```
+
+We can see clients can perform requests such as a `POST` request to `/api/users/register` or a `GET` request to `/api/users/{userId}` to interact with the user management functionality of the application.
