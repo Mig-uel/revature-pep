@@ -440,3 +440,162 @@ public class UserController {
 ```
 
 We can see clients can perform requests such as a `POST` request to `/api/users/register` or a `GET` request to `/api/users/{userId}` to interact with the user management functionality of the application.
+
+## Request Parameters and Path Variables
+
+`@RequestParam` and `@PathVariable` are two annotations in Spring MVC that are used to extract values from the URL of an HTTP request. They serve different purposes and are used in different scenarios.
+
+#### `@RequestParam`
+
+The `@RequestParam` annotation is used to bind a request parameter (query parameter) from the URL to a method parameter in a controller. It is typically used for extracting values from the query string of a URL.
+
+```java
+// Example: URL - /search?query=spring
+@GetMapping("/search")
+public List<Item> searchItems(@RequestParam String query) {
+    // Logic to search for items based on the query parameter
+    return items;
+}
+```
+
+In this example, the `searchItems` method takes a `query` parameter from the URL's query string (e.g., `/search?query=spring`). The value of the `query` parameter is automatically bound to the `query` method parameter. Does the name of the variable matter? Yes, by default, the name of the method parameter must match the name of the request parameter. However, you can specify a different name using the `name` attribute of the `@RequestParam` annotation.
+
+```java
+@GetMapping("/search")
+public List<Item> searchItems(@RequestParam(name = "q") String query) {
+    // Logic to search for items based on the query parameter
+    return items;
+}
+```
+
+In this case, the method will look for a query parameter named `q` in the URL (e.g., `/search?q=spring`).
+
+You can also specify whether a request parameter is required or optional using the `required` attribute. By default, request parameters are required.
+
+```java
+@GetMapping("/search")
+public List<Item> searchItems(@RequestParam(name = "q", required = false) String query) {
+    // Logic to search for items based on the query parameter
+    return items;
+}
+```
+
+In this case, the `query` parameter is optional. If it is not provided in the request, it will be `null`.
+You can also provide a default value for a request parameter using the `defaultValue` attribute.
+
+```java
+@GetMapping("/search")
+public List<Item> searchItems(@RequestParam(name = "q", defaultValue = "all") String query) {
+    // Logic to search for items based on the query parameter
+    return items;
+}
+```
+
+In this case, if the `q` parameter is not provided in the request, it will default to "all".
+
+#### `@PathVariable`
+
+The `@PathVariable` annotation is used to bind a URI template variable from the URL to a method parameter in a controller. It is typically used for extracting values from the path of the URL.
+
+```java
+// Example: URL - /items/42
+@GetMapping("/items/{id}")
+public Item getItemById(@PathVariable Long id) {
+    // Logic to retrieve the item with the specified ID
+    return item;
+}
+```
+
+In this example, the `getItemById` method takes an `id` parameter from the URL path (e.g., `/items/42`). The value of the `id` path variable is automatically bound to the `id` method parameter. Does the name of the variable matter? Yes, by default, the name of the method parameter must match the name of the path variable. However, you can specify a different name using the `name` attribute of the `@PathVariable` annotation.
+
+```java
+@GetMapping("/items/{itemId}")
+public Item getItemById(@PathVariable(name = "itemId") Long id) {
+    // Logic to retrieve the item with the specified ID
+    return item;
+}
+```
+
+In this case, the method will look for a path variable named `itemId` in the URL (e.g., `/items/42`).
+You can also specify whether a path variable is required or optional using the `required` attribute. By default, path variables are required.
+
+```java
+@GetMapping("/items/{id}")
+public Item getItemById(@PathVariable(name = "id", required = false) Long id) {
+    // Logic to retrieve the item with the specified ID
+    return item;
+}
+```
+
+In this case, the `id` path variable is optional. If it is not provided in the request, it will be `null`. However, note that making a path variable optional is not common practice, as it can lead to ambiguous URL mappings.
+You can also provide a default value for a path variable using the `defaultValue` attribute.
+
+```java
+@GetMapping("/items/{id}")
+public Item getItemById(@PathVariable(name = "id", defaultValue = "1") Long id) {
+    // Logic to retrieve the item with the specified ID
+    return item;
+}
+```
+
+In this case, if the `id` path variable is not provided in the request, it will default to `1`.
+
+### Real World Application
+
+A simple application of `@PathVariable` could be in a user profile endpoint where the user ID is part of the URL, such as `/users/{userId}`. This allows for easy retrieval of user-specific data based on the provided user ID.
+Similarly, `@RequestParam` could be used in a search functionality where the search term is passed as a query parameter, such as `/search?query=spring`. This allows for flexible searching based on user input.
+
+### Implementation
+
+Consider the following example that demonstrates the use of both `@RequestParam` and `@PathVariable` in a Spring MVC controller.
+
+```java
+package com.sample.controller;
+
+import com.sample.model.Student;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@RestController("/student") // Combines @Controller and @ResponseBody, meaning methods return data directly and sets base path for all endpoints in this controller
+public class StudentController {
+
+    private List<Student> studentList = new ArrayList<>();
+
+    {
+        studentList.add(new Student("admin@mail.com", "IT", 100, "adminPass"));
+        studentList.add(new Student("Charles@mail.com", "Biology", 72, "password"));
+        studentList.add(new Student("Nick@mail.com", "Computer Science", 18, "superPass"));
+    }
+
+    @GetMapping("info/{email}")
+    public Student displayInfo(@PathVariable String email) {
+
+        for (Student student : studentList) {
+            if (student.getEmail().equals(email))
+                return student;
+        }
+        return null;
+    }
+
+    @PostMapping("submit")
+    public String submit(@RequestParam String email,
+                                       @RequestParam String major,
+                                       @RequestParam int age,
+                                       @RequestParam String password) {
+
+        studentList.add(new Student(email, major, age, password));
+        return "Successfully submitted";
+    }
+}
+```
+
+In this example:
+
+- The `StudentController` class is annotated with `@RestController`, indicating that it is a RESTful controller. This annotation combines `@Controller` and `@ResponseBody`, meaning that the methods in this class will return data directly (usually in JSON format) instead of rendering a view.
+- The class is also annotated with `@RequestMapping("/student")`, which sets a base path for all endpoints in this controller. All endpoints will be prefixed with `/student`.
+- The `displayInfo` method is mapped to handle GET requests to the `/student/info/{email}` endpoint using the `@GetMapping` annotation. It takes an `email` path variable from the URL and searches for a student with that email in the `studentList`. If found, it returns the student object; otherwise, it returns `null`.
+- The `submit` method is mapped to handle POST requests to the `/student/submit` endpoint using the `@PostMapping` annotation. It takes four request parameters: `email`, `major`, `age`, and `password`. It creates a new `Student` object with the provided values and adds it to the `studentList`. Finally, it returns a success message.
+- The `Student` class is a simple model class that represents a student with fields for email, major, age, and password. It includes a constructor and getter methods for each field.
