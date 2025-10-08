@@ -741,3 +741,225 @@ public class StudentController {
     }
 }
 ```
+
+## HTTP Status Codes & Exception Handling With `@ExceptionHandler`
+
+`@ResponseStatus` is a method-level annotation in Spring Boot that allows you to specify the HTTP status code that should be returned when a particular exception is thrown from a controller method. This annotation can be applied to custom exception classes or to specific methods within a controller.
+
+When an exception is thrown from a controller method, Spring will check if the exception class or the method is annotated with `@ResponseStatus`. If it is, Spring will use the specified HTTP status code in the response. If not, Spring will use the default status code for the exception type.
+
+You can specify any HTTP status code using the `value` attribute of the `@ResponseStatus` annotation. You can also provide a custom reason message using the `reason` attribute. The `value` attribute takes a value of type `HttpStatus`, which is an enum that contains all the standard HTTP status codes. The `HttpStatus` enum provides the "named" values for all standard HTTP status codes, such as `HttpStatus.OK`, `HttpStatus.CREATED`, `HttpStatus.BAD_REQUEST`, etc.
+
+```java
+@ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "Resource not found")
+public class ResourceNotFoundException extends RuntimeException {
+    public ResourceNotFoundException(String message) {
+        super(message);
+    }
+}
+```
+
+`@ExceptionHandler` is another way to handle exceptions in Spring Boot. It is a method-level annotation that allows you to define a method that will be called when a specific exception is thrown from a controller method. This method can then handle the exception and return an appropriate response to the client. It handles any exceptions specified in the annotation properties. These properties can include a generic catch-all with `Exception.class`, a single instance of any exception class, or an array of exception classes.
+
+```java
+@RestController
+public class MyController {
+    @ExceptionHandler(ResourceNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String handleResourceNotFound(ResourceNotFoundException ex) {
+        return ex.getMessage();
+    } // This method will handle ResourceNotFoundException and return a 404 status code with the exception message
+    // How do we trigger it? By throwing the ResourceNotFoundException from any controller method
+
+    @GetMapping("/students/{id}")
+    public ResponseEntity<Student> getStudentById(@PathVariable String id) {
+        return studentList.stream()
+                .filter(student -> student.getId().equals(id))
+                .findFirst()
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found")); // This will trigger the exception handler if the student is not found
+    }
+}
+```
+
+If no `@ExceptionHandler` or `@ResponseStatus` annotation is found for a particular exception, Spring will use its default exception handling mechanism, which typically results in a 500 Internal Server Error response.
+
+### Real World Application
+
+The `@ExceptionHandler` and `@ResponseStatus` annotations in the Spring Framework are essential for handling exceptions and customizing HTTP responses in web applications. Here's why they are important:
+
+- **Granular Error Handling**: With `@ExceptionHandler`, you can define specific methods to handle different types of exceptions. This allows for more granular error handling, where you can provide tailored responses based on the exception type. For example, you can return a 404 Not Found status for a `ResourceNotFoundException` and a 400 Bad Request status for a `ValidationException`.
+- **Custom Responses**: The `@ExceptionHandler` annotation gives you full control over the HTTp response sent back to the client when an exception occurs. You can customize the status code, headers, and body of the response to provide meaningful error messages or additional information about the error.
+- **Fine-Grained Control**: `@ResponseStatus` allows you to specify the HTTP status code directly on custom exception classes or controller methods. This provides a simple way to associate specific status codes with certain exceptions, making it easier to manage and maintain error handling logic.
+- **Cleaner Code**: By using these annotations, you can separate error handling logic from the main business logic of your controller methods. This leads to cleaner and more maintainable code, as the error handling concerns are encapsulated in dedicated methods or exception classes.
+
+### Implementation
+
+Consider an example application where we have students who can submit, update, or get their information.
+
+> Student Controller
+
+```java
+@RestController("/student") // Combines @Controller and @ResponseBody, meaning methods return data directly and sets base path for all endpoints in this controller
+public class StudentController {
+    private List<Student> studentList = new ArrayList<>();
+
+    {
+        studentList.add(new Student("John", "Doe", "john.doe@example.com"));
+        studentList.add(new Student("Jane", "Smith", "jane.smith@example.com"));
+        studentList.add(new Student("Jim", "Brown", "jim.brown@example.com"));
+        studentList.add(new Student("Jake", "White", "jake.white@example.com"));
+        studentList.add(new Student("Jill", "Green", "jill.green@example.com"));
+    }
+
+    @GetMapping("/info/{email}") // Maps GET requests to /student/info/{email} to this method
+    // ResponseEntity<Student> will allow us to return a Student object along with HTTP status codes
+    public ResponseEntity<Student> displayInfo(@PathVariable String email) {
+        for (Student student : studentList) {
+            if (student.getEmail().equals(email)) {
+                return ResponseEntity.ok(student); // Returns a 200 OK response with the student object as the response body
+            }
+        }
+
+        throw new CustomException("Student not found with email: " + email); // Throws a custom exception if the student is not found
+    }
+
+    @PutMapping("/update") // Maps PUT requests to /student/update to this method
+    public ResponseEntity<Void>update(@RequestBody Student updatedStudent) {
+        for (Student student : studentList) {
+            if (student.getEmail().equals(updatedStudent.getEmail())) {
+                student.setFirstName(updatedStudent.getFirstName());
+                student.setLastName(updatedStudent.getLastName());
+                return ResponseEntity.noContent().build(); // Returns a 204 No Content response indicating the update was successful
+            }
+        }
+
+        throw new RuntimeException("Student not found with email: " + updatedStudent.getEmail()); // Throws a generic exception if the student is not found
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class) // Handles MissingServletRequestParameterException // This exception is thrown when a required request parameter is missing
+    @ResponseStatus(HttpStatus.BAD_REQUEST) // Sets the HTTP status code to 400 Bad Request
+    public String handleMissingParams(MissingServletRequestParameterException ex) {
+        return ex.getMessage(); // Returns the exception message as the response body
+    }
+}
+```
+
+In our controller handler methods, our responses should reasonably handle any exceptions thrown at them and not simply return a 500 Internal Server Error. As the code above works for successful calls, the exceptions where we cannot find the student by email prevent us from performing our `GET` or `PUT` operations. Along with this, we have issues with out `POST` requests that are missing required parameters.
+
+Let's edit the controller's handlers so that we throw exceptions when necessary and create `@ExceptionHandler` methods to handle them.
+
+```java
+@RestController("/student") // Combines @Controller and @ResponseBody, meaning methods return data directly and sets base path for all endpoints in this controller
+public class StudentController {
+    private List<Student> studentList = new ArrayList<>();
+
+    {
+        studentList.add(new Student("John", "Doe", "john.doe@example.com"));
+        studentList.add(new Student("Jane", "Smith", "jane.smith@example.com"));
+        studentList.add(new Student("Jim", "Brown", "jim.brown@example.com"));
+        studentList.add(new Student("Jake", "White", "jake.white@example.com"));
+    }
+
+    @GetMapping("/info/{email}") // Maps GET requests to /student/info/{email} to this method
+    @ResponseStatus(HttpStatus.ACCEPTED) // Sets the HTTP status code to 202 Accepted for successful responses
+    public Student displayInfo(@PathVariable String email) {
+        for (Student student : studentList) {
+            if (student.getEmail().equals(email)) {
+                return student; // Returns the student object if found
+            }
+        }
+
+        throw new CustomException("Student not found with email: " + email); // Throws a custom exception if the student is not found
+    }
+
+    @PutMapping("/update") // Maps PUT requests to /student/update to this method
+    @ResponseStatus(HttpStatus.NO_CONTENT) // Sets the HTTP status code to 204 No Content for successful responses
+    public void update(@RequestBody Student updatedStudent) {
+        for (Student student : studentList) {
+            if (student.getEmail().equals(updatedStudent.getEmail())) {
+                student.setFirstName(updatedStudent.getFirstName());
+                student.setLastName(updatedStudent.getLastName());
+                return; // Returns void indicating the update was successful
+            }
+        }
+        throw new RuntimeException("Student not found with email: " + updatedStudent.getEmail()); // Throws a generic exception if the student is not found
+    }
+
+    @PostMapping("/submit") // Maps POST requests to /student/submit to this method
+    @ResponseStatus(HttpStatus.CREATED) // Sets the HTTP status code to 201 Created for successful responses
+    public String submitInfo(@RequestBody Student student) {
+        studentList.add(student);
+        return "Student information submitted successfully";
+    }
+
+    @ExceptionHandler({RuntimeException.class, CustomException.class}) // Handles RuntimeException and CustomException
+    @ResponseStatus(HttpStatus.NOT_FOUND) // Sets the HTTP status code to 404 Not Found
+    public String handleNotFoundExceptions(RuntimeException ex) {
+        return ex.getMessage(); // Returns the exception message as the response body
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class) // Handles MissingServletRequestParameterException // This exception is thrown when a required request parameter is missing
+    @ResponseStatus(HttpStatus.BAD_REQUEST) // Sets the HTTP status code to 400 Bad Request
+    public String handleMissingParams(MissingServletRequestParameterException ex) {
+        return ex.getMessage(); // Returns the exception message as the response body
+    }
+}
+```
+
+In this updated controller:
+
+- The `submitInfo` method now returns a success message after adding a student.
+- The `handleNotFoundExceptions` method now handles both `RuntimeException` and `CustomException`.
+- The `handleMissingParams` method is added to handle missing request parameters.
+
+## RESTful API Development with `@RestController` Annotation
+
+The `@RestController` annotation in Spring MVC is a specialized version of the `@Controller` annotation that is used to create RESTful web services. It combines the functionality of `@Controller` and `@ResponseBody`, meaning that the methods in a class annotated with `@RestController` will return data directly (usually in JSON format) instead of rendering a view.
+
+When a method in a `@RestController` is called, Spring will automatically serialize the returned object into JSON (or XML, depending on the configuration) and write it to the HTTP response body. This makes it easy to create RESTful APIs that can be consumed by clients such as web browsers, mobile apps, or other services.
+
+```java
+@RestController
+public class MyRestController {
+    @GetMapping("/hello")
+    public String sayHello() {
+        return "Hello, World!"; // Returns a plain text response
+    }
+
+    @GetMapping("/user")
+    public User getUser() {
+        return new User("John", "Doe"); // Returns a User object that will be serialized to JSON
+    }
+}
+```
+
+Notice that we do not need to annotate each method with `@ResponseBody` when using `@RestController`, as it is implied for all methods in the class. Again, `@ResponseBody` was used to indicate that the return value of a method should be written directly to the HTTP response body, rather than being interpreted as a view name.
+
+### Real World Application
+
+The `@RestController` annotation helps with rapid development and ensures that a response is always provided to users based on the HTTP request made, such as logging in, requesting information, updating information, etc. It is particularly useful for building RESTful APIs where the focus is on exchanging data rather than rendering views.
+
+### Implementation
+
+Consider an example application where students can submit their information.
+
+```java
+@RestController("/student") // Combines @Controller and @ResponseBody, meaning methods return data directly and sets base path for all endpoints in this controller
+public class StudentController {
+    private List<Student> studentList = new ArrayList<>();
+
+    {
+        studentList.add(new Student("John", "Doe", "john.doe@example.com"));
+    }
+
+    @PostMapping("/submit") // Maps POST requests to /student/submit to this method
+    @ResponseStatus(HttpStatus.CREATED) // Sets the HTTP status code to 201 Created for successful responses
+    public String submitInfo(@RequestBody Student student) {
+        studentList.add(student);
+        return "Student information submitted successfully";
+    }
+}
+```
+
+Can we use `@ResponseStatus` without creating a custom exception? Yes, we can use `@ResponseStatus` on any method to set the HTTP status code for successful responses, as shown in the `submitInfo` method above. Would the alternative of using `ResponseEntity` be better? It depends on the use case. If we need to return different status codes based on the outcome of the operation or include custom headers, `ResponseEntity` would be more appropriate. However, if we simply want to set a fixed status code for successful responses, using `@ResponseStatus` is a simpler and more concise option.
