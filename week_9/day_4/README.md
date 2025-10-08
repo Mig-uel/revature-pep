@@ -963,3 +963,36 @@ public class StudentController {
 ```
 
 Can we use `@ResponseStatus` without creating a custom exception? Yes, we can use `@ResponseStatus` on any method to set the HTTP status code for successful responses, as shown in the `submitInfo` method above. Would the alternative of using `ResponseEntity` be better? It depends on the use case. If we need to return different status codes based on the outcome of the operation or include custom headers, `ResponseEntity` would be more appropriate. However, if we simply want to set a fixed status code for successful responses, using `@ResponseStatus` is a simpler and more concise option.
+
+## Video - Spring Web
+
+### Overview of Spring MVC
+
+- Model-View-Controller (MVC) is a web design pattern that separates an application into three main components: Model, View, and Controller.
+- Controllers contain the business logic and handle incoming HTTP requests, process them, and return appropriate responses.
+- Models handle the data and business logic of the application.
+- Views are responsible for rendering the user interface and displaying data to the user.
+- A Front Controller is a DispatcherServlet that handles the flow of the Spring MVC application by routing requests to the appropriate controllers and views.
+
+Advantages:
+
+- Separation of Concerns: MVC separates the application into distinct components, making it easier to manage and maintain.
+- Lightweight: Spring MVC is a lightweight framework that can be easily integrated with other Spring components.
+- Powerful Configuration: Spring MVC provides a wide range of configuration options, allowing developers to customize the framework to meet their specific needs.
+- Rapid Development: Spring MVC provides a range of tools and features that make it easy to develop web applications quickly.
+- Reusability: The separation of concerns in MVC allows for the reuse of components across different parts of the application.
+- Flexible Mapping: Spring MVC provides flexible mapping options, allowing developers to map URLs to controller methods in a variety of ways.
+
+### Spring MVC Architecture
+
+Let's say we have a user and that user makes a request to Spring Boot embedded Tomcat server. The request is received by the DispatcherServlet, which acts as the front controller for the application. The DispatcherServlet then delegates the request to the appropriate controller based on the URL mapping. The controller processes the request, interacts with the model to retrieve or manipulate data, and then returns a view name or a response body. The view resolver then resolves the view name to a specific view (e.g., a JSP or Thymeleaf template) and renders the view with the data provided by the controller. Finally, the rendered view is sent back to the user as the HTTP response.
+
+### Spring MVC Architecture - Pet Shop Example
+
+In this example, a user visits a pet shop website and wants to view a list of available pets. The user makes a request to the website, which is received by the DispatcherServlet. The DispatcherServlet then delegates the request to the appropriate controller based on the URL mapping. The controller processes the request, interacts with the model to retrieve a list of available pets, and then returns a view name or a response body. The view resolver then resolves the view name to a specific view (e.g., a JSP or Thymeleaf template) and renders the view with the list of pets provided by the controller. Finally, the rendered view is sent back to the user as the HTTP response.
+
+### Summary
+
+- The MVC is just one of many design patterns used in web development.
+- Its major perk its the fact that it decouples the data (model), the business logic (controller), and the presentation layer (view).
+- Because of Spring Boot Web, we can easily create web applications that follow the MVC pattern.
