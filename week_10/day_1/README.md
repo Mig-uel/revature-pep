@@ -955,3 +955,47 @@ public class UserService {
   }
 }
 ```
+
+## Transaction Propagation Strategies
+
+Propagation defines the behavior of a transaction when a transactional method is called by another transactional method. Spring can start and pause a transaction according to the configuration of the propagation attribute. It uses `TransactionManager::getTransaction()` to create a transaction based on the propagation configuration and supports these propagation types for all `TransactionManager` implementations.
+
+In layman's terms, propagation determines how transactions behave when one transactional method calls another transactional method. It defines whether the called method should run within the existing transaction, start a new transaction, or not participate in any transaction at all.
+
+#### Common Propagation Types
+
+- `REQUIRED` (default): If a transaction exists, the method will run within that transaction. If no transaction exists, a new one will be created.
+- `SUPPORTS`: If a transaction exists, the method will run within that transaction. If no transaction exists, the method will run without a transaction.
+- `MANDATORY`: If a transaction exists, the method will run within that transaction. If no transaction exists, an exception will be thrown.
+- `NEVER`: The method will always run without a transaction. If a transaction exists, an exception will be thrown.
+- `NOT_SUPPORTED`: The method will always run without a transaction. If a transaction exists, it will be suspended for the duration of the method execution.
+- `REQUIRES_NEW`: A new transaction will always be created for the method. If a transaction exists, it will be suspended for the duration of the method execution.
+- `NESTED`: If a transaction exists, Spring will create a saved point within the existing transaction and can roll back to that point if necessary. If no transaction exists, a new one will be created.
+
+### Real World Application
+
+Understanding transaction propagation strategies is crucial for building complex and reliable database transactions in enterprise applications. Here is why:
+
+- **Control Over Transaction Scope**: Developers can decide how transactions propagate across service layers, enabling fine-grained control over transactional boundaries.
+- **Consistency and Data Integrity**: Proper propagation strategies ensure that data across multiple operations remains consistent, even in the face of failures or exceptions.
+- **Concurrency Management**: Propagation settings help manage concurrent access to shared resources, ensuring that transactions execute predictably in multi-threaded environments or distributed systems.
+
+### Implementation
+
+Below is an example of setting the propagation type of a transaction:
+
+```java
+@Service
+public class UserService {
+  @Autowired
+  private UserRepository userRepository;
+
+  @Transactional(propagation = Propagation.REQUIRES_NEW) // Always starts a new transaction
+  public void createUser(User user) {
+    userRepository.save(user); // Save user to the database
+    // Additional operations can be performed here
+  }
+}
+```
+
+`Propagation.REQUIRES_NEW` ensures that `createUser` always runs in a new transaction, independent of any existing transaction context. If a transaction is already in progress when this method is called, that transaction will be suspended until the new transaction completes. This is useful when you want to isolate the operations of this method from the caller's transaction.
