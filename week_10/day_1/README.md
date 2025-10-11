@@ -999,3 +999,92 @@ public class UserService {
 ```
 
 `Propagation.REQUIRES_NEW` ensures that `createUser` always runs in a new transaction, independent of any existing transaction context. If a transaction is already in progress when this method is called, that transaction will be suspended until the new transaction completes. This is useful when you want to isolate the operations of this method from the caller's transaction.
+
+## ACID Properties of Transactions
+
+ACID is an acronym that stands for **Atomicity, Consistency, Isolation, and Durability**. These properties are fundamental principles that ensure reliable processing of database transactions. Let's break down each property:
+
+- **Atomicity**: The system executes all operations within a transaction as a single unit. If any operation fails, the entire transaction is rolled back, and the database remains unchanged. This ensures that partial updates do not occur, maintaining data integrity.
+- **Consistency**: A transaction brings the database from one valid state to another valid state, maintaining all predefined rules, constraints, and triggers. If a transaction violates any of these rules, it is rolled back to ensure that the database remains consistent.
+- **Isolation**: Transactions are isolated from each other, meaning that the operations of one transaction do not interfere with the operations of another transaction. This prevents issues such as dirty reads, non-repeatable reads, and phantom reads, ensuring that concurrent transactions do not lead to inconsistent data.
+- **Durability**: Once a transaction is committed, its changes are permanent and will survive any subsequent system failures. This is typically achieved through mechanisms such as write-ahead logging, where changes are recorded in a log before being applied to the database.
+
+Relational databases support ACID transactions, and the JDBC specification provides a way to manage transactions through the `Connection` interface. Spring provides annotations and transaction managers to integrate transaction management into applications.
+
+### Real World Application
+
+Understanding ACID principles and utilizing the `@Transactional` annotation in Spring are essential for developing reliable and consistent enterprise applications. Key benefits include:
+
+- **Data Integrity**: ACID properties ensure that all database transactions are processed reliably, maintaining the integrity of the data even in the face of errors or failures.
+- **Concurrency Control**: Isolation levels such as `READ_COMMITTED`, `REPEATABLE_READ`, and `SERIALIZABLE` help manage concurrent access to data, preventing issues like dirty reads and non-repeatable reads.
+- **Transaction Management**: The `@Transactional` annotation provides a declarative way to handle transactions, allowing developers to mark methods or classes as transactional without needing to write boilerplate code for transaction management.
+- **Error Handling and Rollbacks**: Developers can configure rollback rules, propagation behavior, and exception handling strategies to ensure that transactions are rolled back appropriately in case of errors, maintaining data consistency.
+- **Consistency Across Layers**: By applying `@Transactional` at the service layer, developers can ensure that business logic is executed within a transaction, providing a consistent approach to data access and manipulation across the application.
+
+### Implementation
+
+The three primary JDBC methods for controlling transactions are:
+
+- `void setAutoCommit(boolean autoCommit)`: By default, a new `Connection` object is in auto-commit mode, meaning that each individual SQL statement is treated as a transaction and is automatically committed right after it is executed. To manage transactions manually, you can disable auto-commit mode by calling `setAutoCommit(false)`.
+- `void commit()`: This method is used to commit the current transaction, making all changes made during the transaction permanent in the database. It should be called after all operations within the transaction have been successfully completed.
+- `void rollback()`: This method is used to roll back the current transaction, undoing all changes made during the transaction. It should be called if any operation within the transaction fails or if an exception occurs, ensuring that the database remains in a consistent state.
+
+```java
+class AssociateRecords {
+  public static void main(String[] args) {
+    Class.forName("com.mysql.cj.jdbc.Driver"); // Load the JDBC driver
+
+    try (Connection connection = dataSource.getConnection()) {
+      connection.setAutoCommit(false); // Disable auto-commit mode
+
+      Statement stmt = connection.createStatement();
+      stmt.executeUpdate("INSERT INTO Associate (name, email) VALUES ('John Doe', 'john.doe@example.com')");
+      stmt.executeUpdate("INSERT INTO Associate (name, email) VALUES ('Jane Smith', 'jane.smith@example.com')");
+
+      connection.commit(); // Commit the transaction
+    } catch (SQLException e) {
+      e.printStackTrace();
+      connection.rollback(); // Rollback the transaction in case of an error
+    }
+  }
+}
+```
+
+- Start a transaction by disabling auto-commit mode.
+- Execute multiple SQL statements as part of the transaction.
+- Commit the transaction if all operations succeed.
+- Rollback the transaction if any operation fails, ensuring data integrity.
+
+#### Transactions with Spring
+
+Spring provides the boilerplate needed to start, commit, or rollback transactions, allowing developers to focus on business logic rather than transaction management. It integrates seamlessly with Hibernate and JPA transaction management.
+
+In Spring Boot, you can use the `@Transactional` annotation on an interface, method, or class to execute code within a transaction. Spring automatically handles the transaction lifecycle, including starting, committing, and rolling back transactions as needed.
+
+In Spring (without Spring Boot), enable transaction management explicitly by adding the `@EnableTransactionManagement` annotation to your configuration class.
+
+> Spring Boot
+
+```java
+@Service
+public class UserService {
+  @Autowired
+  private UserRepository userRepository;
+
+  @Transactional // Method runs within a transaction
+  public void createUser(User user) {
+    userRepository.save(user); // Save user to the database
+    // Additional operations can be performed here
+  }
+}
+```
+
+`@Transactional` can be customized with attributes such as:
+
+```java
+@Transactional(readonly = true) // Optimizes for read-only operations meaning no changes will be made to the database // For example, fetching data and not modifying it
+```
+
+```java
+@Transactional(propagation = Propagation.REQUIRES_NEW) // Always starts a new transaction // Useful when you want to isolate the operations of this method from the caller's transaction // For example, logging operations that should not be affected by the main transaction
+```
