@@ -620,3 +620,123 @@ Each test:
     assertEquals("johndoe@example.com", capturedUser.getEmail()); // Assert that the email is correct
   }
 ```
+
+## Intro to Integration Testing
+
+### Integration Testing in Software Development
+
+Integration testing is a critical phase in the software development lifecycle that focuses on verifying the interactions and integration between different components or modules of an application. Unlike unit testing, which tests individual components in isolation, integration testing ensures that these components work together as expected when combined. In this phase, you combine individual software modules and test them collectively to ensure they function correctly as a group.
+
+### Why Integration Testing Matters
+
+Modern software systems often consist of multiple interconnected components, such as databases, web services, and third-party APIs. These components must work together seamlessly to deliver the desired functionality.
+
+While unit tests verifies that individual parts of a system function correctly, integration tests validate that these parts interact properly. This is crucial because even if each component works perfectly in isolation, issues can arise when they are integrated. Integration testing helps identify problems related to data flow, communication protocols, and overall system behavior.
+
+#### Levels of Integration Testing
+
+Integration testing can be performed at various levels, including:
+
+- **Component Integration Testing**: Testing the interaction between individual components or modules within a single application.
+- **System Integration Testing**: Testing the interaction between different systems or applications, such as a web application and a database.
+- **End-to-End Testing**: Testing the entire application flow from start to finish, simulating real user scenarios.
+
+#### Integration Testing in Spring Boot Applications
+
+Spring provides strong support for integration testing through its testing framework. Spring Boot provides annotations such as `@SpringBootTest` and `@DataJpaTest` to help you create application contexts with the required configuration for your tests.
+
+In a spring application, you may need to test interactions between:
+
+- Service and repository layers
+- Your application and the database
+- Your application and other Spring Boot components, such as caching or Actuator endpoints
+- Your application and external systems, such as RESTful APIs or message brokers
+
+The Spring Boot Test module also offers additional tools and annotations that simplify integration testing across the Spring ecosystem.
+
+### Real World Application
+
+Integration testing ensures software quality across various industries by verifying that components function correctly together.
+
+**E-commerce Platforms**
+E-commerce platforms integrate various components, including the user interface, payment gateway, product catalog, and shipping module. Integration testing confirms these components work together to provide a seamless customer experience.
+
+**Banking Systems**
+Banking systems connect multiple subsystems, including user accounts, transaction processing, and credit card services. Comprehensive integration testing prevents glitches that could result in financial losses or damage a bank's reputation.
+
+**Healthcare Systems**
+Healthcare applications, such as Electronic Health Records (EHRs), integrate patient data, billing, insurance, pharmacy, and laboratory systems to facilitate seamless patient care. Integration testing ensures these systems communicate correctly, preventing errors that could affect patient care.
+
+**Social Media Platforms**
+Social media platforms integrate features like user profiles, messaging, notifications, and news feeds. Integration testing ensures smooth communication between these modules for a consistent user experience.
+
+**Enterprise Resource Planning (ERP) Systems**
+ERP systems unify business functions, including finance, HR, and supply chain management. Integration testing ensures that data flows accurately across these functions, reducing the risk of operational issues in production.
+
+### Implementation
+
+Here's a step-by-step guide to setting up integration testing in a Spring Boot application using the `@SpringBootTest` annotation.
+
+#### Step 1: Add Dependencies
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-test</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+
+#### Step 2: Create an Integration Test Class
+
+Place your integration test class in the `src/test/java` directory, typically in the same package as the class being tested. Annotate the class with `@SpringBootTest` to load the full application context during testing.
+
+```java
+@SpringBootTest // Load the full application context
+class ExampleIntegrationTest {
+  @Test // Mark this method as a test case
+  void contextLoads() {
+    // Test to ensure the application context loads successfully
+  }
+}
+```
+
+#### Step 3: Inject Dependencies
+
+Use Spring's dependency injection to access components, services, or utilities within your test class. For example, inject a `TestRestTemplate` to perform HTTP requests against your application during integration tests.
+
+```java
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT) // Start server on random port
+class ExampleIntegrationTest {
+  @Autowired
+  private TestRestTemplate restTemplate; // Inject TestRestTemplate instance
+
+  @Test
+  void contextLoads() {
+    // Test to ensure the application context loads successfully
+    // Execute test logic using the injected restTemplate
+  }
+ }
+```
+
+#### Step 4: Write Integration Test Methods
+
+Use the injected components to perform actions and validate the expected results with assertions from libraries like JUnit or AssertJ.
+
+```java
+@Test
+void testGetEndpoint() {
+  ResponseEntity<String> response = restTemplate.getForEntity("/api/example", String.class);
+  assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+  assertEquals("Expected Response", response.getBody());
+}
+```
+
+#### Step 5: Run the Tests
+
+- **In an IDE**: Right-click the test class or method and select "Run".
+- **Using Maven**: Run `mvn test` from the command line to execute all tests in the project.
+
+Integration tests typically take longer than unit tests due to the need to start the application context and interact with multiple components. However, they provide valuable insights into the overall behavior of the application and help identify issues that may not be apparent in isolated unit tests.
+
+In summary, integration testing confirms that your application's components work together as intended, ensuring a reliable and robust software system.
