@@ -815,3 +815,143 @@ Associate findByName(@Param("name") String name);
 @Query(value = "SELECT AVG(p.age) FROM Person p", nativeQuery = true)
 Double findAverageAge();
 ```
+
+## `@Transactional`
+
+A transaction executes multiple operations or queries as a single unit of work. It usually changes the database by creating, updating, or deleting data. For a transaction to be successful, it must complete all operations successfully. If any operation fails, the entire transaction is rolled back, and the database remains unchanged.
+
+The `@Transactional` annotation in Spring provides declarative transaction management. When you apply it to a method or class, Spring automatically manages the transaction boundaries for you. This means that Spring will start a transaction before the method execution and commit it after the method completes successfully. If an exception occurs during the method execution, Spring will roll back the transaction to maintain data integrity.
+
+- **Method-Level Annotation**: Runs only the annotated method within a transaction.
+- **Class-Level Annotation**: Applies to all public methods of the class, running them within a transaction.
+
+You can customize the behavior of transactions using various attributes of the `@Transactional` annotation, such as:
+
+- `propagation`: Defines how transactions behave when a method calls another method that is also transactional. Common propagation types include `REQUIRED`, `REQUIRES_NEW`, and `SUPPORTS`.
+- `isolation`: Specifies the isolation level for the transaction, which determines how data is visible to other transactions. Common isolation levels include `READ_COMMITTED`, `REPEATABLE_READ`, `SERIALIZABLE`, and `READ_UNCOMMITTED`.
+- `rollbackFor`: Specifies which exceptions should trigger a rollback of the transaction. By default, only unchecked exceptions (subclasses of `RuntimeException`) and errors trigger a rollback.
+
+Note: In standard Spring (without Spring Boot), you must explicitly enable annotation-driven transaction management by adding the `@EnableTransactionManagement` annotation to your configuration class. However, in Spring Boot, this is automatically configured for you when you include the necessary dependencies.
+
+Simple read-only operations (such as fetching data) may not require a transaction, but it is often a good practice to use transactions consistently to ensure data integrity and consistency, especially in applications with complex business logic.
+
+### Real World Application
+
+Transaction management plays a critical role in enterprise applications: Developers use it to:
+
+- Maintain **data integrity** when running complex operations that involve multiple database interactions.
+- Control **propagation behavior** across services for consistent results.
+- Enforce **read-only restrictions** to optimize performance.
+- Apply **timeouts** to improve efficiency and prevent long-running transactions.
+- Provide **rollback safety nets** to recover from errors or prevent data corruption.
+
+### Implementation
+
+#### Example: Spring without Spring Boot
+
+To use the `@Transactional` annotation in a Spring application without Spring Boot, you need to enable transaction management in your configuration class. Here is an example:
+
+```java
+@Configuration
+@EnableTransactionManagement // Enable transaction management
+public class AppConfig {
+  @Bean
+  public PlatformTransactionManager transactionManager() {
+    return yourTransactionManager; // Configure your transaction manager
+  }
+}
+```
+
+#### Example: Spring Boot
+
+In a Spring Boot application, transaction management is automatically configured when you include the necessary dependencies. You can simply use the `@Transactional` annotation in your service classes without any additional configuration.
+
+```java
+@Service
+public class UserService {
+  @Autowired
+  private UserRepository userRepository;
+
+  @Transactional // Method runs within a transaction
+  public void createUser(User user) {
+    userRepository.save(user); // Save user to the database
+    // Additional operations can be performed here
+  }
+}
+```
+
+#### Equivalent JDBC Implementation
+
+Here is an equivalent implementation using plain JDBC without Spring:
+
+```java
+public class AssociateService {
+  public Long registerAssociate(Associate associate) {
+    try (Connection connection = dataSource.getConnection()) {
+      connection.setAutoCommit(false); // Start transaction
+
+      // Check if the username already exists
+      // Insert the new associate
+      // Retrieve the generated ID
+
+      connection.commit(); // Commit transaction
+      return generatedId;
+  } catch (SQLException e) {
+      connection.rollback(); // Rollback transaction on error
+      throw new RuntimeException("Error registering associate", e);
+  }
+}
+```
+
+#### Class-Level `@Transactional` Example
+
+```java
+@Service // Mark this class as a Spring service
+@Transactional // All public methods in this class will be transactional
+public class ExampleService {
+  @Autowired
+  private ExampleRepository exampleRepository;
+
+  public void performOperation() {
+    // This method runs within a transaction
+    exampleRepository.save(new ExampleEntity());
+    // Additional operations can be performed here
+  }
+}
+```
+
+#### Example with Custom Attributes
+
+```java
+@Service
+public class UserService {
+  @Autowired
+  private UserRepository userRepository;
+
+  @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED, rollbackFor = Exception.class)
+  public void updateUser(User user) {
+    userRepository.save(user); // Save user to the database
+    // Additional operations can be performed here
+  }
+}
+```
+
+#### Example with Rollback Rules
+
+```java
+@Service
+public class UserService {
+  @Autowired
+  private UserRepository userRepository;
+
+  @Transactional(rollbackFor = DataAccessException.class) // Rollback for specific exception
+  public void deleteUser(Long userId) {
+    try {
+      userRepository.deleteById(userId); // Delete user from the database
+    } catch (DataAccessException e) {
+      // Log or handle exception
+      throw e; // Rethrow to trigger rollback
+    }
+  }
+}
+```
