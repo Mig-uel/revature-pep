@@ -740,3 +740,172 @@ void testGetEndpoint() {
 Integration tests typically take longer than unit tests due to the need to start the application context and interact with multiple components. However, they provide valuable insights into the overall behavior of the application and help identify issues that may not be apparent in isolated unit tests.
 
 In summary, integration testing confirms that your application's components work together as intended, ensuring a reliable and robust software system.
+
+## Testing Database Interactions
+
+Data integration testing verifies how an application interacts with its database, ensuring that data is correctly stored, retrieved, updated, and deleted. In a Spring Boot application, this involves testing the repository layer, which is responsible for database operations. It ensures that the application communicates effectively with the database and that data integrity is maintained.
+
+Key points about data integration testing:
+
+- It verifies that the interaction between the application and the database works as expected.
+- It focuses on testing the data access layer, including CRUD operations and complex queries.
+- Spring Boot provides tools and features to support data integration testing, such as `@DataJpaTest` and in-memory databases like H2.
+- You can use an in-memory database, a test container, or a real database instance for testing.
+- Tools like Spring Boot Test, JUnit, and Mockito help create and manage integration tests.
+- It ensures the application functions correctly when interacting with the database, which is crucial for modern applications that rely on persistent data storage.
+
+Integration testing the data layer in Spring Boot applications involves:
+
+- Setting up a test database (in-memory or real) and configuring it in the application context.
+- Writing test cases that interact with the database through Spring Data JPA repositories.
+- Using tools like Flyway or Liquibase to manage database migrations and ensure the test database schema is up-to-date.
+- Verifying that the application correctly persists, retrieves, updates, and deletes data in the database.
+- Ensuring data integrity and proper transaction management during tests.
+- Mocking external dependencies of the data layer, such as services or APIs, to isolate the tests.
+- Configuring test-specific properties such as connection pool size, transaction isolation levels, or database vendor-specific settings.
+
+### Real World Application
+
+Consider an e-commerce web application built with Spring Boot. Customers can browse products, add them to a cart, and place orders. The backend manages the product catalog, tracks inventory, and processes orders.
+
+The data layer stores product information in a relational database using Spring Data JPA.
+
+The goal of integration testing the data layer is to ensure that the application's CRUD operations on products and inventory work correctly and that the database stores the data accurately. The scope of integration testing includes:
+
+- Creating a new product and verifying that the database stores it with the correct attributes.
+- Updating a product and verifying that the database reflects the changes.
+- Deleting a product and verifying that the database removes it.
+- Retrieving a product by ID and verifying that it matches the stored data.
+- Retrieving products by criteria (e.g., category, price range) and verifying that the results are correct.
+- Adjusting inventory when an order is placed and verifying that the database stores the correct inventory level.
+
+To achieve this, write integration tests using an in-memory database to simulate the production database. Use Spring Boot Test to set up the test environment, configure the in-memory database, and load the Spring context with the required components. Then use Spring Data JPA to interact with the database and validate the results.
+
+Integration testing the data layer ensures that data operations function as intended and that the database accurately stores and retrieves information.
+
+### Implementation
+
+The following example demonstrates integration testing of the data layer in a Spring Boot application. This example uses `Spring Data JPA`, `H2 Database`, and `Lombok`.
+
+#### Step 1: Define the Entity Class
+
+```java
+@Entity // Marks this class as a JPA entity
+@Table(name = "users") // Maps to the "users" table in the database
+@Data // Lombok annotation to generate getters, setters, toString, etc.
+public class User {
+  @Id // Marks this field as the primary key
+  @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-generates the ID value
+  private Long id;
+
+  @Column(name = "username")
+  private String username;
+
+  @Column(name = "email")
+  private String email;
+}
+```
+
+#### Step 2: Define the Repository Interface
+
+```java
+public interface UserRepository extends JpaRepository<User, Long> {}
+```
+
+#### Step 3: Configure H2 Database Properties in `application-test.properties`
+
+```bash
+# DataSource
+spring.datasource.url=jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+spring.datasource.driverClassName=org.h2.Driver # H2 driver
+spring.datasource.username=sa
+spring.datasource.password=
+
+# Hibernate
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect # Use H2 dialect
+spring.jpa.hibernate.ddl-auto=create-drop # Create and drop tables for each test run
+```
+
+With these properties, an in-memory H2 database is configured for testing. The `DB_CLOSE_DELAY=-1` setting keeps the database alive as long as the JVM is running, and `DB_CLOSE_ON_EXIT=FALSE` prevents the database from closing when the connection is closed. The `spring.jpa.hibernate.ddl-auto=create-drop` setting ensures that the database schema is created at the start of each test and dropped at the end, providing a clean state for each test run.
+
+#### Step 4: Create the Integration Test Class for UserRepository
+
+```java
+@DataJpaTest // Configure JPA tests with an in-memory database
+public class UserRepositoryIntegrationTest {
+  @Autowired
+  private TestEntityManager entityManager; // Inject TestEntityManager for managing entities in tests
+
+  @Autowired
+  private UserRepository userRepository; // Inject UserRepository to test its methods
+}
+```
+
+- `@DataJpaTest`: This annotation configures the test class for JPA tests, setting up an in-memory database and scanning for JPA entities and repositories.
+- `TestEntityManager`: This is a utility class provided by Spring Boot for managing JPA entities in tests. It allows you to persist, find, and remove entities in a way that is consistent with JPA.
+- `UserRepository`: This is the repository interface that you want to test. It is injected into the test class to allow you to call its methods and verify their behavior.
+
+#### Step 5: Write Integration Test Methods
+
+```java
+@Test
+public void testSaveUser() {
+  User user = new User();
+  user.setUsername("johndoe");
+  user.setEmail("johndoe@example.com");
+
+  User savedUser = userRepository.save(user); // Save the user to the database
+
+  // Verify that the user was saved correctly
+  assertThat(savedUser.getId()).isNotNull(); // ID should be generated
+  assertThat(savedUser.getUsername()).isEqualTo("johndoe");
+  assertThat(savedUser.getEmail()).isEqualTo("johndoe@example.com");
+}
+
+@Test
+public void testFindUserById() {
+  User user = new User();
+  user.setUsername("janedoe");
+  user.setEmail("janedoe@example.com");
+
+  User persistedUser = entityManager.persistAndFlush(user); // Persist the user to the database
+
+  Optional<User> foundUser = userRepository.findById(persistedUser.getId()); // Find the user by ID
+
+  // Verify that the user was found correctly
+  assertThat(foundUser).isPresent(); // User should be present
+  assertThat(foundUser.get().getUsername()).isEqualTo("janedoe");
+  assertThat(foundUser.get().getEmail()).isEqualTo("janedoe@example.com");
+}
+
+@Test
+public void testFindAll() {
+    User user1 = new User();
+    user1.setUsername("testuser1");
+    user1.setEmail("testuser1@example.com");
+    entityManager.persistAndFlush(user1);
+
+    User user2 = new User();
+    user2.setUsername("testuser2");
+    user2.setEmail("testuser2@example.com");
+    entityManager.persistAndFlush(user2);
+
+    List<User> userList = userRepository.findAll();
+    assertThat(userList).hasSize(2);
+    assertThat(userList.get(0).getUsername()).isEqualTo("testuser1");
+    assertThat(userList.get(1).getUsername()).isEqualTo("testuser2");
+}
+
+@Test
+public void testDeleteUser() {
+    User user = new User();
+    user.setUsername("testuser");
+    user.setEmail("testuser@example.com");
+    User savedUser = entityManager.persistAndFlush(user);
+
+    userRepository.delete(savedUser);
+    assertThat(userRepository.findById(savedUser.getId())).isEmpty();
+}
+```
+
+These integration tests cover the basic CRUD operations for the `User` entity using the `UserRepository`. Each test method performs a specific operation and verifies the expected outcome using assertions.
