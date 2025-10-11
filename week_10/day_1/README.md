@@ -572,3 +572,154 @@ public class Application {
 ```
 
 With these steps, you now have a basic Spring Data JPA application using `JpaRepository`. You can easily switch to `CrudRepository` by changing the repository interface to extend `CrudRepository` instead of `JpaRepository`, but you will lose the additional features provided by `JpaRepository`.
+
+## Property Expression
+
+In Spring Data JPA, property expressions are used to define query methods in repository interfaces based on the names of the entity's properties. This feature allows developers to create queries by simply defining method names that follow a specific naming convention, without the need to write explicit JPQL or SQL queries.
+
+They are an integral part of the query derivation mechanism in Spring Data JPA, which automatically generates queries based on the method names defined in repository interfaces.
+
+#### What are Property Expressions?
+
+Property expressions are parts of method names in repository interfaces that correspond to the properties (fields) of the entity class. They are used to specify the criteria for querying the database.
+
+Property expressions refer to the chaining of properties within method names. These expression form the `findBy`, `readBy`, `getBy`, `queryBy`, `countBy`, and `deleteBy` keywords followed by the property names of the entity.
+
+For example, if we have a `User` entity with properties `name` and `age`, and want to find users by their name, we could define a method in the repository interface like this:
+
+```java
+@Repository
+public interface UserRepository extends JpaRepository<User, Long> {
+  List<User> findByName(String name); // Finds users by their name
+}
+```
+
+In this example, `findByName` is a method that uses the property expression `Name`, which corresponds to the `name` property of the `User` entity. Spring Data JPA will automatically generate the necessary query to fetch users with the specified name.
+
+#### Handling Nested Properties
+
+Property expressions can also handle or reference nested properties of related entities. Suppose our `User` entity has a relationship with an `Address` entity, and we want to find users based on their city. We can define a method like this:
+
+```java
+@Entity
+public class User {
+  // Other properties/fields
+  private Address address; // Relationship with Address entity
+}
+```
+
+Supposed the `Address` entity has a property `country`. In that case, we can find users based on their address's country using a nested property expression:
+
+```java
+public interface UserRepository extends JpaRepository<User, Long> {
+  List<User> findByAddress_Country(String country); // Finds users by their address's country
+}
+```
+
+In this example, `findByAddress_Country` uses the nested property expression `Address_Country`, which corresponds to the `country` property of the related `Address` entity. Spring Data JPA will generate the necessary query to fetch users based on their address's country.
+
+#### Resolving Ambiguities
+
+Sometimes, a property expression can match more than one property in the entity (e.g. when properties have similar names but exist in different nested entities). In such cases, Spring Data JPA allows the use of `@Param` annotation in method parameters to explicitly specify which property to use in the query.
+
+```java
+public interface UserRepository extends JpaRepository<User, Long> {
+  List<User> findByAddress_Country(@Param("country") String country); // Explicitly specify the parameter name
+}
+```
+
+Property expressions are a powerful feature of Spring Data JPA that simplifies the process of creating queries based on entity properties. By following the naming conventions and using property expressions, developers can easily define query methods in repository interfaces without writing explicit queries, making data access more efficient and maintainable.
+
+### Real World Application
+
+Property expressions in Spring Data JPA offer a concise and readable way to define queries based on method names and entity properties in repository interfaces. This feature is widely applicable in real-world scenarios where querying based on entity properties is required.
+
+#### E-commerce Applications
+
+Consider an e-commerce application with entities like `User`, `Product`, and `Order`. Users can place orders for a variety of products. Property expressions can be used to define query methods in repository interfaces to retrieve orders based on user information or product details. The `Order` entity might look like this:
+
+```java
+@Entity
+public class Order {
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private Long id;
+
+  private User user; // Relationship with User entity
+  private Product product; // Relationship with Product entity
+  private LocalDate orderDate;
+
+  // Getters and Setters
+}
+```
+
+We cab define queries in an `OrderRepository` interface using property expressions:
+
+```java
+public interface OrderRepository extends JpaRepository<Order, Long> {
+  List<Order> findByUser_Name(String name); // Finds orders by user's name
+  List<Order> findByProduct_Category(String category); // Finds orders by product's category
+  List<Order> findByOrderDate(LocalDate orderDate); // Finds orders by order date
+}
+```
+
+- `findByUser_Name`: Retrieves orders placed by users with a specific name.
+- `findByProduct_Category`: Retrieves orders for products in a specific category.
+- `findByOrderDate`: Retrieves orders placed on a specific date.
+
+This approach simplifies writing complex queries in large applications with multiple entities and relationships.
+
+### Implementation
+
+Property expressions in Spring Data JPA allow you to create complex queries by defining methods in repository interfaces based on the names of entity properties.
+
+#### Step 1: Define the Entity
+
+Example `User` entity with nested `Address` entity:
+
+```java
+@Entity
+public class User {
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private Long id;
+  private String name;
+
+  @Embedded // Embedded annotation marks Address as a value type
+  private Address address; // Relationship with Address entity
+
+  // Getters and Setters
+}
+```
+
+#### Step 2: Define the Repository Interface
+
+```java
+public interface UserRepository extends JpaRepository<User, Long> {
+  List<User> findByName(String name); // Finds users by their name
+  List<User> findByAddress_Country(String country); // Finds users by their address's country
+}
+```
+
+- `findByName`: Finds users based on the `name` property.
+- `findByAddress_Country`: Finds users based on the `country` property of the nested `Address` entity.
+
+#### Step 3: Use the Repository in a Service
+
+```java
+@Service
+public class UserService {
+  @Autowired
+  private UserRepository userRepository;
+
+  public List<User> getUsersByName(String name) {
+    return userRepository.findByName(name);
+  }
+
+  public List<User> getUsersByCountry(String country) {
+    return userRepository.findByAddress_Country(country);
+  }
+}
+```
+
+And that's it! You can easily create complex queries using property expressions in Spring Data JPA by defining methods in repository interfaces based on entity properties. This approach simplifies the process of querying data and reduces boilerplate code.
