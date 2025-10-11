@@ -723,3 +723,95 @@ public class UserService {
 ```
 
 And that's it! You can easily create complex queries using property expressions in Spring Data JPA by defining methods in repository interfaces based on entity properties. This approach simplifies the process of querying data and reduces boilerplate code.
+
+## Annotations
+
+Spring Data annotations are used to configure and customize various aspects of data access in Spring applications. These annotations are part of the Spring Data project, which provides a simplified and unified programming model for interacting with different types of data stores, such as relational databases, NoSQL databases, and more. Below are commonly used Spring Data annotations:
+
+- `@Entity`: Marks a class as a JPA entity, indicating that it should be mapped to a database table.
+- `@Table`: Specifies the name of the database table to which the entity is mapped.
+- `@Repository`: Indicates that an interface is a Spring Data repository, which provides CRUD operations for a specific entity type.
+- `@Query`: Used to define custom query methods in repository interfaces using JPQL or native SQL.
+- `@Param`: Used to bind method parameters to query parameters in custom query methods.
+- `@Transactional`: Indicates that a method, class, or interface should be executed within a transactional context. Often used in the service layer to define transaction boundaries around business logic.
+
+### Real World Application
+
+Understanding Spring Data annotations is essential for several reasons:
+
+- **Data Access Configuration**: Enables developers to configure repositories, define custom queries, map entities to database tables, and specify transaction boundaries.
+- **Consistency**: Encourages consistent practices in data access across an application, making the codebase easier to understand and maintain.
+- **Flexibility**: Offers a flexible and extensible framework for customizing repositories, queries, entity mappings, and transactional behavior to meet application requirements.
+- **Testability**: Simplifies unit and integration testing of data access code by allowing developers to write tests for repository methods, custom queries, and persistence logic.
+
+### Implementation
+
+#### Spring Data Annotations
+
+Spring Data provides an abstraction over data storage technologies, keeping business logic code independent of the underlying data storage technology. Below are examples of commonly used Spring Data annotations:
+
+##### `@Id`
+
+The `@Id` annotation is used to specify the primary key of an entity. It is applied to a field or property in a JPA entity class.
+
+```java
+@Entity
+public class Associate {
+  @Id
+  private Long id; // Primary key field
+  private String name;
+}
+```
+
+##### `@Param`
+
+Used to map a method parameter to a named parameter in a query.
+
+```java
+@Repository
+public interface AssociateRepository extends JpaRepository<Associate, Long> {
+  @Query("SELECT a FROM Associate a WHERE a.name = :name") // Custom query
+  List<Associate> findByName(@Param("name") String name); // Method parameter mapped to query parameter
+}
+```
+
+##### `@Transactional`
+
+The `@Transactional` annotation is used to define the scope of a single database transaction. It can be applied at the method or class level.
+
+```java
+@Transactional
+public List<Associate> saveAllAssociates(List<Associate> associates) {
+  return (List<Associate>) associateRepository.saveAll(associates); // Save all associates in a transaction
+}
+```
+
+#### Spring Data JPA Annotations
+
+Spring Data JPA provides several annotations to define and customize the behavior of JPA repositories and entities. Below are some commonly used Spring Data JPA annotations:
+
+##### `@Query`
+
+The `@Query` annotation is used to define custom JPQL or SQL queries in repository methods.
+
+```java
+@Repository
+public interface AssociateRepository extends JpaRepository<Associate, Long> {
+  @Query("SELECT a FROM Associate a WHERE a.name = :name") // Custom JPQL query
+  List<Associate> findByName(@Param("name") String name); // Method parameter mapped to query parameter
+}
+```
+
+##### Using Named Parameters
+
+```java
+@Query("FROM Associate a WHERE a.name = :name")
+Associate findByName(@Param("name") String name);
+```
+
+##### Using a Native Query
+
+```java
+@Query(value = "SELECT AVG(p.age) FROM Person p", nativeQuery = true)
+Double findAverageAge();
+```
