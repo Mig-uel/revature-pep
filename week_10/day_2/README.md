@@ -344,4 +344,279 @@ public class CustomerServiceTest {
 }
 ```
 
-w
+## Testing RESTful APIs with MockMvc and RestTemplate
+
+#### What is Integration Testing?
+
+Integration testing is a type of software testing that focuses on verifying the interactions and integration between different components or modules of an application. Unlike unit testing, which tests individual components in isolation, integration testing ensures that these components work together as expected when combined.
+
+In a Spring Boot application, integration testing typically involves testing the interaction between various layers of the application, such as the controller layer, service layer, and repository layer. It may also involve testing the integration with external systems, such as databases, web services, or messaging systems.
+These tests evaluate the application's overall behavior rather than just individual units, ensuring that the components work together correctly and that data flows seamlessly through the application.
+
+Integration tests start the Spring application context, allowing you to test the application in an environment that closely resembles production. This helps verify that endpoints map correctly, responses generate as expected, and injected dependencies collaborate properly. Integration testing catches issues that unit tests might miss, such as misconfigurations, incorrect mappings, or problems with data serialization/deserialization.
+
+**MockMvc** and **RestTemplate** both test RESTful APIs in Spring Boot applications, but they serve different purposes and are used in different contexts.
+
+#### What is MockMvc and its Purpose?
+
+`MockMvc` is a testing framework provided by Spring that allows you to test your Spring MVC controllers in isolation without starting a full web server. It is lightweight and fast, making it ideal for controller-level integration tests.
+
+With `MockMvc`, you can simulate HTTP requests to your controllers and verify the responses, status codes, headers, and content. It provides a fluent API for building requests and assertions, making it easy to write and read tests.
+
+```java
+@SpringBootTest // Load the full application context // All beans are created and autowired
+@AutoConfigureMockMvc // Enable and configure MockMvc
+public class UserControllerMockMvcTest {
+  @Autowired
+  private MockMvc mockMvc; // Inject MockMvc instance
+
+  @Test
+  public void testGetUserById() throws Exception {
+    mockMvc.perform(get("/users/{id}", 1L)) // Perform GET request to /users/1
+        .andExpect(status().isOk()) // Expect HTTP 200 OK status
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON)) // Expect JSON response
+        .andExpect(jsonPath("$.id").value(1L)) // Expect id field to be 1
+        .andExpect(jsonPath("$.name").value("John Doe")); // Expect name field to be "John Doe"
+  }
+}
+```
+
+- `@SpringBootTest`: This annotation loads the full application context, allowing you to test the entire application with all its beans created and autowired.
+- `@AutoConfigureMockMvc`: This annotation enables and configures `MockMvc` for the test class, allowing you to inject a `MockMvc` instance.
+- `mockMvc.perform(get("/users/{id}", 1L))`: This line performs a GET request to the `/users/1` endpoint.
+- `.andExpect(...)`: These methods are used to set expectations for the response, such as the status code, content type, and specific JSON fields.
+
+`MockMvc` simulates a request to the controller and endpoint without starting a web server, making it fast and efficient for testing controller logic.
+
+#### What is RestTemplate and its Purpose?
+
+`RestTemplate` is a Spring Class for making HTTP requests to RESTful web services. It is typically used in integration tests where you want to test the interaction between your application and an external service or API. It supports common HTTP methods like `GET`, `POST`, `PUT`, `DELETE`, etc and primarily handles synchronous requests (blocking calls). For asynchronous requests, you can use `WebClient` from the Spring WebFlux module.
+
+In integration tests, `RestTemplate` validates interactions between your application and external services, ensuring that requests are correctly formed and responses are properly handled. It is often used for service-layer integration tests and can also test your controller layer. Unlike `MockMvc`, `RestTemplate` requires a running web server to send actual HTTP requests, which makes it slower and less isolated.
+
+```java
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT) // Start server on random port
+public class UserControllerRestTemplateTest {
+  @LocalServerPort
+  private int port; // Inject the random port number
+
+  @Autowired
+  private TestRestTemplate restTemplate; // Inject TestRestTemplate instance
+
+  @Test
+  public void testGetUserById() {
+    String url = "http://localhost:" + port + "/users/1"; // Construct URL with random port
+
+    User user = restTemplate.getForObject(url, User.class); // Perform GET request to /users/1
+
+    assertThat(user.getId()).isEqualTo(1L); // Assert that the id is 1
+  }
+}
+```
+
+- `@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)`: This annotation starts the Spring Boot application on a random port, allowing you to test the application with a running web server.
+- `@LocalServerPort`: This annotation injects the random port number into the test class.
+- `@Autowired`: This annotation injects a `TestRestTemplate` instance, which is a convenient subclass of `RestTemplate` for integration testing.
+- `restTemplate.getForObject(url, User.class)`: This line performs a GET request to the specified URL and maps the response to a `User` object.
+- `assertThat(user.getId()).isEqualTo(1L)`: This assertion verifies that the `id` field of the returned `User` object is equal to `1L`.
+
+#### Comparison of MockMvc and RestTemplate
+
+| Feature      | MockMvc                                                            | RestTemplate/TestRestTemplate                                                                                             |
+| ------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| Server       | No server required; tests controllers in isolation                 | Requires a running web server; tests full application context                                                             |
+| Scope        | Controller layer only                                              | Tests the controller together with services, repositories, databases, and other beans                                     |
+| Dependencies | Allows mocking dependencies, making tests faster and more isolated | Uses real dependencies, making tests slower and less isolated but more realistic                                          |
+| Performance  | Fast and lightweight due to no server startup                      | Slower due to server startup and actual HTTP requests                                                                     |
+| Use Case     | Ideal for unit testing controllers and verifying request/response  | Ideal for integration testing and verifying end-to-end functionality (controller + service + repository working together) |
+
+### Real World Application
+
+Here's a sample enterprise-level application where MockMVC and RESTTemplate could be used for integration testing:
+
+**Application**: E-commerce platform
+**Description**: An online marketplace where vendors sell products to customers.
+**Scenario**: Testing the checkout process, including adding items to a cart, entering shipping and payment details, and submitting the order.
+
+**Steps**:
+
+1. Use MockMVC to simulate adding items to a cart (POST /cart with product IDs and quantities).
+2. Use RESTTemplate to call /shipping and retrieve available shipping options.
+3. Use MockMVC to send shipping information to /checkout.
+4. Use RESTTemplate to submit payment information to the payment gateway API.
+5. Verify the order exists in the database with the correct details.
+
+This approach ensures robust, reliable, and secure functionality by simulating requests and responses between internal and external systems, thereby guaranteeing seamless integration.
+
+### Implementation
+
+Below is a demonstration of testing a controller layer with `MockMvc` and `RestTemplate` in a Spring Boot application.
+
+#### Step 1: Define User Model
+
+```java
+@Data // Lombok annotation to generate getters, setters, toString, etc.
+public class User {
+    private Long id;
+    private String username;
+    private String email;
+
+    // Constructors, getters, setters, toString, etc. will be generated by Lombok
+}
+```
+
+#### Step 2: Define the UserRepository Interface
+
+```java
+@Repository
+public interface UserRepository extends JpaRepository<User, Long> {
+  User save(User user);
+  Optional<User> findById(Long id);
+  void delete(User user);
+  List<User> findAll();
+}
+```
+
+#### Step 3: Define the UserService Class
+
+```java
+@Service // Marks this class as a Spring service component
+@AllArgsConstructor // Lombok annotation to generate constructor with all arguments
+public class UserService {
+  private final UserRepository userRepository;
+
+  public User createUser(User user) {
+    return userRepository.save(user);
+  }
+
+  public User getUserById(Long id) {
+    return userRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+  }
+
+  public User updateUser(Long id, User userDetails) {
+    User existingUser = getUserById(id);
+    existingUser.setUsername(userDetails.getUsername());
+    existingUser.setEmail(userDetails.getEmail());
+    return userRepository.save(existingUser);
+  }
+
+  public void deleteUser(Long id) {
+    User existingUser = getUserById(id);
+    userRepository.delete(existingUser);
+  }
+}
+```
+
+#### Step 4: Define the UserController Class
+
+```java
+@RestController // Marks this class as a REST controller
+@RequestMapping("/api/users") // Base URL for all endpoints in this controller
+public class UserController {
+  @Autowired
+  private UserService userService;
+
+  @PostMapping // Handles HTTP POST requests to /api/users
+  public ResponseEntity<User> createUser(@RequestBody User user) {
+    User createdUser = userService.createUser(user);
+    return new ResponseEntity<>(createdUser, HttpStatus.CREATED); // Return 201 Created status
+  }
+
+  @GetMapping("/{id}") // Handles HTTP GET requests to /api/users/{id}
+  public ResponseEntity<User> getUserById(@PathVariable Long id) {
+    User user = userService.getUserById(id);
+    return ResponseEntity.ok(user); // Return 200 OK status
+  }
+
+  @PutMapping("/{id}") // Handles HTTP PUT requests to /api/users/{id}
+  public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
+    User updatedUser = userService.updateUser(id, user);
+    return ResponseEntity.ok(updatedUser); // Return 200 OK status
+  }
+
+  @DeleteMapping("/{id}") // Handles HTTP DELETE requests to /api/users/{id}
+  public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    userService.deleteUser(id);
+    return ResponseEntity.noContent().build(); // Return 204 No Content status
+  }
+}
+```
+
+This controller handles CRUD operations for the `User` entity, providing endpoints to create, retrieve, update, and delete users and returns JSON responses with appropriate HTTP status codes. The `UserService` contains the business logic for managing users and is injected into the controller using field injection with `@Autowired`.
+
+#### Step 5: Create Test Suite with MockMvc and RestTemplate
+
+```java
+@SpringBootTest // Load the full application context
+@AutoConfigureMockMvc // Enable and configure MockMvc
+public class UserControllerMockMvcTest {
+  @Autowired
+  private MockMvc mockMvc; // Inject MockMvc instance
+
+  @MockBean
+  private UserService userService; // Mock the UserService dependency
+
+  @MockBean
+  private UserRepository userRepository; // Mock the UserRepository dependency
+
+  @Mock
+  private RestTemplate restTemplate; // Mock RestTemplate for external API calls
+
+  @Captor
+  private ArgumentCaptor<User> userCaptor; // Capture User arguments passed to methods
+
+  @Autowired
+  private ObjectMapper objectMapper; // For JSON serialization/deserialization
+}
+```
+
+This test setup:
+
+- Loads the full application context with `@SpringBootTest`.
+- Configures `MockMvc` for testing the controller layer (HTTP requests and responses) with `@AutoConfigureMockMvc`.
+- Mocks the `UserService` and `UserRepository` dependencies using `@MockBean`, allowing you to define their behavior in tests.
+- Mocks `RestTemplate` to simulate external API calls without making real HTTP requests.
+- Uses `@Captor` to capture `User` arguments passed to methods for verification. For example, you can verify that the correct `User` object was passed to the `createUser` method.
+- Injects `ObjectMapper` for JSON serialization and deserialization, which is useful for converting between Java objects and JSON strings in tests.
+
+#### Step 6: Write Integration Tests for UserController
+
+This file includes detailed `@Test` methods for demonstrating the use of `MockMvc` and `RestTemplate` usage for:
+
+- Creating a user with `POST /api/users`
+- Retrieving a user by ID with `GET /api/users/{id}`
+- Updating a user with `PUT /api/users/{id}`
+- Deleting a user with `DELETE /api/users/{id}`
+- Listing all users with `GET /api/users`
+
+Each test:
+
+- Sets up data and mocks behavior for dependencies.
+- Performs HTTP requests using `MockMvc`.
+- Asserts the expected outcomes, including status codes and response content.
+- Verifies interactions with mocked dependencies using Mockito.
+
+```java
+@Test // Test case for creating a user
+  public void testCreateUser() throws Exception {
+    User user = new User();
+    user.setUsername("johndoe");
+    user.setEmail("johndoe@example.com");
+
+    when(userService.createUser(any(User.class))).thenReturn(user); // Mock the createUser method
+
+    mockMvc.perform(post("/api/users") // Perform POST request to /api/users
+            .contentType(MediaType.APPLICATION_JSON) // Set content type to JSON
+            .content(objectMapper.writeValueAsString(user))) // Convert user object to JSON string
+        .andExpect(status().isCreated()) // Expect HTTP 201 Created status
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON)) // Expect JSON response
+        .andExpect(jsonPath("$.username").value("johndoe")) // Expect username field to be "johndoe"
+        .andExpect(jsonPath("$.email").value("johndoe@example.com"));
+
+    verify(userService, times(1)).createUser(userCaptor.capture()); // Capture the User argument
+    User capturedUser = userCaptor.getValue();
+    assertEquals("johndoe", capturedUser.getUsername()); // Assert that the username is correct
+    assertEquals("johndoe@example.com", capturedUser.getEmail()); // Assert that the email is correct
+  }
+```
