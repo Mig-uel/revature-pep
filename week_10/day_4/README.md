@@ -319,3 +319,26 @@ Key attributes of CSS Grid Layout:
 - `grid-area`: This property allows you to assign a grid item to a named grid area defined in the `grid-template-areas` property.
 - `justify-items` and `align-items`: These properties control the alignment of grid items within their grid cells along the horizontal and vertical axes, respectively. Possible values include `start`, `end`, `center`, and `stretch`.
 - `justify-content` and `align-content`: These properties control the alignment of the entire grid within the container along the horizontal and vertical axes, respectively. Possible values include `start`, `end`, `center`, `space-between`, `space-around`, and `stretch`.
+
+## CSS Variables
+
+CSS Variables, also known as Custom Properties, allow you to define reusable values in your CSS. They are defined using the `--` prefix and can be accessed using the `var()` function. Unlike constants in programming languages, CSS Variables are dynamic and can be changed at runtime.
+
+CSS Variables are scoped to the element they are defined on and can be inherited by child elements. This means you can define a variable on a parent element and use it in its children.
+Example of defining and using CSS Variables:
+
+```css
+:root {
+  --main-color: #3498db; /* Define a CSS variable */
+  --padding: 10px;
+}
+body {
+  background-color: var(--main-color); /* Use the CSS variable */
+  padding: var(--padding);
+}
+h1 {
+  color: var(--main-color); /* Use the CSS variable */
+}
+```
+
+CSS Variables can store values such as colors, font sizes, spacing values, and more. They can also be updated dynamically using JavaScript, allowing for themes and other dynamic styling options.
