@@ -119,3 +119,71 @@ h1 ~ p {
 ```
 
 This rule will style all `<p>` elements that come after an `<h1>` element, not just the first one.
+
+## Advanced CSS Selectors
+
+Advanced CSS selectors allow you to target elements more precisely based on their attributes, states, or relationships with other elements. Here are some examples of advanced CSS selectors:
+
+- **Attribute Selectors**: These selectors target elements based on their attributes and attribute values.
+
+```css
+a[href^="https"] {
+  color: green; /* Selects all <a> elements with href attribute starting with "https" */
+}
+input[type="text"] {
+  border: 1px solid #ccc; /* Selects all <input> elements with type attribute equal to "text" */
+}
+img[alt$="icon"] {
+  width: 50px; /* Selects all <img> elements with alt attribute ending with "icon" */
+}
+```
+
+- **Child Selectors**: These selectors target elements based on their position within the parent element.
+
+```css
+ul > li {
+  list-style-type: square; /* Selects all <li> elements that are direct children of <ul> */
+}
+div > p {
+  margin-bottom: 10px; /* Selects all <p> elements that are direct children of <div> */
+}
+```
+
+- **Descendant Selectors**: These selectors target elements that are descendants of a specified element, regardless of their depth in the hierarchy.
+
+```css
+div p {
+  font-size: 14px; /* Selects all <p> elements that are descendants of <div> */
+}
+section article h2 {
+  color: darkblue; /* Selects all <h2> elements that are descendants of <article> within <section> */
+}
+```
+
+- **Pseudo-classes**: These selectors target elements based on their state or position.
+
+```css
+a:hover {
+  text-decoration: underline; /* Selects <a> elements when hovered over */
+}
+li:first-child {
+  font-weight: bold; /* Selects the first <li> element within its parent */
+}
+input:focus {
+  border-color: blue; /* Selects <input> elements when they are focused */
+}
+```
+
+- **Pseudo-elements**: These selectors allow you to style specific parts of an element.
+
+```css
+p::first-letter {
+  font-size: 200%; /* Selects the first letter of each <p> element */
+}
+h1::after {
+  content: " ★"; /* Adds a star after each <h1> element */
+  color: gold;
+}
+```
+
+These advanced selectors provide powerful ways to target and style elements in your web pages, allowing for more complex and dynamic designs.
