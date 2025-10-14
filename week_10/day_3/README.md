@@ -133,3 +133,117 @@ Inline elements represent a specific portion of text within a block-level elemen
 | New Line | Start on a new line  | Do not start on a new line; flows horizontally |
 | Width    | Take up full width   | Take up only as much width as necessary        |
 | Margins  | Have default margins | Do not have default margins                    |
+
+## Common HTML Tags
+
+Here are some common HTML tags along with their descriptions:
+
+`<figure>` and `<figcaption>`
+
+- Inline or Block?: Block
+- `<figure>`: Represents self-contained content, such as images, diagrams, or code snippets, along with their captions.
+- `<figcaption>`: Provides a caption or legend for the content within the `<figure>` element.
+- These two elements are used together to group media content and its description, enhancing semantic meaning and accessibility.'
+
+```html
+<figure>
+  <img src="image.jpg" alt="Description of the image" />
+  <figcaption>This is a caption for the image.</figcaption>
+</figure>
+```
+
+---
+
+`<blockquote>`
+
+- Inline or Block?: Block
+- `<blockquote>`: Represents a section that is quoted from another source. It is typically used for longer quotations and is usually indented by default.
+
+```html
+<blockquote>
+  This is a blockquote. It is used to indicate that the enclosed text is an
+  extended quotation.
+</blockquote>
+```
+
+---
+
+`<details>` and `<summary>`
+
+- Inline or Block?: `<details>` is Block, `<summary>` is Inline
+- `<details>`: Represents a disclosure widget that can be toggled open or closed by the user. It is used to hide or show additional information.
+- `<summary>`: Provides a summary or caption for the content within the `<details>` element. It is always visible and acts as a toggle control.
+
+```html
+<details>
+  <summary>More Information</summary>
+  <p>
+    This is additional information that can be revealed by clicking the summary.
+  </p>
+</details>
+```
+
+---
+
+`<hr />`
+
+- Inline or Block?: Block
+- `<hr />`: Represents a thematic break or horizontal rule in the content. It is used to separate sections of content visually.
+
+```html
+<p>This is the first section of content.</p>
+<hr />
+<p>This is the second section of content.</p>
+```
+
+---
+
+`<table>`, `<tr>`, `<td>`, `<th>`, `<thead>`, `<tbody>`, `<tfoot>`, `<caption>`
+
+These tags are used to create and structure tables in HTML.
+
+- Inline or Block?: Block
+- `<table>`: Defines a table and contains all other table-related elements.
+- `<tr>`: Defines a table row.
+- `<th>`: Defines a table header cell, which is typically bold and centered.
+- `<td>`: Defines a standard table cell.
+- `<thead>`: Groups the header content in a table.
+- `<tbody>`: Groups the body content in a table.
+- `<tfoot>`: Groups the footer content in a table.
+- `<caption>`: Provides a title or caption for the table.
+
+**Notable attributes**:
+
+- `th` and `td` can have the `colspan` and `rowspan` attributes to span multiple columns or rows.
+
+```html
+<table>
+  <caption>
+    Sample Table
+  </caption>
+  <thead>
+    <tr>
+      <th>Header 1</th>
+      <th>Header 2</th>
+      <th>Header 3</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Row 1, Cell 1</td>
+      <td>Row 1, Cell 2</td>
+      <td>Row 1, Cell 3</td>
+    </tr>
+    <tr>
+      <td>Row 2, Cell 1</td>
+      <td>Row 2, Cell 2</td>
+      <td>Row 2, Cell 3</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td colspan="3">Table Footer</td>
+    </tr>
+  </tfoot>
+</table>
+```
