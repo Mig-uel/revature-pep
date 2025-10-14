@@ -83,3 +83,53 @@ The HTML document structure and the DOM are fundamental concepts in web developm
 - **Web Scrapers**: Web scrapers use the DOM to extract data from web pages. By navigating the DOM tree, scrapers can locate specific elements and retrieve their content for further processing or analysis.
 - **Browser Extensions**: Browser extensions often interact with the DOM to modify the appearance or behavior of web pages. They can add new elements, change styles, or inject scripts to enhance functionality.
 - **Accessibility Tools**: Accessibility tools, such as screen readers, rely on the semantic structure of the HTML document and the DOM to provide meaningful navigation and content interpretation for users with disabilities.
+
+## Inline and Block Elements
+
+#### Block Elements
+
+Block elements form the main content structure of a webpage. They typically start on a new line and take up the full width available, creating a "block" of content. Examples of block elements include:
+
+- Start on a new line before and after the element.
+- Span the full horizontal width within their parent container.
+- Have default margins (top and bottom) added by the browser.
+
+**Syntax**: Block elements consist of opening and closing tags, with content placed between them.
+
+#### Common Block-Level Elements
+
+- `<p>`: Defines a paragraph.
+- `<h1>` to `<h6>`: Define headings, with `<h1>` being the highest level.
+- `<div>`: Defines a division or section in an HTML document.
+- `<ul>`: Defines an unordered list.
+- `<ol>`: Defines an ordered list.
+- `<li>`: Defines a list item.
+- `<header>`: Defines a header for a document or section.
+- `<footer>`: Defines a footer for a document or section.
+- `<section>`: Defines a section in a document.
+- `<article>`: Defines an independent, self-contained article.
+- `<hr>`: Defines a thematic break (horizontal rule) in the content.
+
+#### Inline Elements
+
+Inline elements represent a specific portion of text within a block-level element. They typically do not start on a new line and only take up as much width as necessary.
+
+**Syntax**: Inline elements also consist of opening and closing tags, with content placed between them.
+
+#### Common Inline Elements
+
+- `<a>`: Defines a hyperlink.
+- `<span>`: Defines a section in a document (used for styling purposes).
+- `<strong>`: Defines important text (usually displayed in bold).
+- `<em>`: Defines emphasized text (usually displayed in italics).
+- `<img>`: Embeds an image (self-closing tag).
+- `<br>`: Inserts a line break (self-closing tag).
+- `<code>`: Defines a piece of computer code.
+
+#### Key Differences Between Block and Inline Elements
+
+| Feature  | Block Elements       | Inline Elements                                |
+| -------- | -------------------- | ---------------------------------------------- |
+| New Line | Start on a new line  | Do not start on a new line; flows horizontally |
+| Width    | Take up full width   | Take up only as much width as necessary        |
+| Margins  | Have default margins | Do not have default margins                    |
