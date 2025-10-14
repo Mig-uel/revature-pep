@@ -177,3 +177,30 @@ function fetchData(callback) {
   }, 2000); // Simulate a 2-second delay
 }
 ```
+
+## Default Parameters
+
+Default parameters allow you to set default values for function parameters. If no value or `undefined` is passed for a parameter, the default value will be used.
+
+```js
+function greet(name = "Guest") {
+  return "Hello, " + name + "!";
+}
+console.log(greet()); // "Hello, Guest!"
+console.log(greet("Alice")); // "Hello, Alice!"
+```
+
+Default parameters can be placed anywhere in the parameter list but parameters with default values should be placed after parameters without default values to avoid confusion.
+
+```js
+function createUser(name, age = 18, country = "USA") {
+  return {
+    name: name,
+    age: age,
+    country: country,
+  };
+}
+console.log(createUser("Alice")); // { name: 'Alice', age: 18, country: 'USA' }
+console.log(createUser("Bob", 25)); // { name: 'Bob', age: 25, country: 'USA' }
+console.log(createUser("Charlie", 30, "Canada")); // { name: 'Charlie', age: 30, country: 'Canada' }
+```
