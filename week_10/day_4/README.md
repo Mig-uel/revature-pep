@@ -221,3 +221,87 @@ When comparing specificity values, the values are compared from left to right (a
 In this case, the first rule has a higher specificity because it has an ID selector, so it will be applied over the second rule.
 
 Regardless of specificity, inline styles will always take precedence over any other CSS rules. Additionally, the `!important` declaration can be used to override specificity, but it should be used sparingly as it can make debugging and maintaining CSS more difficult.
+
+## Responsive Web Design
+
+### Implementation
+
+To implement responsive web design, you can use the following techniques:
+
+- **Fluid Grids**: Use relative units like percentages or `em` instead of fixed units like pixels for widths and heights. This allows elements to resize based on the viewport size (viewport = visible area of a web page).
+
+```css
+.container {
+  width: 80%; /* Container will take up 80% of the viewport width */
+}
+```
+
+- **Flexible Images and Media**: Set images and media to scale within their containing elements using CSS properties like `max-width: 100%` and `height: auto`.
+
+```css
+img {
+  max-width: 100%; /* Image will scale down to fit within its container */
+  height: auto; /* Maintain aspect ratio */
+}
+```
+
+- **Media Queries**: Use CSS media queries to apply different styles based on the device's characteristics, such as screen width, height, resolution, and orientation.
+
+```css
+/* Example of a media query for small screens */
+@media (max-width: 600px) {
+  body {
+    background-color: lightblue; /* Change background color for small screens */
+  }
+  .container {
+    width: 100%; /* Make container full width on small screens */
+  }
+}
+
+/* Example of a media query for medium screens */
+@media (min-width: 601px) and (max-width: 1200px) {
+  body {
+    background-color: lightgreen; /* Change background color for medium screens */
+  }
+  .container {
+    width: 80%; /* Make container 80% width on medium screens */
+  }
+}
+```
+
+- `@media only screen and (max-width: 600px) { ... }`: This media query applies styles only when the screen width is 600 pixels or less, typically for mobile devices.
+- `@media only screen and (min-width: 601px) and (max-width: 1200px) { ... }`: This media query applies styles when the screen width is between 601 and 1200 pixels, typically for tablets and small desktops.
+
+- **Viewport Meta Tag**: Include the viewport meta tag in the `<head>` section of your HTML document to control the layout on mobile browsers.
+
+```html
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+```
+
+- This tag sets the viewport width to the device's width and the initial zoom level to 1.0, ensuring that your responsive design works correctly on mobile devices.
+
+## Flexbox
+
+CSS Flexbox (Flexible Box Layout) is a layout model that allows you to design complex layouts more easily and efficiently. It provides a way to distribute space along a single axis (either horizontally or vertically) and align items within a container.
+
+Key attributes of Flexbox:
+
+- `display: flex;`: This property is applied to a container element to enable Flexbox layout for its child elements (flex items).
+- `flex-direction`: This property defines the direction of the main axis (row or column) along which the flex items are laid out. Possible values are `row`, `row-reverse`, `column`, and `column-reverse`.
+  - `row`: Items are laid out horizontally from left to right.
+  - `column`: Items are laid out vertically from top to bottom.
+- `flex-wrap`: This property controls whether flex items should wrap onto multiple lines if they exceed the container's width. Possible values are `nowrap`, `wrap`, and `wrap-reverse`.
+  - `nowrap`: All items are kept on a single line (default).
+  - `wrap`: Items will wrap onto multiple lines if necessary.
+- `justify-content`: This property aligns flex items along the main axis. Possible values include `flex-start`, `flex-end`, `center`, `space-between`, `space-around`, and `space-evenly`.
+  - `flex-start`: Items are aligned to the start of the container.
+  - `center`: Items are centered within the container.
+- `align-items`: This property aligns flex items along the cross axis (perpendicular to the main axis). Possible values include `flex-start`, `flex-end`, `center`, `baseline`, and `stretch`.
+  - `stretch`: Items are stretched to fill the container (default).
+  - `center`: Items are centered along the cross axis.
+- `flex`: This property is shorthand for `flex-grow`, `flex-shrink`, and `flex-basis`. It defines how a flex item will grow or shrink to fill the available space in the container.
+  - `flex-grow`: Defines the ability of a flex item to grow if necessary. A value of `1` means the item can grow to fill available space, while `0` means it will not grow.
+  - `flex-shrink`: Defines the ability of a flex item to shrink if necessary. A value of `1` means the item can shrink to fit within the container, while `0` means it will not shrink.
+  - `flex-basis`: Defines the initial size of a flex item before any growing or shrinking occurs. It can be set to a specific value (e.g., `100px`) or to `auto`.
