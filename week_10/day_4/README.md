@@ -95,3 +95,27 @@ The CSS box model is a fundamental concept in web design that describes how elem
 4. **Margin**: The outermost layer that creates space between the element and other elements on the page. Margins are also transparent and can be adjusted using CSS properties like `margin-top`, `margin-right`, `margin-bottom`, and `margin-left`.
 
 The total width and height of an element can be calculated by adding the content width/height, padding, border, and margin. Understanding the box model is essential for effective web design and layout, as it helps you control the spacing and alignment of elements on a web page.
+
+## Sibling Selectors
+
+Sibling selectors in CSS are used to select elements that are siblings (i.e., share the same parent) of a specified element. There are two types of sibling selectors:
+
+- **Adjacent Sibling Selector (`+`)**: This selector targets the immediate next sibling of a specified element. For example, `A + B` selects the first `B` element that is immediately preceded by an `A` element.
+
+```css
+h1 + p {
+  color: blue;
+}
+```
+
+This rule will style the first `<p>` element that comes immediately after an `<h1>` element.
+
+- **General Sibling Selector (`~`)**: This selector targets all siblings of a specified element that come after it, regardless of their position. For example, `A ~ B` selects all `B` elements that are preceded by an `A` element.
+
+```css
+h1 ~ p {
+  color: green;
+}
+```
+
+This rule will style all `<p>` elements that come after an `<h1>` element, not just the first one.
