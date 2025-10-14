@@ -305,3 +305,17 @@ Key attributes of Flexbox:
   - `flex-grow`: Defines the ability of a flex item to grow if necessary. A value of `1` means the item can grow to fill available space, while `0` means it will not grow.
   - `flex-shrink`: Defines the ability of a flex item to shrink if necessary. A value of `1` means the item can shrink to fit within the container, while `0` means it will not shrink.
   - `flex-basis`: Defines the initial size of a flex item before any growing or shrinking occurs. It can be set to a specific value (e.g., `100px`) or to `auto`.
+
+## Grid Layout
+
+CSS Grid Layout is a two-dimensional layout system that allows you to create complex grid-based designs with ease. It provides a way to define rows and columns in a container and place items within those grid areas.
+
+Key attributes of CSS Grid Layout:
+
+- `display: grid;`: This property is applied to a container element to enable Grid layout for its child elements (grid items).
+- `grid-template-columns` and `grid-template-rows`: These properties define the number and size of columns and rows in the grid. You can specify sizes using fixed units (e.g., `px`, `em`) or flexible units (e.g., `fr` for fractional units).
+- `gap`: This property defines the space between grid items. You can set both row and column gaps using `row-gap` and `column-gap`, or use the shorthand `gap` to set both at once.
+- `grid-column` and `grid-row`: These properties allow you to specify the starting and ending positions of a grid item within the grid. You can use line numbers or named grid areas to define the placement.
+- `grid-area`: This property allows you to assign a grid item to a named grid area defined in the `grid-template-areas` property.
+- `justify-items` and `align-items`: These properties control the alignment of grid items within their grid cells along the horizontal and vertical axes, respectively. Possible values include `start`, `end`, `center`, and `stretch`.
+- `justify-content` and `align-content`: These properties control the alignment of the entire grid within the container along the horizontal and vertical axes, respectively. Possible values include `start`, `end`, `center`, `space-between`, `space-around`, and `stretch`.
