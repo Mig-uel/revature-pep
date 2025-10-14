@@ -225,3 +225,23 @@ When Strict Mode is enabled, it enforces a stricter set of rules for your code, 
 - Makes `this` in functions default to `undefined` instead of the global object
 - Prevents modifying the arguments object
 - Prevents deleting an undeletable property
+
+## Arrow Functions
+
+Arrow functions are a more concise syntax for writing functions in JavaScript. They were introduced in ES6 (ECMAScript 2015) and provide a shorter way to write function expressions. Arrow functions also have some differences in behavior compared to traditional function expressions, particularly with regard to the `this` keyword.
+
+### Implementation
+
+**Syntax:**
+
+```js
+const functionName = (parameters) => {
+  // function body
+};
+
+// Single parameter (no parentheses needed)
+const square = (x) => x * x;
+
+// No parameters (empty parentheses needed)
+const greet = () => "Hello, World!";
+```
