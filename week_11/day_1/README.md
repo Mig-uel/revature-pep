@@ -245,3 +245,56 @@ const square = (x) => x * x;
 // No parameters (empty parentheses needed)
 const greet = () => "Hello, World!";
 ```
+
+## Hoisting
+
+Hoisting is a JavaScript mechanism where variable and function declarations are moved to the top of their containing scope during the compilation phase before the code is executed. This means that you can use variables and functions before they are declared in the code.
+
+It is important to note that only the declarations are hoisted, not the initializations. This means that if you try to use a variable before it is initialized, it will be `undefined`.
+
+```js
+console.log(x); // undefined (due to hoisting)
+var x = 5;
+console.log(x); // 5
+```
+
+The above code demonstrates `x` is accessible before its declaration, but its value is `undefined` until the assignment is made.
+
+```js
+// Before program execution, the variable declaration is hoisted
+var x; // Declaration is hoisted
+
+console.log(x); // undefined (due to hoisting)
+x = 5; // Initialization happens here
+console.log(x); // 5
+```
+
+It is generally recommended to use the `let` or `const` keywords for variable declarations instead of `var`, as they do not exhibit hoisting behavior in the same way and help avoid potential issues related to variable scope and redeclaration.
+
+```js
+console.log(y); // ReferenceError: Cannot access 'y' before initialization
+let y = 10;
+console.log(y); // 10
+```
+
+The above code would cause the program to terminate with a `ReferenceError` because `y` is not accessible before its declaration when using `let`.
+
+Regarding functions, function declarations are hoisted, allowing you to call the function before its declaration in the code.
+
+```js
+sayHello(); // "Hello, World!"
+
+function sayHello() {
+  console.log("Hello, World!");
+}
+```
+
+Regarding function expressions (including arrow functions), only the variable declaration is hoisted, not the function definition. Therefore, calling the function before its definition will result in an error.
+
+```js
+sayHello(); // TypeError: sayHello is not a function
+
+var sayHello = function () {
+  console.log("Hello, World!");
+};
+```
