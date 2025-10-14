@@ -114,3 +114,66 @@ let num = 42;
 let str = num.toString(); // Converts number to string
 console.log(str); // "42"
 ```
+
+## Functions
+
+A function is a reusable block of code that performs a specific task. Functions can take inputs (parameters) and can return an output (return value). They help in organizing code, making it more readable, and avoiding repetition.
+
+```js
+function greet(name) {
+  return "Hello, " + name + "!";
+}
+
+console.log(greet("Alice")); // "Hello, Alice!"
+```
+
+#### Callback Functions
+
+A callback function is a function that is passed as an argument to another function and is executed after some operation has been completed. Callbacks help us develop asynchronous code, allowing us to perform actions after a task is finished without blocking the main thread.
+
+JavaScrip runs the code in sequential order (from top to bottom). If there is a situation where code runs after some execution, which is not happening in sequential order, it is called asynchronous code. All functions in JavaScript are objects, and a JavaScript function can be passed as an argument to another function.
+
+```js
+function fetchData(callback) {
+  setTimeout(() => {
+    const data = { name: "John", age: 30 };
+    callback(data); // Call the callback function with the fetched data
+  }, 2000); // Simulate a 2-second delay
+}
+```
+
+### Implementation
+
+#### Function Expression/Anonymous Function
+
+Function Expressions are also known as named or anonymous functions. An anonymous function is a function that does not have a name and is assigned to a variable.
+
+```js
+const add = function (a, b) {
+  return a + b;
+};
+console.log(add(2, 3)); // 5
+```
+
+#### Self-Invoking Function/ Immediately Invoked Function Expression (IIFE)
+
+A self-invoking function, also known as an Immediately Invoked Function Expression (IIFE), is a function that is executed immediately after it is defined. It is often used to create a new scope and avoid polluting the global namespace.
+
+```js
+(function () {
+  console.log("This function runs immediately upon definition!");
+})();
+```
+
+#### Callback Function
+
+A callback function is a function that is passed as an argument to another function and is executed after some operation has been completed. Callbacks help us develop asynchronous code, allowing us to perform actions after a task is finished without blocking the main thread.
+
+```js
+function fetchData(callback) {
+  setTimeout(() => {
+    const data = { name: "John", age: 30 };
+    callback(data); // Call the callback function with the fetched data
+  }, 2000); // Simulate a 2-second delay
+}
+```
