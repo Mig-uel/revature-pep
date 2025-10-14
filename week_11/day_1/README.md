@@ -204,3 +204,24 @@ console.log(createUser("Alice")); // { name: 'Alice', age: 18, country: 'USA' }
 console.log(createUser("Bob", 25)); // { name: 'Bob', age: 25, country: 'USA' }
 console.log(createUser("Charlie", 30, "Canada")); // { name: 'Charlie', age: 30, country: 'Canada' }
 ```
+
+## Strict Mode
+
+JavaScript is a loosely typed scripting language, which means you don't have to declare variable types explicitly. However, this flexibility can lead to potential issues and bugs in your code. To help mitigate these issues, JavaScript provides a feature called "Strict Mode."
+
+Strict Mode can be enabled by adding the following line at the beginning of your JavaScript file or function:
+
+```js
+"use strict";
+```
+
+When Strict Mode is enabled, it enforces a stricter set of rules for your code, which can help catch common mistakes and improve the overall quality of your code. Some of the key features of Strict Mode include:
+
+- Prevents the use of undeclared variables
+- Prevents the use of reserved keywords as variable names
+- Disallows duplicate parameter names in functions
+- Throws errors for assignments to non-writable properties
+- Disallows the use of `with` statements
+- Makes `this` in functions default to `undefined` instead of the global object
+- Prevents modifying the arguments object
+- Prevents deleting an undeletable property
