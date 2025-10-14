@@ -187,3 +187,37 @@ h1::after {
 ```
 
 These advanced selectors provide powerful ways to target and style elements in your web pages, allowing for more complex and dynamic designs.
+
+## Cascading Nature of CSS
+
+The CSS Cascade is the algorithm that determines which CSS rules apply to an element when there are multiple conflicting rules. The cascade takes into account three main factors: specificity, importance, and source order.
+
+1. **Specificity**: Specificity is a measure of how specific a selector is. The more specific a selector, the higher its specificity value. Specificity is calculated based on the types of selectors used:
+
+   - Inline styles (e.g., `style="..."`) have the highest specificity.
+   - ID selectors (e.g., `#id`) have a high specificity.
+   - Class selectors (e.g., `.class`), attribute selectors (e.g., `[type="text"]`), and pseudo-classes (e.g., `:hover`) have a medium specificity.
+   - Element selectors (e.g., `div`, `p`) and pseudo-elements (e.g., `::before`, `::after`) have the lowest specificity.
+
+   When multiple rules apply to the same element, the rule with the highest specificity takes precedence.
+
+2. **Importance**: The `!important` declaration can be added to a CSS property to give it the highest priority, overriding any other conflicting rules, regardless of specificity. However, it is generally recommended to use `!important` sparingly, as it can make debugging and maintaining CSS more difficult.
+3. **Source Order**: When two rules have the same specificity and importance, the rule that appears later in the CSS (or in the HTML if using inline styles) takes precedence. This means that if you have two conflicting rules with the same specificity, the one that is defined last will be applied.
+
+## Specificity
+
+CSS specificity is a ranking system that determines which CSS rule is applied to an element when multiple rules could apply. Specificity is calculated based on the types of selectors used in the CSS rules. The more specific a selector is, the higher its specificity value, and the more likely it is to be applied. Specificity is calculated using a four-part value (a, b, c, d):
+
+- **a**: Inline styles (e.g., `style="..."`) - counts as 1 if present, otherwise 0.
+- **b**: Number of ID selectors (e.g., `#id`) - counts the number of ID selectors in the rule.
+- **c**: Number of class selectors (e.g., `.class`), attribute selectors (e.g., `[type="text"]`), and pseudo-classes (e.g., `:hover`) - counts the total number of these selectors in the rule.
+- **d**: Number of element selectors (e.g., `div`, `p`) and pseudo-elements (e.g., `::before`, `::after`) - counts the total number of these selectors in the rule.
+
+When comparing specificity values, the values are compared from left to right (a, b, c, d). The first value that is different determines which rule has higher specificity. For example:
+
+- `#header .nav li a` has a specificity of (0, 1, 1, 2) (1 ID, 1 class, 2 elements)
+- `.nav li a` has a specificity of (0, 0, 1, 2) (0 IDs, 1 class, 2 elements)
+
+In this case, the first rule has a higher specificity because it has an ID selector, so it will be applied over the second rule.
+
+Regardless of specificity, inline styles will always take precedence over any other CSS rules. Additionally, the `!important` declaration can be used to override specificity, but it should be used sparingly as it can make debugging and maintaining CSS more difficult.
