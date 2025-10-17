@@ -406,3 +406,54 @@ The DOM allows us to do anything with elements and their contents, but first, we
 
 - `element.previousSibling`: This property returns the previous sibling node of the specified element.
 - `element.nextSibling`: This property returns the next sibling node of the specified element.
+
+## Events and Listeners
+
+An event is an action or occurrence that happens in the system you are programming, which the system tells you about so your code can respond to it as needed. Examples of events include user interactions (like clicks, key presses, and mouse movements), changes to the DOM, and network requests.
+
+In web development, events are signals that indicate that something has happened or changed in the browser. These events can be triggered by user actions (like clicking a button or typing in a text field), changes to the DOM (like adding or removing elements), or other system events (like loading a page or receiving data from a server).
+
+Events allow JavaScript to respond to user interactions and changes in the web page, enabling dynamic and interactive web applications. When an event occurs, it typically triggers a function or a block of code to execute, allowing developers to define how the application should behave in response to that event. These functions are called event handlers or event listeners and are responsible for handling the event and performing the desired actions.
+
+Events are fundamental to creating interactive and dynamic web applications, as they enable developers to respond to user input and changes in the application state.
+
+Below are common types of events in web development:
+
+- Mouse Events: These events are triggered by mouse actions, such as clicking, double-clicking, hovering, and dragging. Examples include `click`, `dblclick`, `mouseover`, `mouseout`, `mousemove`, and `mousedown`.
+- Keyboard Events: These events are triggered by keyboard actions, such as pressing or releasing keys. Examples include `keydown`, `keyup`, and `keypress`.
+- Form Events: These events are triggered by interactions with form elements, such as submitting a form, changing input values, or focusing on an input field. Examples include `submit`, `change`, `focus`, and `blur`.
+- Window Events: These events are triggered by actions related to the browser window, such as resizing, scrolling, or loading a page. Examples include `load`, `resize`, `scroll`, and `unload`.
+- Window Events: These events are triggered by actions related to the browser window, such as resizing, scrolling, or loading a page. Examples include `load`, `resize`, `scroll`, and `unload`.
+
+When working with events, we follow these steps:
+
+- Select the DOM node associated with an event.
+- Attach an event listener to the node.
+- Write the handler logic.
+
+Example syntax using an anonymous function handler:
+
+```javascript
+// get the specific element to use
+let node = document.getElementById("myButton");
+
+// add an event listener and handler
+node.addEventListener("click", () => {
+  // logic to be executed when the event occurs
+});
+```
+
+Example syntax using a named function handler:
+
+```javascript
+// get the specific element to use
+let node = document.getElementById("myButton");
+
+// add an event listener and handler
+node.addEventListener("click", handleClick);
+
+// because of hoisting, this function can be defined after the listener is added
+function handleClick() {
+  // logic to be executed when the event occurs
+}
+```
