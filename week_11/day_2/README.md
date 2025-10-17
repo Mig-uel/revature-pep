@@ -239,3 +239,77 @@ Object-Oriented Programming (OOP) in JavaScript is beneficial for structuring co
 - **Creating APIs and Interfaces**: OOP is useful for defining APIs and interfaces that specify how different parts of a system interact with each other. Classes can serve as contracts that define expected behavior and communication protocols.
 
 By leveraging OOP principles in JavaScript, developers can create scalable, maintainable, and extensible applications that meet the requirements of modern web development.
+
+## `this` Keyword
+
+In JavaScript, the `this` keyword refers to the context in which a function is executed. The value of `this` can vary depending on how a function is called, and it is determined at runtime.
+
+When used in a function, `this` keyword refers to an object to which it is bound. The bound object is generally the object that is calling the function.
+
+```javascript
+function alert() {
+  console.log(this.message); // 'this' refers to the object that calls the function
+}
+```
+
+In the example above, `this` refers to the object that calls the `alert` function.
+
+#### Types of Binding
+
+- Default Binding: When a function is called in the global context, `this` refers to the global object (e.g., `window` in browsers or `global` in Node.js). In strict mode, `this` will be `undefined`.
+
+```javascript
+function show() {
+  console.log(this); // In non-strict mode: global object, In strict mode: undefined
+}
+show();
+// Output: [object Window] (in browsers) or undefined (in strict mode)
+```
+
+- Implicit Binding: When a function is called as a method of an object, `this` refers to the object that the method is called on.
+
+```javascript
+const obj = {
+  message: "Hello, World!",
+  show: function () {
+    console.log(this.message); // 'this' refers to 'obj'
+  },
+};
+obj.show(); // Output: Hello, World!
+```
+
+- Explicit Binding: You can explicitly set the value of `this` using `call()`, `apply()`, or `bind()` methods.
+
+```javascript
+function greet() {
+  console.log(this.message); // 'this' refers to the object passed as an argument
+}
+
+const obj = { message: "Hello, World!" };
+
+greet.call(obj); // Output: Hello, World!
+greet.apply(obj); // Output: Hello, World!
+
+const boundGreet = greet.bind(obj);
+boundGreet(); // Output: Hello, World!
+```
+
+- Constructor Binding: When a function is used as a constructor with the `new` keyword, `this` refers to the newly created object.
+
+```javascript
+function Person(name) {
+  this.name = name; // 'this' refers to the new object being created
+}
+const person1 = new Person("Alice");
+console.log(person1.name); // Output: Alice
+```
+
+### Implementation
+
+`this` in Event Handlers refers to the HTML element that received the event.
+
+```javascript
+<button onclick="this.style.backgroundColor='red'">Click Me</button>
+```
+
+In the example above, `this` refers to the button element that was clicked and changes its background color to red.
