@@ -71,3 +71,82 @@ Object literals are commonly used in various scenarios, such as:
 - **Configuration Objects:** They are used to define configuration settings for applications, libraries, or frameworks, allowing for easy customization and flexibility.
 - **State Management:** In front-end frameworks like React, object literals are used to manage component state, storing and updating data that affects the UI.
 - **Utility Functions:** Object literals can encapsulate utility functions and methods, providing a namespace for related functionality.
+
+## Template Literals
+
+Template literals are a feature in JavaScript that allows for easier string interpolation and multi-line strings. They are enclosed by backticks (`` ` ``) instead of single or double quotes and allow you to include variables or execute expressions within the string using `${}` syntax.
+
+### Implementation
+
+#### Multi-line Strings
+
+We use the escape character, `\n`, to create a new line for a multi-line string. In template literals, there is no need for the escape character. Template literals preserve the formatting, including line breaks and indentation.
+
+```javascript
+console.log(`This is a multi-line
+string using template literals.`);
+// Output: This is a multi-line
+//         string using template literals.
+```
+
+#### String Interpolation
+
+In JavaScript, template literals support string interpolation, allowing you to embed expressions within the string using `${}` syntax.
+
+```javascript
+function sayHello() {
+  return "Hello";
+}
+
+let x = 1;
+let y = 2;
+
+console.log(`${sayHello()}, the sum of ${x} and ${y} is ${x + y}.`);
+// Output: Hello, the sum of 1 and 2 is 3.
+```
+
+#### Tagged Templates
+
+Tagged templates are a more advanced feature of template literals that allow you to customize the processing of template literals by using a function (tag) to manipulate the string and its interpolated values.
+
+Tagged templates allow us to parse template literals with a function. The first argument of a tag function contains an array of string values. The subsequent arguments are the values of the placeholders.
+
+```javascript
+tagFunction`Hello ${firstName} ${lastName}`;
+```
+
+Putting a function name in front of a template literal calls that function, with the processed template literal passed as arguments.
+
+The above example is equivalent to:
+
+```javascript
+tagFunction(["Hello ", " ", ""], firstName, lastName);
+```
+
+This, the name before the template literal is the name of the function that will be called. The first argument of the tag function contains an array of string values like `["Hello ", " ", ""]`. The remaining arguments are the values of the placeholders, in this case, `firstName` and `lastName`.
+
+```javascript
+function printAll(literalArray, ...substitutions) {
+  console.log(literalArray); // ["Hello ", " ", ""]
+  console.log(substitutions); // ["John", "Doe"]
+}
+
+printAll`Hello ${"John"} ${"Doe"}`; // Calls printAll with the processed template literal
+// Output:
+// ["Hello ", " ", ""]
+// ["John", "Doe"]
+```
+
+#### Raw Strings
+
+The template literal raw method allows you to access the raw string form of a template literal, preserving escape sequences like `\n` and `\t`.
+
+`String.raw` is a built-in method that accepts a template literal argument and returns a string where escape sequences are not processed.
+
+```javascript
+let a = 3;
+let b = 4;
+let string = String.raw`The sum of ${a} and ${b} is \n${a + b}.`;
+console.log(string);
+// Output: The sum of 3 and 4 is \n7.
+```
