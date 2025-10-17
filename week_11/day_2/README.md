@@ -379,3 +379,30 @@ console.log(elements);
     e.style.color = "red"; // Change text color to red for all elements with class "test"
   }
 ```
+
+## Traversing the DOM
+
+The DOM allows us to do anything with elements and their contents, but first, we need to reach the corresponding DOM object. The properties used to traverse the DOM or to get a particular DOM object are listed below:
+
+> Topmost nodes, the document object, is the root of every node in the DOM.
+
+- `document.documentElement`: This property returns the root element of the document, which is typically the `<html>` element.
+- `document.head`: This property returns the `<head>` element of the document, which contains metadata and links to external resources.
+- `document.body`: This property returns the `<body>` element of the document, which contains the visible content of the webpage.
+
+> Parent nodes, the parent of any node, is the node that is one level above it in the DOM tree.
+
+- `element.parentNode`: This property returns the parent node of the specified element.
+- `element.parentElement`: This property returns the parent element of the specified element. It is similar to `parentNode`, but it only returns element nodes.
+
+> Child nodes, the children of any node, are the nodes that are one level below it in the DOM tree.
+
+- `element.childNodes`: This property returns a live NodeList of all child nodes of the specified element, including text nodes and comment nodes.
+- `element.firstChild`: This property returns the first child node of the specified element.
+- `element.lastChild`: This property returns the last child node of the specified element.
+- `element.children`: This property returns a live HTMLCollection of all child elements of the specified element, excluding text nodes and comment nodes.
+
+> Sibling nodes, the siblings of any node, are the nodes that share the same parent node.
+
+- `element.previousSibling`: This property returns the previous sibling node of the specified element.
+- `element.nextSibling`: This property returns the next sibling node of the specified element.
