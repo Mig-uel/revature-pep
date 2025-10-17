@@ -313,3 +313,69 @@ console.log(person1.name); // Output: Alice
 ```
 
 In the example above, `this` refers to the button element that was clicked and changes its background color to red.
+
+## Selecting Elements from the DOM
+
+JavaScript is used to get or modify the content or value of HTML elements on a webpage. To perform any action on an HTML element, we first need to select it from the Document Object Model (DOM). The DOM is a programming interface for web documents that represents the structure of a webpage as a tree of objects.
+
+There are several methods to select elements from the DOM:
+
+- Selecting by ID: The `getElementById()` method is used to select an element by its unique ID.
+
+```javascript
+const element = document.getElementById("myElement");
+console.log(element);
+// Output: <div id="myElement">...</div>
+```
+
+- Selecting by Class Name: The `getElementsByClassName()` method is used to select elements by their class name. This method returns a live HTMLCollection of elements.
+- Is a collection an array? No, but it is array-like. It has a length property and can be accessed using an index, but it does not have array methods like `forEach`, `map`, or `filter`. To convert an HTMLCollection to an array, you can use `Array.from()` or the spread operator (`...`).
+
+```javascript
+const elements = document.getElementsByClassName("myClass");
+console.log(elements);
+// Output: HTMLCollection(2) [div.myClass, div.myClass]
+```
+
+- Selecting by Tag Name: The `getElementsByTagName()` method is used to select elements by their tag name. This method also returns a live HTMLCollection of elements.
+
+```javascript
+const elements = document.getElementsByTagName("div");
+console.log(elements);
+// Output: HTMLCollection(3) [div, div, div]
+```
+
+- Selecting by CSS Selector: The `querySelector()` method is used to select the first element that matches a specified CSS selector. The `querySelectorAll()` method is used to select all elements that match a specified CSS selector. This method returns a static NodeList of elements.
+
+```javascript
+const element = document.querySelector(".myClass");
+console.log(element);
+// Output: <div class="myClass">...</div>
+const elements = document.querySelectorAll(".myClass");
+console.log(elements);
+// Output: NodeList(2) [div.myClass, div.myClass]
+```
+
+### Implementation
+
+#### Example: Selecting Elements by Class Name
+
+```html
+<!-- ... -->
+<div class="test">This is a div element with class "test".</div>
+
+<p>
+  <h1 class="test">This is a h1 element with class "test".</h1>
+</p>
+
+<p class="test">This is a p element with class "test".</p>
+
+<script>
+  const elements = document.getElementsByClassName("test");
+  console.log(elements);
+  // Output: HTMLCollection(3) [div.test, h1.test, p.test]
+
+  for (let e of elements) {
+    e.style.color = "red"; // Change text color to red for all elements with class "test"
+  }
+```
