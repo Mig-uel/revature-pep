@@ -476,3 +476,121 @@ Events and event listeners are crucial in web development for creating dynamic a
 - **User Interface Widgets**: Interactive widgets like sliders, date pickers, and accordions often rely on events and event listeners to respond to user interactions. For instance, a slider widget may use events like "mousemove" and "mouseup" to update its value in real-time as the user drags the slider handle.
 - **Single Page Applications (SPAs)**: SPAs, which dynamically update content without reloading the entire page, heavily rely on events and event listeners to manage navigation, handle user interactions, and update views. Libraries like React, Angular, and Vue.js use events extensively for component communication and state management.
 - **Real-Time Collaboration Tools**: Applications like collaborative document editors, chat applications, and multiplayer games utilize events to provide real-time updates to multiple users simultaneously. Events triggered by user actions are broadcasted to all connected clients, and event listeners on each client handle these events to update the UI and synchronize data.
+
+## Bubbling Capturing
+
+#### Event Bubbling
+
+In Event Bubbling, when an event is triggered on a child element, it first runs the event handler on that element, then on its parent element, and so on, up to the root of the document. This means that the event "bubbles up" through the DOM tree.
+
+```html
+<div id="parent">
+  <button id="child">Click Me</button>
+</div>
+```
+
+```javascript
+const parent = document.getElementById("parent");
+const child = document.getElementById("child");
+
+child.addEventListener("click", () => {
+  console.log("Child clicked");
+});
+parent.addEventListener("click", () => {
+  console.log("Parent clicked");
+});
+```
+
+When the button is clicked, the output will be:
+
+```plaintext
+Child clicked
+Parent clicked
+```
+
+#### Event Capturing
+
+In Event Capturing, the event is first captured by the outermost element and then propagated down to the target element. This means that the event "captures" down through the DOM tree.
+
+```html
+<div id="parent">
+  <button id="child">Click Me</button>
+</div>
+```
+
+```javascript
+const parent = document.getElementById("parent");
+const child = document.getElementById("child");
+
+parent.addEventListener(
+  "click",
+  () => {
+    console.log("Parent clicked");
+  },
+  true // Enable capturing
+);
+
+child.addEventListener("click", () => {
+  console.log("Child clicked");
+});
+```
+
+When the button is clicked, the output will be:
+
+```plaintext
+Parent clicked
+Child clicked
+```
+
+#### Event Target
+
+An Event Target is the specific element that triggered the event. It is the element on which the event occurred, and it can be accessed using the `event.target` property within an event handler.
+
+```js
+const button = document.getElementById("myButton");
+button.addEventListener("click", (event) => {
+  console.log("Event target:", event.target); // Output: Event target: <button id="myButton">Click Me</button>
+});
+```
+
+#### Stopping Event Propagation
+
+To stop event propagation, meaning to prevent the event from bubbling up or capturing down the DOM tree, we can use the `event.stopPropagation()` method within an event handler.
+
+```js
+const parent = document.getElementById("parent");
+const child = document.getElementById("child");
+
+child.addEventListener("click", (event) => {
+  console.log("Child clicked");
+  event.stopPropagation(); // Stop the event from propagating further
+});
+parent.addEventListener("click", () => {
+  console.log("Parent clicked");
+});
+```
+
+When the button is clicked, the output will be:
+
+```plaintext
+Child clicked
+```
+
+`event.stopImmediatePropagation()` is another method that stops the event from propagating further and also prevents any other event listeners on the same element from being executed.
+
+```js
+const button = document.getElementById("myButton");
+button.addEventListener("click", (event) => {
+  console.log("First listener");
+  event.stopImmediatePropagation(); // Stop further propagation and other listeners
+});
+button.addEventListener("click", () => {
+  console.log("Second listener");
+});
+```
+
+When the button is clicked, the output will be:
+
+```plaintext
+First listener
+```
