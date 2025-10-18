@@ -169,3 +169,36 @@ const request = new Request("https://api.example.com/data", options);
 // use the Request object with fetch
 const response = await fetch(request);
 ```
+
+## Async/Await Keywords
+
+The `async` and `await` keywords in JavaScript provide a way to work with asynchronous code in a more synchronous-looking manner. They are built on top of promises and help to simplify the process of writing and reading asynchronous code.
+
+- `async` keyword: When you declare a function as `async`, it means that the function will always return a promise even if it does not explicitly return a promise object. Inside an `async` function, you can use the `await` keyword to pause the execution of the function until a promise is resolved or rejected. When an `async` function is called, it returns a promise that resolves to the value returned by the function or rejects with an error if an exception is thrown.
+- `await` keyword: The `await` keyword can only be used inside an `async` function. It is used to pause the execution of the function until a promise is resolved or rejected. When you use `await` with a promise, it waits for the promise to settle and then returns the resolved value. If the promise is rejected, it throws an error that can be caught using a `try...catch` block.
+
+While `async` and `await` make asynchronous code look more like synchronous code, they do not change the underlying asynchronous nature of JavaScript. The event loop still handles the execution of asynchronous operations, and the main thread remains non-blocking. Under the hood, `async` and `await` are syntactic sugar for working with promises, making it easier to read and write asynchronous code without deeply nested callbacks or complex promise chains.
+
+### Implementation
+
+```javascript
+// create a promise to use
+const promise = new Promise((resolve, reject) => {
+  // asynchronous operation
+  setTimeout(() => {
+    const randomNumber = Math.random();
+    if (randomNumber > 0.5) resolve(randomNumber);
+    else reject(new Error("Number is less than or equal to 0.5"));
+  }, 2000);
+});
+
+// async function to use await
+async function fetchRandomNumber() {
+  try {
+    const result = await promise; // wait for the promise to resolve
+    console.log("Resolved value:", result);
+  } catch (error) {
+    console.error("Error:", error.message); // handle any errors
+  }
+}
+```
