@@ -154,7 +154,7 @@ const response = await fetch("https://api.example.com/data", options);
 
 #### Request
 
-The `Request` type represnets a resource request. It contains information about the request, such as the URL, method, headers, and body. You can create a new `Request` object using the `Request` constructor or by passing a URL and options object to the `fetch()` function.
+The `Request` type represents a resource request. It contains information about the request, such as the URL, method, headers, and body. You can create a new `Request` object using the `Request` constructor or by passing a URL and options object to the `fetch()` function.
 
 ```javascript
 const options = {
@@ -202,3 +202,83 @@ async function fetchRandomNumber() {
   }
 }
 ```
+
+## Jest Intro
+
+Jest is widely used for testing JavaScript and TypeScript applications. It is known for its simplicity, ease of use, and powerful features that make writing and running tests straightforward. It does not rely on a third-party tool and is simple to install and configure. It was designed for testing React applications but has since evolved to support a wide range of JavaScript projects.
+
+Testing the frontend needs extensive support and configuration that can be time consuming. Jest simplifies this process by providing a complete testing framework out of the box, with minimal setup required. It includes features like snapshot testing, mocking, and code coverage analysis, making it a comprehensive solution for frontend testing.
+
+#### Advantages of Jest
+
+- Provides excellent code coverage analysis.
+- Easy to set up and use.
+- Provides a CLI tool for running tests.
+- Isolated tests to avoid interference between tests.
+- Snapshot testing for UI components.
+- Offers rich API for assertions and mocking.
+- Easy to migrate any project to use Jest.
+- Ease of using mocks and spies for functions and modules.
+
+### Implementation
+
+To get started with Jest, you need to install it as a development dependency in your project. You can do this using npm or yarn:
+
+```bash
+npm install --save-dev jest
+```
+
+or
+
+```bash
+yarn add --dev jest
+```
+
+#### First Unit Test
+
+Let's start by writing a program to test. Create `function1.js` and a `package.json` file in the same directory.
+
+```javascript
+// creating a cube function
+function cube(x) {
+  return x * x * x;
+}
+module.exports = cube;
+```
+
+Now, we write our test script in a file named `function1.test.js` (the `.test.js` extension is a convention used by Jest to identify test files).
+
+```javascript
+// importing the cube function
+const cube = require("./function1");
+
+// writing a test case for the cube function
+test("cube of 3 should be 27", () => {
+  expect(cube(3)).toBe(27);
+});
+```
+
+This demonstrated the simplest way to test a method, using "matchers" to set an actual value from `expect()` and compare it to an expected value using `toBe()`. Jest offers many matchers that include properties like truthiness, numerical comparisons, pattern matching, the content of arrays and objects, and exceptions.
+
+Before we can use the CLI, we need to add a test script to the `package.json` file.
+
+```json
+{
+  "name": "jest-example",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^27.0.0"
+  }
+}
+```
+
+Now, you can run the test using the following command:
+
+```bash
+npm test
+```
+
+This command will execute Jest, which will look for test files in your project and run the tests defined in them. If everything is set up correctly, you should see output indicating that the test has passed.
