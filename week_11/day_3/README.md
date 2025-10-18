@@ -84,3 +84,88 @@ promise
     console.log("Error:", error);
   });
 ```
+
+## Fetch API
+
+The Fetch API provides a modern way to make network requests in JavaScript. It is built into most modern browsers and is designed to be more powerful and flexible than the older XMLHttpRequest (XHR) API.
+
+The Fetch API uses promises to handle asynchronous operations, making it easier to work with network requests and responses. It provides a global `fetch()` function that can be used to make HTTP requests.
+
+#### The `fetch()` Function
+
+The `fetch()` function is a global function that takes a URL as its first argument and an optional options object as its second argument. It returns a promise that resolves to the `Response` object representing the response to the request. The promise will be rejected if there is a network error or if the request is blocked. Otherwise, it will be resolved successfully even for HTTP error status codes (like 404 or 500). It is customary to check the `ok` property of the `Response` object to determine if the request was successful.
+
+```javascript
+fetch("https://api.example.com/data");
+```
+
+A promise object is returned by the `fetch()` function, which resolves to the `Response` object representing the response to the request. We can use the `.then()` or `await` syntax to handle the promise and access the response data, which is a Response object. The `Response` object provides methods to read the response body in various formats, such as `.json()`, `.text()`, and `.blob()`.
+
+You can also optionally provide an options object as the second argument to the `fetch()` function. This object allows you to customize the request by specifying properties such as the HTTP method, headers, body, and more.
+
+```javascript
+fetch("https://api.example.com/data", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({ key: "value" }),
+});
+```
+
+#### Response
+
+The `Response` object represents the response to a request made using the Fetch API. It contains information about the response, such as the status code, headers, and body. The `Response` object provides several methods to read the response body in different formats, such as `.json()`, `.text()`, and `.blob()`. These methods return promises that resolve to the corresponding data format. These also need to be handled using `.then()` or `await` syntax.
+
+```javascript
+fetch("https://api.example.com/data")
+  .then((response) => {
+    if (!response.ok) {
+      throw new Error("Network response was not ok " + response.statusText);
+    }
+    return response.json(); // Parse the response body as JSON
+  })
+  .then((data) => {
+    console.log(data); // Handle the parsed data
+  })
+  .catch((error) => {
+    console.error("There was a problem with the fetch operation:", error);
+  });
+```
+
+#### Headers
+
+The `Headers` object represents the headers of a request or response. It provides methods to manipulate and access the headers, such as `.get()`, `.set()`, `.append()`, and `.delete()`. You can create a new `Headers` object or use the headers from an existing request or response.
+
+```javascript
+const headers = new Headers();
+headers.append("Authorization", "Bearer token");
+headers.append("Content-Type", "application/json");
+headers.append("X-Custom-Header", "CustomValue");
+
+// add headers to options object
+const options = {
+  method: "GET",
+  headers,
+};
+
+const response = await fetch("https://api.example.com/data", options);
+```
+
+#### Request
+
+The `Request` type represnets a resource request. It contains information about the request, such as the URL, method, headers, and body. You can create a new `Request` object using the `Request` constructor or by passing a URL and options object to the `fetch()` function.
+
+```javascript
+const options = {
+  method: "POST",
+  headers,
+  body: JSON.stringify({ key: "value" }),
+};
+
+// create a new Request object
+const request = new Request("https://api.example.com/data", options);
+
+// use the Request object with fetch
+const response = await fetch(request);
+```
