@@ -775,3 +775,43 @@ type Person = {
   age?: number; // Optional property
 };
 ```
+
+## Union Types
+
+We can compose new types from existing ones when needed. Union types allows us to create a new type out of the common parts of two or more existing types. The name "union" comes from the set theory concept of union, where the union of two sets contains all elements that are in either set.
+
+#### Defining a Union Type
+
+We use the pipe (`|`) symbol to define a union type. For example, we can define a type that can be either a `string` or a `number` like this:
+
+```ts
+type StringOrNumber = string | number;
+```
+
+We can then use this union type to type a variable or function parameter:
+
+```ts
+let value: StringOrNumber;
+value = "Hello"; // No error, value can be a string
+value = 42; // No error, value can be a number
+
+function printValue(value: StringOrNumber) {
+  console.log(value);
+}
+printValue("Hello"); // No error, value can be a string
+printValue(42); // No error, value can be a number
+```
+
+#### Working with Union Types
+
+Above, we specified that a function parameter must be one of two types. So, inside the function, we need to handle both cases. For example, strings have the `toUpperCase()` method, while numbers have the `toFixed()` method. To work with union types, we can use type guards to narrow down the type of a variable at runtime.
+
+```ts
+function logValue(value: StringOrNumber) {
+  if (typeof value === "string") {
+    console.log(value.toUpperCase()); // value is treated as a string
+  } else {
+    console.log(value.toFixed(2)); // value is treated as a number
+  }
+}
+```
