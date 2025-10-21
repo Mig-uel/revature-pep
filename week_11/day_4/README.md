@@ -536,3 +536,81 @@ You might choose a lower target version if you need to support older browsers or
 Changing the `target` also changes the default `lib` option, which specifies the built-in type definitions that are included in the compilation. You may "mix and match" different `lib` options regardless of the `target` setting but you could just set the `target` for convenience.
 
 The special `esnext` value for the `target` option indicates that the TypeScript code should be transpiled to the latest version of JavaScript that is currently supported by the TypeScript compiler. This means that the generated code will include the most recent JavaScript features and syntax available at the time of compilation.
+
+## TSC
+
+TypeScript files are transpiled into JavaScript files using the TypeScript compiler. The compiler can be installed as the typescript package from `npm`. As with any `npm` package, you can install it either globally or locally to your project.
+
+#### Input Files Location
+
+The TS compiler accepts a list of files to compile as arguments:
+
+```bash
+tsc file1.ts file2.ts file3.ts
+```
+
+However, most of the time, we do not specify the list of files directly. Instead, we use a `tsconfig.json` file to specify the root files and compiler options for the project. When we run the `tsc` command without any arguments, the compiler looks for a `tsconfig.json` file in the current directory and uses the settings specified in it to compile the project.
+
+A `tsconfig.json` file can be created automatically by running the following command in the terminal:
+
+```bash
+tsc --init
+```
+
+But it generates the config file with default settings. For our purposes, we will create the empty `tsconfig.json` file and run the `tsc` command to generate the necessary files based on our project structure and requirements:
+
+```bash
+echo {} > tsconfig.json && tsc
+```
+
+This command creates an empty `tsconfig.json` file and then runs the TypeScript compiler, which will generate the necessary files based on the default settings. You can then customize the `tsconfig.json` file to specify your desired compiler options and input files.
+
+At the moment, TS recursively searches for all files in the root directory and subdirectories and compiles them. However, we can control where the compiler will be looking for files by using the `files` config option in the `tsconfig.json` file.
+
+So to tell the compiler to only ocmpile the files, `main.ts` and `router/b.ts`, and leave out everything else, we can set up the `tsconfig.json` file like this:
+
+```json
+{
+  "compilerOptions": {},
+  "files": ["main.ts", "router/b.ts"]
+}
+```
+
+Note: The TS compiler will also compile files that are referenced by the files listed in the `files` option, even if those referenced files are not explicitly listed.
+
+Instead of listing each file manually, we can use the `include` option to specify a pattern that matches the files we want to include in the compilation. For example, we can compile all files inside the `router` directory by setting up the `tsconfig.json` file like this:
+
+```json
+{
+  "compilerOptions": {},
+  "include": ["router/**/*"]
+}
+```
+
+This configuration tells the compiler to include all files in the `router` directory and its subdirectories. The `**/*` pattern matches all files recursively.
+
+### Real World Application
+
+`tsc` Compile Options
+
+| Flag            | Type    | Description                                          |
+| --------------- | ------- | ---------------------------------------------------- |
+| --all           | boolean | Show all compiler options.                           |
+| --generateTrace | string  | Output a trace file for performance analysis.        |
+| --help          | boolean | Gives help information.                              |
+| --init          | boolean | Initializes a tsconfig.json file.                    |
+| --listFilesOnly | boolean | Lists files that would be compiled.                  |
+| --locale        | string  | The locale to use for error messages.                |
+| --project       | string  | Compile the project given the path to tsconfig.json. |
+| --showConfig    | boolean | Show the resolved tsconfig.json file.                |
+| --version       | boolean | Print the compiler's version.                        |
+
+`tsc` Build Options
+
+| Flag      | Type    | Description                    |
+| --------- | ------- | ------------------------------ |
+| --build   | boolean | Build one or more projects.    |
+| --clean   | boolean | Deletes the output of a build. |
+| --dry     | boolean | Show what would be built.      |
+| --force   | boolean | Rebuild all projects.          |
+| --verbose | boolean | Enable verbose logging.        |
