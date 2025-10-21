@@ -262,3 +262,178 @@ If you intended to do this, you could manually specify a union type as the type 
 ```ts
 combine<string | number>([1, 2], ["a"]); // okay
 ```
+
+## Classes
+
+TypeScript supports object-oriented programming features like classes, interfaces, inheritance, and access modifiers. Classes in TypeScript are similar to classes in other object-oriented languages like Java or C#.
+
+#### Class Members
+
+```ts
+class Point {}
+```
+
+#### Fields
+
+A field declaration creates a public writable property on the class:
+
+```ts
+class Point {
+  x: number;
+  y: number;
+}
+
+const pt = new Point();
+pt.x = 10;
+pt.y = 20;
+```
+
+As with other locations, the type annotation is optional if TypeScript can infer the type. You can also provide an initializer to set the value of the field when an instance of the class is created:
+
+```ts
+class Point {
+  x = 0;
+  y = 0;
+}
+```
+
+#### readonly Modifier
+
+You can use the `readonly` modifier to mark a field as immutable. A `readonly` field can only be assigned during initialization or in the constructor of the class:
+
+```ts
+class Point {
+  readonly x: number;
+  readonly y: number;
+
+  constructor(x: number, y: number) {
+    this.x = x;
+    this.y = y;
+  }
+}
+```
+
+Attempting to assign a value to a `readonly` field outside of these locations will result in a compilation error:
+
+```ts
+const pt = new Point(10, 20);
+pt.x = 30; // Error: Cannot assign to 'x' because it is a read-only property.
+```
+
+#### Constructors
+
+Class constructors are very similar to functions. You add parameters with type annotations, default values, and overloads:
+
+```ts
+class Point {
+  x: number;
+  y: number;
+
+  // Normal signature with defaults
+  constructor(x = 0, y = 0) {
+    this.x = x;
+    this.y = y;
+  }
+}
+```
+
+```ts
+class Point {
+  // Overloads
+  constructor();
+  constructor(x: number, y: string);
+  constructor(s: string);
+  constructor(xOrS: any, y?: any) {
+    // Implementation
+  }
+}
+```
+
+#### Super Calls
+
+Just as in JavaScript, if a class extends another class and has a constructor, it must call `super()` before referencing `this`:
+
+```ts
+class Base {
+  k = 4;
+}
+
+class Derived extends Base {
+  constructor() {
+    super();
+    console.log(this.k);
+  }
+}
+```
+
+#### Methods
+
+A function property on a class is called a method. Methods can use all the same type annotations as functions and constructors:
+
+```ts
+class Point {
+  x = 10;
+  y = 10;
+
+  scale(n: number): void {
+    this.x *= n;
+    this.y *= n;
+  }
+}
+```
+
+Other than the standard type annotations, TypeScript does not add any special syntax for methods.
+
+#### Getters and Setters
+
+Classes also support getters and setters as a way to intercept property access:
+
+```ts
+class C {
+  _length = 0;
+
+  get length(): number {
+    return this._length;
+  }
+
+  set length(value: number) {
+    this._length = value;
+  }
+}
+```
+
+TypeScript has some special inference rules for getters and setters:
+
+- If `get` exists but no `set`, the property is inferred to be `readonly`.
+- If the type of the setter parameter is not annotated, it is inferred from the getter's return type.
+- Getter and setters must have the same member visibility (public, private, or protected).
+
+#### Index Signatures
+
+Classes can also have index signatures to describe properties that are accessed via an index:
+
+```ts
+class MyClass {
+  // Key is a string
+  [s: string]: boolean | ((s: string) => boolean); // Value can be a boolean or a function
+
+  check(s: string) {
+    return this[s] as boolean;
+  }
+}
+```
+
+What the above code does is define a class `MyClass` that has an index signature allowing it to have properties with string keys. The values of these properties can either be a boolean or a function that takes a string argument and returns a boolean. The `check` method takes a string argument `s` and returns the value associated with the key `s` in the class instance, casting it to a boolean.
+
+How would this be used in practice? Here's an example:
+
+```ts
+const myInstance = new MyClass();
+myInstance["isActive"] = true; // Assigning a boolean value
+myInstance["isValid"] = (input: string) => input.length > 5;
+console.log(myInstance.check("isActive")); // Outputs: true
+console.log(myInstance["isValid"]("Hello, World!")); // Outputs: true
+console.log(myInstance["isValid"]("Hi")); // Outputs: false
+```
+
+So does this assign multiple properties to the class instance dynamically? Yes, it does. The index signature allows you to add properties to instances of `MyClass` using string keys, and the values can be either booleans or functions that match the specified signature. This provides flexibility in how you can use instances of the class.
