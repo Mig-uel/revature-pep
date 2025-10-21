@@ -478,3 +478,51 @@ function strictNullChecksFixed(name: string | null): string {
   }
 }
 ```
+
+## Strict
+
+The `strict` option in the `tsconfig.json` file is a shorthand way to enable a set of TypeScript's strict type-checking options. Yo can turn off individual strict options if needed, but enabling `strict` is a good way to ensure that your code adheres to best practices and catches potential errors early in the development process.
+
+#### Strict Bind Call Apply
+
+When the `strictBindCallApply` option is enabled, TypeScript performs stricter type checking for the `bind`, `call`, and `apply` methods on functions. This helps catch potential errors related to incorrect argument types or counts when using these methods.
+
+```ts
+function greet(this: { name: string }, greeting: string) {
+  return `${greeting}, ${this.name}`;
+}
+
+const person = { name: "Alice" };
+console.log(greet.call(person, "Hello")); // No error, correct usage
+console.log(greet.call(person, 42)); // Error: Argument of type 'number' is not assignable to parameter of type 'string'.
+```
+
+In this example, the `greet` function expects a `this` context with a `name` property of type `string` and a single argument of type `string`. When we use the `call` method to invoke the function, TypeScript checks that the argument types match the expected types. If we pass an argument of the wrong type, TypeScript raises an error.
+
+#### Strict Function Types
+
+When the `strictFunctionTypes` option is enabled, TypeScript performs stricter type checking for function types. This helps catch potential errors related to incompatible function types when assigning functions to variables or passing them as arguments.
+
+```ts
+type StringToNumber = (input: string) => number;
+type NumberToString = (input: number) => string;
+let func: StringToNumber;
+
+func = (input: number) => input.toString(); // Error: Type '(input: number) => string' is not assignable to type 'StringToNumber'.
+```
+
+In this example, we define two function types: `StringToNumber` and `NumberToString`. When we try to assign a function of type `NumberToString` to a variable of type `StringToNumber`, TypeScript raises an error because the function types are incompatible. The parameter types and return types must match for the assignment to be valid.
+
+When the `useUnknownInCatchVariables` option is enabled, TypeScript treats the type of variables declared in `catch` clauses as `unknown` instead of `any`. This helps catch potential errors related to handling exceptions in a type-safe manner.
+
+```ts
+try {
+  // Some code that may throw an error
+} catch (error) {
+  console.log(error.message); // Error: Object is of type 'unknown'.
+}
+```
+
+In this example, the `error` variable in the `catch` clause is treated as `unknown`. When we try to access the `message` property of `error`, TypeScript raises an error because it cannot guarantee that `error` has a `message` property. To safely access properties of an `unknown` type, we need to perform type checks or assertions.
+
+`strictPropertyInitialization` and `strictNullChecks` were covered in the previous section on Compiler Options.
