@@ -77,3 +77,188 @@ The syntax for type casting using angle brackets is:
 ```ts
 <NewType>variable;
 ```
+
+## Functions
+
+Functions are the basic building blocks of any application, whether they are local functions, imported from another module, or methods on a class. They are also values, and just like any other value, TypeScript has many ways to describe how functions can be called.
+
+#### Function Type Expressions
+
+The simples way to describe a function type is with a function type expression. These are syntactically similar to arrow functions, but they only describe the type of the function, not its implementation.
+
+```ts
+function greeter(fn: (a: string) => void) {
+  fn("Hello, World");
+}
+
+function printToConsole(s: string) {
+  console.log(s);
+}
+
+greeter(printToConsole);
+```
+
+The syntax `(a: string) => void` describes a function that takes a single parameter of type `string` and does not return a value. The `greeter` function takes a parameter `fn` of this function type and calls it with the string "Hello, World". The `printToConsole` function matches this type, so it can be passed to `greeter`.
+
+We cab use a type alias to make the code more readable:
+
+```ts
+type GreetFunction = (a: string) => void;
+
+function greeter(fn: GreetFunction) {
+  fn("Hello, World");
+}
+
+function printToConsole(s: string) {
+  console.log(s);
+}
+
+greeter(printToConsole);
+```
+
+#### Call Signatures
+
+In JavaScript, functions can have properties in addition to being callable. However, the function type expressions we have seen so far only describe the callable aspect of functions. If we want to describe something callable with properties, we can write a call signature in an object type:
+
+```ts
+type DescribableFunction = {
+  description: string;
+  (someArg: number): boolean;
+};
+
+function doSomething(fn: DescribableFunction) {
+  console.log(fn.description + " returned " + fn(6));
+}
+
+let myFunc: DescribableFunction; = function (someArg: number) {
+  return someArg > 3;
+};
+
+myFunc.description = "This function checks if a number is greater than 3";
+
+doSomething(myFunc);
+```
+
+Note, the syntax is slightly different compared to a function type expression. We use `:` to separate the property from the call signature. The call signature itself does not have a name; it is just a list of parameters and the return type.
+
+#### Construct Signatures
+
+In JavaScript, functions can also be invoked with the `new` keyword to create new objects. TypeScript refers to these as constructors because they usually create a new object. To describe a constructor, we can use a construct signature in an object type:
+
+```ts
+type SomeConstructor = {
+  new (s: string): SomeObject;
+};
+
+function fn(ctor: SomeConstructor) {
+  return new ctor("hello");
+}
+
+class SomeObject {
+  constructor(s: string) {
+    console.log(s);
+  }
+}
+
+fn(SomeObject);
+```
+
+Some objects, like JavaScript's built-in `Date` object, can be invoked with or without `new`. You can combine call and construct signatures in a single type:
+
+```ts
+interface CallOrConstruct {
+  new (s: string): Date;
+  (n?: number): number;
+}
+```
+
+#### Generic Functions
+
+It's common to write a function where the types of the input relate to the type of the output or where the types of the inputs relate to each other. In these cases, we can use generics to capture the relationship between the types.
+
+```ts
+function firstElement(arr: any[]) {
+  return arr[0];
+}
+```
+
+This function does its job but loses information about the type of the elements in the array. It would be better if the function returned the type of the array element.
+
+In TypeScript, generics are used when we want to describe a relationship between types. We do this by declaring a type parameter in the function signature:
+
+```ts
+function firstElement<Type>(arr: Type[]): Type | undefined {
+  return arr[0];
+}
+```
+
+By adding a type parameter `Type` to this function and using it in two places, we have created a link between the input of the function (the array) and the output of the function (the first element of the array). Now, when we call `firstElement`, TypeScript can infer the type of the elements in the array and use that as the return type of the function:
+
+```ts
+// s is of type string
+const s = firstElement(["a", "b", "c"]);
+
+// n is of type number
+const n = firstElement([1, 2, 3]);
+
+// u is of type undefined
+const u = firstElement([]);
+```
+
+#### Inference
+
+Note that we did not have to specify the type parameter `Type` when we called `firstElement`. TypeScript was able to infer the type based on the type of the argument we passed in. This is called "type inference" and is a powerful feature of TypeScript that allows us to write generic functions without having to explicitly specify the types every time we call them.
+
+We can use multiple type parameters to describe functions that relate multiple types. For example, a standalone version of the `map` method on arrays can be written like this:
+
+```ts
+function map<Input, Output>(
+  arr: Input[],
+  func: (arg: Input) => Output
+): Output[] {
+  return arr.map(func);
+}
+```
+
+#### Constraints
+
+We have written some generic functions that can work on any type. Sometimes, we want to relate two values but can only operate on a subset of types. In these cases, we can use "constraints" to limit the kinds of types that can be used as type arguments.
+
+Let's write a function that returns the longer of two values. To do this, we need a length property that is a number. We can constrain the type parameter to types that have a `length` property by writing an `extends` clause on the type parameter:
+
+```ts
+function longest<Type extends { length: number }>(a: Type, b: Type): Type {
+  if (a.length >= b.length) {
+    return a;
+  } else {
+    return b;
+  }
+}
+```
+
+An argument of type `number` cannot be passed to this function because `number` does not have a `length` property. We allows TypeScript to infer the type of the return value based on the types of the arguments we pass in.
+
+#### Specifying Type Arguments
+
+TypeScript can usually infer the type arguments for generic functions, but sometimes we need to specify them explicitly. We can do this by providing the type arguments in angle brackets after the function name when we call the function:
+
+```ts
+function combine<Type>(arr1: Type[], arr2: Type[]): Type[] {
+  return arr1.concat(arr2);
+}
+```
+
+Normally, calling a function with mismatched types would result in a compilation error:
+
+```ts
+combine<string>(["a", "b"], ["c"]); // okay
+combine<number>([1, 2], [3]); // okay
+combine<string | number>([1, 2], ["a"]); // okay
+combine<string>([1, 2], ["a"]); // Error: Argument of type 'number' is not assignable to parameter of type 'string'.
+```
+
+If you intended to do this, you could manually specify a union type as the type argument:
+
+```ts
+combine<string | number>([1, 2], ["a"]); // okay
+```
