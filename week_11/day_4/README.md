@@ -614,3 +614,35 @@ This configuration tells the compiler to include all files in the `router` direc
 | --dry     | boolean | Show what would be built.      |
 | --force   | boolean | Rebuild all projects.          |
 | --verbose | boolean | Enable verbose logging.        |
+
+## Simple or Variable Types
+
+The following are the most commonly used primitives in TypeScript:
+
+- `boolean`: Represents a logical value that can be either `true` or `false`.
+- `number`: Represents numeric values, including integers and floating-point numbers.
+- `string`: Represents textual data, enclosed in single or double quotes.
+
+#### Type Assignment
+
+When creating a variable, there are two main ways TypeScript can infer its type:
+
+- Implicit Type Assignment: If you assign a value to a variable without explicitly specifying its type, TypeScript infers the type based on the assigned value.
+
+```ts
+let isDone = false; // TypeScript infers the type as boolean
+let decimal = 6; // TypeScript infers the type as number
+let color = "blue"; // TypeScript infers the type as string
+```
+
+- Explicit Type Assignment: You can explicitly specify the type of a variable using type annotations.
+
+```ts
+let isDone: boolean = false; // Explicitly specifying the type as boolean
+let decimal: number = 6; // Explicitly specifying the type as number
+let color: string = "blue"; // Explicitly specifying the type as string
+```
+
+#### Null
+
+`null` is a special type in TypeScript that represents the intentional absence of any object value. It is one of the two primitive values in JavaScript that represent "no value" or "empty value," the other being `undefined`. It is treated as a falsy value in boolean contexts.
