@@ -526,3 +526,13 @@ try {
 In this example, the `error` variable in the `catch` clause is treated as `unknown`. When we try to access the `message` property of `error`, TypeScript raises an error because it cannot guarantee that `error` has a `message` property. To safely access properties of an `unknown` type, we need to perform type checks or assertions.
 
 `strictPropertyInitialization` and `strictNullChecks` were covered in the previous section on Compiler Options.
+
+## Target
+
+The `target` option in the `tsconfig.json` file specifies the version of JavaScript that the TypeScript code will be transpiled to. This option determines the set of JavaScript features that will be available in the generated code.
+
+You might choose a lower target version if you need to support older browsers or environments that do not support the latest JavaScript features. Conversely, you might choose a higher target version if you want to take advantage of newer JavaScript features and your target environment supports them.
+
+Changing the `target` also changes the default `lib` option, which specifies the built-in type definitions that are included in the compilation. You may "mix and match" different `lib` options regardless of the `target` setting but you could just set the `target` for convenience.
+
+The special `esnext` value for the `target` option indicates that the TypeScript code should be transpiled to the latest version of JavaScript that is currently supported by the TypeScript compiler. This means that the generated code will include the most recent JavaScript features and syntax available at the time of compilation.
