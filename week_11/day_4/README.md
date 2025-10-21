@@ -87,3 +87,154 @@ Node.js takes a different approach. It runs a single-thread event loop registere
 - Extensibility to meet customized requirements.
 - Reduces loading time with quick caching.
 - Helps in building cross-platform applications.
+
+## TS Config Basics
+
+The presence of a `tsconfig.json` file in a directory indicates that the directory is the root of a TypeScript project. The `tsconfig.json` file specifies the root files and the compiler options required to compile the project.
+
+JavaScript projects can use a `jsconfig.json` file to specify the root files and compiler options for the project. The `jsconfig.json` file is similar to the `tsconfig.json` file used in TypeScript projects, but it is specifically designed for JavaScript projects.
+
+A project is "compiled" in one of the following ways:
+
+- Using a `tsconfig.json` file to specify the root files and compiler options for a TypeScript project.
+- Using a `jsconfig.json` file to specify the root files and compiler options for a JavaScript project
+
+By invoking `tsc` with no input files, the compiler searches for a `tsconfig.json` file in the current directory. If no `tsconfig.json` file is found, the compiler searches in the parent directory, and so on, until it finds a `tsconfig.json` file or reaches the root directory.
+
+By invoking `tsc -p <path-to-config-file>`, the compiler uses the specified configuration file instead of searching for one.
+
+When input files are specified on the command line, the compiler ignores the `tsconfig.json` file and only compiles the specified files.
+
+Example using files property:
+
+```json
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "sourceMap": true
+  },
+  "files": [
+    "core.ts",
+    "sys.ts",
+    "types.ts",
+    "scanner.ts",
+    "parser.ts",
+    "utilities.ts",
+    "binder.ts",
+    "checker.ts",
+    "emitter.ts",
+    "program.ts",
+    "commandLineParser.ts",
+    "tsc.ts",
+    "diagnosticInformationMap.generated.ts"
+  ]
+}
+```
+
+Example using include and exclude properties:
+
+```json
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "sourceMap": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "**/*.spec.ts"]
+}
+```
+
+#### TSConfig Bases
+
+Depending on the JavaScript runtime environment (browser, Node.js, etc.) in which you intend to run your code, there may be a base configuration you can use at [https://www.github.com/tsconfig/bases](https://www.github.com/tsconfig/bases). These base configurations can be extended in your own `tsconfig.json` file using the `extends` property. By extending a base configuration, you can inherit its settings and customize them as needed for your specific project.
+
+For example, if you were writing a project that uses Node.js version 12 and above, the you could use the npm module `@tsconfig/node12` as your base configuration:
+
+```json
+{
+  "extends": "@tsconfig/node12/tsconfig.json",
+  "compilerOptions": {
+    // Your custom compiler options here
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "**/*.spec.ts"]
+}
+```
+
+This approach allows you to leverage pre-defined configurations that are optimized for specific environments, reducing the amount of boilerplate configuration you need to write and maintain.
+
+This lets your tsconfig.json focus on the unique choices for your project, rather than all of the runtime mechanics.
+
+### Real World Application
+
+TypeScript allows us to add types to regular JavaScript code. It also checks for syntax errors even before runtime. It even provides tooltips that show you why some code might throw an error. There are so many great features that come by default. Even with all these great features, TypeScript recognizes the need for flexibility.
+
+Sometimes, you do not want all the default rules that TypeScript enforces and that is totally okay. That's one reason why providing a `tsconfig.json` file is so important. It allows you to customize the behavior of the TypeScript compiler to fit the specific needs of your project. You get perks like telling the TypeScript compiler what files to run and more!
+
+#### Sample `tsconfig.json` File and Breakdown
+
+The `tsconfig.json` file is always placed in the root of your project, and you can customize what rules you want the TypeScript compiler to enforce. Here is a sample `tsconfig.json` file:
+
+```json
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "module": "commonjs",
+    "strictNullChecks": true
+  },
+  "include": ["src/**/*"]
+}
+```
+
+In this `tsconfig.json` file:
+
+- The `compilerOptions` is a nest object that contains various settings for the TypeScript compiler.
+  - The `target` option specifies the version of JavaScript that the TypeScript code will be transpiled to. In this case, it is set to `es2017`, which means that the TypeScript code will be transpiled to ECMAScript 2017.
+  - The `module` option specifies the module system that will be used in the transpiled JavaScript code. In this case, it is set to `commonjs`, which is the module system used in Node.js.
+  - The `strictNullChecks` option is set to `true`, which means that the TypeScript compiler will enforce strict null checking rules. This helps catch potential null or undefined value errors at compile time.
+- The `include` option specifies the files that should be included in the TypeScript project. In this case, it includes all files in the `src` directory and its subdirectories.
+
+Another neat addition is that by including a `tsconfig.json` file, you can now use the command `tsc` without any additional arguments in your terminal. The compiler will automatically look for the `tsconfig.json` file in the current directory and use the settings specified in it to compile your TypeScript code.
+
+### Implementation
+
+The tsconfig.json file is a file in JSON format which allows us to specify the root level files and different compiler options required to set up a TypeScript-based project. The existence of this file in a project specifies that the given directory is the root of the TypeScript project folder.
+
+Here is a simple example of a tsconfig.json file:
+
+```json
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "module": "system",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "allowUnreachableCode": false,
+    "strictNullChecks": true,
+    "outFile": "../JS/TypeScript/HelloWorld.js",
+    "sourceMap": true
+  },
+  "files": ["program.ts", "sys.ts"],
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "src/**/*.spec.ts"]
+}
+```
+
+- `compileOnSave`: When set to true, this option allows the TypeScript compiler to automatically compile the TypeScript files whenever they are saved.
+- `compilerOptions`: This section contains various options that control the behavior of the TypeScript compiler.
+  - `module`: Specifies the module system to be used in the generated JavaScript code. In this case, it is set to "system".
+  - `noImplicitAny`: When set to true, this option raises an error when a variable is implicitly assigned the "any" type.
+  - `removeComments`: When set to true, this option removes all comments from the generated JavaScript code.
+  - `allowUnreachableCode`: When set to false, this option raises an error when unreachable code is detected.
+  - `strictNullChecks`: When set to true, this option enables strict null checking, which helps catch potential null or undefined value errors at compile time.
+  - `outFile`: Specifies the output file for the generated JavaScript code. In this case, it is set to "../JS/TypeScript/HelloWorld.js".
+  - `sourceMap`: When set to true, this option generates source map files that allow debugging of the original TypeScript code in the browser.
+- `files`: This section specifies the list of TypeScript files to be included in the compilation process. In this case, it includes "program.ts" and "sys.ts".
+- `include`: This section specifies the files or directories to be included in the compilation process. In this case, it includes all files in the "src" directory and its subdirectories.
+- `exclude`: This section specifies the files or directories to be excluded from the compilation process. In this case, it excludes the "node_modules" directory and any TypeScript files in the "src" directory that end with ".spec.ts".

@@ -1,0 +1,15 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "module": "system",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "allowUnreachableCode": true,
+    "strictNullChecks": true,
+    "outFile": "",
+    "sourceMap": true
+  },
+  "files": [],
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "**/*.spec.ts"]
+}
