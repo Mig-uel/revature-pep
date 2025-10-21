@@ -61,3 +61,29 @@ Some advantages of using TypeScript over JavaScript include:
 
 - TypeScript points out compilation errors at the time of development (pre-runtime). As a result, runtime errors are reduced, leading to more robust and reliable code.
 - TypeScript offers better code structuring and greater support for object-oriented programming (OOP) principles, making it easier to manage and maintain large codebases.
+
+## Node As A Runtime
+
+Scalability, latency, and throughput are critical factors in server-side applications. Keeping latency low and throughput high while scaling up and out is not easy. Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine that achieves this by using an event-driven, non-blocking I/O model. In other words, Node.js can handle multiple requests simultaneously without blocking the execution of other requests. This makes it well-suited for building scalable and high-performance server-side applications.
+
+In the traditional approach to creating web servers, for each incoming request or connection, the server spawns a new thread of execution or even forks a new process to handle that request and send a response back to the client. Conceptually, this makes perfect sense, but in practice, it incurs a great deal of overhead.
+
+While spawning threads incurs less memory and CPU overhead than forking processes, it can still be inefficient, especially when handling a large number of concurrent connections. The presence of a large number of threads can cause a heavily loaded system to spend precious cycles on thread scheduling and context switching, which can lead to poor performance and increased latency.
+
+Node.js takes a different approach. It runs a single-thread event loop registered with the system to handle connections, and each new connection causes a JavaScript callback function to be invoked. The callback function can handle requests with non-blocking I/O operations, and if necessary, can spawn threads from a pool to execute blocking or CPU-intensive operations. Node's approach to scaling with callback functions requires less memory to handle more connections than most competitive architectures that scale with threads or processes, including Apache HTTP Server, various Java EE application servers, Microsoft's IIS, and Ruby on Rails.
+
+### Real World Application
+
+#### Node.js Advantages
+
+- High performance for real-time applications.
+- Easy scalability for modern applications.
+- Cost-effective with full-stack JS.
+- Community support to simplify development.
+- Easy to learn and quick to adapt.
+- Helps in building cross-functional teams.
+- Improves app response time and boosts performance.
+- Reduces time-to-market for your applications.
+- Extensibility to meet customized requirements.
+- Reduces loading time with quick caching.
+- Helps in building cross-platform applications.
