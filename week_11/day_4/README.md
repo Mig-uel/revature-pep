@@ -646,3 +646,53 @@ let color: string = "blue"; // Explicitly specifying the type as string
 #### Null
 
 `null` is a special type in TypeScript that represents the intentional absence of any object value. It is one of the two primitive values in JavaScript that represent "no value" or "empty value," the other being `undefined`. It is treated as a falsy value in boolean contexts.
+
+## Special Types
+
+#### `any`
+
+The `any` type in TypeScript is a special type that allows a variable to hold any value, regardless of its type. When a variable is declared with the `any` type, TypeScript does not perform any type checking on that variable, and it can be assigned values of any type without raising any errors.
+
+```ts
+let randomValue: any = 10; // randomValue is of type any
+randomValue = "Hello"; // No error, randomValue can hold a string
+randomValue = true; // No error, randomValue can hold a boolean
+```
+
+`any` can be useful to get past errors since it disables type checking, but it also removes the benefits of using TypeScript's type system. It is generally recommended to avoid using `any` whenever possible and to use more specific types to take advantage of TypeScript's type checking capabilities.
+
+#### `unknown`
+
+The `unknown` type in TypeScript is a special type that represents a value that could be of any type, similar to `any`. However, unlike `any`, the `unknown` type is safer because it requires explicit type checking or type assertions before performing operations on the value.
+
+```ts
+let randomValue: unknown = 10; // randomValue is of type unknown
+randomValue = "Hello"; // No error, randomValue can hold a string
+randomValue = true; // No error, randomValue can hold a boolean
+```
+
+To perform operations on a variable of type `unknown`, you need to first check its type or use a type assertion:
+
+```ts
+let randomValue: unknown = "Hello";
+if (typeof randomValue === "string") {
+  console.log(randomValue.toUpperCase()); // No error, randomValue is treated as a string
+}
+let anotherValue: unknown = 10;
+let valueAsNumber: number = anotherValue as number; // Type assertion to treat anotherValue as a number
+console.log(valueAsNumber.toFixed(2)); // No error, valueAsNumber is treated as a number
+```
+
+### Real World Application
+
+#### Why Use `unknown` Over `any`?
+
+Using `unknown` over `any` is generally recommended because it provides better type safety and helps catch potential errors at compile time. Here are some reasons why you might choose `unknown` over `any`:
+
+1. Type Safety: `unknown` forces you to perform type checks or assertions before using the value, which helps prevent runtime errors that can occur when using values of unknown types.
+2. Intentionality: Using `unknown` indicates that you are aware of the uncertainty of the value's type and are taking steps to handle it safely, whereas `any` can lead to careless usage of values without considering their types.
+3. Maintainability: Code that uses `unknown` is often easier to maintain and understand, as it makes the developer's intentions clear and encourages proper type handling.
+
+#### Why `unknown`?
+
+The `unknown` type was introduced in TypeScript 3.0 as a safer alternative to `any`. TypeScript does not allow you to use a variable of type `unknown` unless you either cast the variable to a known type or narrow its type. Type narrowing is the process of moving a less precise type to a more precise type. The `unknown` type forces you to determine what a variable typed as `unknown` actually is, either through type casting or type narrowing. This helps prevent errors that can occur when using values of unknown types.
