@@ -696,3 +696,82 @@ Using `unknown` over `any` is generally recommended because it provides better t
 #### Why `unknown`?
 
 The `unknown` type was introduced in TypeScript 3.0 as a safer alternative to `any`. TypeScript does not allow you to use a variable of type `unknown` unless you either cast the variable to a known type or narrow its type. Type narrowing is the process of moving a less precise type to a more precise type. The `unknown` type forces you to determine what a variable typed as `unknown` actually is, either through type casting or type narrowing. This helps prevent errors that can occur when using values of unknown types.
+
+## Object Types
+
+In TypeScript, object types are used to define the shape of an object, including its properties and methods. Object types can be defined using interfaces or type aliases.
+
+If you write a class in JavaScript, you are actually creating an object type. It has a name and certain properties and methods. In TypeScript, there are several ways to define object types. Keep in mind that after TypeScript introduces these features, which JavaScript lacked, JavaScript later adopted them as well.
+
+#### Defining Types
+
+There are several ways to define a type in TypeScript. In each of the below examples, we have a function that should only take in a particular type, a `Person`, which is made up of two `string` properties: `firstName` and `lastName`.
+
+We can define a type **anonymously** , where the type is not given a name. This is useful for defining a type in an ad-hoc manner, such as when passing an object as an argument to a function, but this definition cannot be reused elsewhere in the code.
+
+```ts
+function greet(person: { firstName: string; lastName: string }) {
+  console.log(`Hello, ${person.firstName} ${person.lastName}`);
+}
+greet({ firstName: "John", lastName: "Doe" });
+```
+
+TypeScript support **interfaces**, where we set forth a "promise" or "contract" that an object must adhere to. That is, we define the shape of the object by specifying its properties and their types.
+
+```ts
+interface Person {
+  firstName: string;
+  lastName: string;
+}
+```
+
+Now we can use the `Person` interface to type our function parameter:
+
+```ts
+function greet(person: Person) {
+  console.log(`Hello, ${person.firstName} ${person.lastName}`);
+}
+greet({ firstName: "Jane", lastName: "Smith" });
+```
+
+We can also define a type using a **type alias**, which allows us to create a new name for a type. Type aliases can be used to define primitive types, union types, intersection types, and more.
+
+```ts
+type Person = {
+  firstName: string;
+  lastName: string;
+};
+```
+
+Now we can use the `Person` type alias to type our function parameter:
+
+```ts
+function greet(person: Person) {
+  console.log(`Hello, ${person.firstName} ${person.lastName}`);
+}
+greet({ firstName: "Alice", lastName: "Johnson" });
+```
+
+#### Property Modifiers
+
+Objects in TypeScript, just like in JavaScript, are made up of key-value pairs called properties. There are several ways to modify these properties to change their behavior, including specifying a type, making them optional, or making them read-only.
+
+Optional properties are those that may or may not be present on an object. In TypeScript, we can define optional properties using the `?` modifier.
+
+```ts
+type Person = {
+  firstName: string;
+  lastName: string;
+  age?: number; // Optional property
+};
+```
+
+Read-only properties are those that cannot be modified after they are initialized. In TypeScript, we can define read-only properties using the `readonly` modifier.
+
+```ts
+type Person = {
+  readonly firstName: string; // Read-only property
+  readonly lastName: string; // Read-only property
+  age?: number; // Optional property
+};
+```
