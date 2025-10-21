@@ -238,3 +238,243 @@ Here is a simple example of a tsconfig.json file:
 - `files`: This section specifies the list of TypeScript files to be included in the compilation process. In this case, it includes "program.ts" and "sys.ts".
 - `include`: This section specifies the files or directories to be included in the compilation process. In this case, it includes all files in the "src" directory and its subdirectories.
 - `exclude`: This section specifies the files or directories to be excluded from the compilation process. In this case, it excludes the "node_modules" directory and any TypeScript files in the "src" directory that end with ".spec.ts".
+
+## Compiler Options
+
+The `tsconfig.json` file specifies compilation options for the TypeScript compiler. These options include which version of JavaScript our TypeScript code will be transpiled to, what the output directory will be, whether to include source maps, and more.
+
+### Implementation
+
+#### Nested `tsconfig.json` Files
+
+The TypeScript compiler supports the use of nested `tsconfig.json` files. This means that you can have multiple `tsconfig.json` files in different directories within your project, each with its own set of compiler options.
+
+When the TypeScript compiler encounters a nested `tsconfig.json` file, it will merge the options from the parent `tsconfig.json` file with the options from the nested file. The options in the nested file will take precedence over the options in the parent file.
+
+For example, consider the following project structure:
+
+```
+├── dist
+└── src
+├── tsconfig.json
+├── backend
+│ ├── index.ts
+│ └── tsconfig.json
+└── frontend
+├── index.ts
+└── tsconfig.json
+```
+
+Here, we have a project with a root `tsconfig.json` file in the `src` directory, and two nested `tsconfig.json` files in the `backend` and `frontend` directories.
+
+Both subdirectories contain their own `tsconfig.json` files and a TypeScript file (`index.ts`).
+
+The `tsconfig.json` file in the `src` directory might look like this:
+
+```json
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "rootDir": ".",
+    "outDir": "../dist/"
+  },
+  "files": [],
+  "references": [{ "path": "./backend" }, { "path": "./frontend" }]
+}
+```
+
+- We have specified the `outDir` option to output the compiled JavaScript files to the `dist` directory.
+- We have also specified the `references` option to reference the `backend` and `frontend` subdirectories. `references` allow us to create a project structure where multiple TypeScript projects can depend on each other.
+
+The whole project can be compiled by running the following command:
+
+```bash
+tsc -b src
+```
+
+This command tells the TypeScript compiler to build the project starting from the `src` directory, taking into account the nested `tsconfig.json` files in the `backend` and `frontend` directories.
+
+The `tsconfig.json` file in the `backend` directory might look like this:
+
+```json
+{
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "../../dist/backend"
+  }
+}
+```
+
+- Here, we have specified the `outDir` option to output the compiled JavaScript files to the `dist/backend` directory.
+
+The frontend subdirectory can be built independently by running the following command:
+
+```bash
+tsc -b src/frontend
+```
+
+Let's take a loot at the `tsconfig.json` file in the `frontend` directory:
+
+```json
+{
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "../../dist/frontend"
+  },
+  "references": [{ "path": "../backend" }, { "composite": true }]
+}
+```
+
+- Here, we have specified the `outDir` option to output the compiled JavaScript files to the `dist/frontend` directory.
+- We have also specified the `references` option to reference the `backend` subdirectory.
+- The `composite` option is set to `true`, indicating that this project is a composite project. Composite projects allow for faster builds and better incremental compilation by enabling the TypeScript compiler to understand the dependencies between different projects.
+
+The backend subdirectory can be built independently by running the following command:
+
+```bash
+tsc -b src/backend
+```
+
+---
+
+`strictPropertyInitialization`: When set to true, this option ensures that class properties are initialized in the constructor, helping to prevent runtime errors related to uninitialized properties.
+
+```ts
+class NoInitProperties {
+  name: string; // Error: Property 'name' has no initializer and is not definitely assigned in the constructor.
+
+  constructor() {
+    // this.name is not initialized here
+  }
+}
+```
+
+The first method to fix this error is to initialize the property in the constructor:
+
+```ts
+class InitProperties {
+  name: string;
+
+  constructor() {
+    this.name = "Default Name";
+  }
+}
+```
+
+The second method is to use a type union with `undefined`:
+
+```ts
+class InitPropertiesWithUndefined {
+  name: string | undefined; // No error, as 'name' can be undefined
+
+  constructor() {
+    // this.name is not initialized here
+  }
+}
+```
+
+The third method is to use the definite assignment assertion operator (`!`):
+
+```ts
+class DefiniteAssignment {
+  name!: string; // No error, as we assert that 'name' will be assigned
+}
+```
+
+The fourth method is to assign a value directly to the property at the point of declaration:
+
+```ts
+class DirectAssignment {
+  name: string = "Default Name"; // No error, as the property is initialized
+}
+```
+
+`noImplicitThis`: When set to true, this option raises an error when the `this` keyword is used in a way that is not explicitly typed. This helps catch potential errors related to the `this` context in functions and methods.
+
+```ts
+class NoImplicitThis {
+  name: string = "TypeScript";
+
+  logToConsole() {
+    let callback = function () {
+      console.log(this.name); // Error: 'this' implicitly has type 'any' because it does not have a type annotation.
+    };
+
+    setTimeout(callback, 1000);
+  }
+}
+```
+
+What happens here is that the `this` context inside the `callback` function is not referencing the instance of the `NoImplicitThis` class, but rather the function's own context, which is `undefined` in strict mode or the global object in non-strict mode. In JavaScript, the `this` scope inside methods is not bound to the class instance by default.
+
+To fix this error, we can use an arrow function for the `callback`, which lexically binds the `this` context to the surrounding scope (the class instance in this case):
+
+```ts
+class ImplicitThisFixed {
+  name: string = "TypeScript";
+
+  logToConsole() {
+    let callback = () => {
+      console.log(this.name); // No error, 'this' correctly refers to the class instance
+    };
+
+    setTimeout(callback, 1000);
+  }
+}
+```
+
+This error can also be fixed by passing the `this` property into the callback function:
+
+```ts
+let callback = function (_this) {
+  console.log(_this.name); // No error, '_this' correctly refers to the class instance
+};
+
+setTimeout(callback, 1000, this); // setTimeout takes additional parameters to pass to the callback
+```
+
+`noImplicitReturns`: When set to true, this option raises an error when a function does not have a return statement in all code paths. This helps catch potential errors related to missing return values in functions.
+
+```ts
+function noImplicitReturns(value: number): number {
+  if (value > 0) return value;
+  // Error: Not all code paths return a value.
+}
+```
+
+Here, the function `noImplicitReturns` has a return type of `number`, but it does not return a value in all code paths. If the input `value` is less than or equal to 0, the function will reach the end without returning anything, which violates the expected return type.
+
+To fix this error, we need to ensure that all code paths in the function return a value. We can add an `else` clause to handle the case when `value` is less than or equal to 0:
+
+```ts
+function implicitReturnsFixed(value: number): number {
+  if (value > 0) {
+    return value;
+  } else {
+    return 0; // Return a default value when value is less than or equal to 0
+  }
+}
+```
+
+`strictNullChecks`: When set to true, this option enables strict null checking, which helps catch potential null or undefined value errors at compile time.
+
+```ts
+function strictNullChecksExample(name: string | null): string {
+  return "Hello, " + name.toUpperCase(); // Error: Object is possibly 'null'.
+}
+```
+
+In this example, the function `strictNullChecksExample` takes a parameter `name` that can be either a `string` or `null`. When we try to call the `toUpperCase()` method on `name`, TypeScript raises an error because `name` could be `null`, and calling a method on `null` would result in a runtime error.
+
+To fix this error, we need to add a check to ensure that `name` is not `null` before calling the `toUpperCase()` method:
+
+```ts
+function strictNullChecksFixed(name: string | null): string {
+  if (name === null) {
+    return "Hello, Guest!";
+  } else {
+    return "Hello, " + name.toUpperCase();
+  }
+}
+```
