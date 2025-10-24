@@ -443,3 +443,66 @@ This approach allows for more nuanced type transformations based on the characte
 ### Real World Application
 
 The `keyof` operator is also known as indexed type query operator, and it yields the union that contains property names and keys of its operand type. It is commonly used in scenarios where you want to create functions or types that operate on the keys of an object type, ensuring type safety and preventing errors.
+
+## Readonly Interface
+
+TypeScript provides the `readonly` modifier, which can be applied to properties of an interface to make them immutable. Once a property is marked as `readonly`, it cannot be reassigned after the initial assignment.
+
+```typescript
+interface IEmployee {
+  readonly id: number;
+  name: string;
+  position: string;
+}
+
+let employee: IEmployee = {
+  id: 1,
+  name: "John Doe",
+  position: "Software Engineer",
+};
+
+employee.name = "Jane Smith"; // Allowed
+employee.position = "Senior Software Engineer"; // Allowed
+employee.id = 2; // Error: Cannot assign to 'id' because it is a read-only property.
+```
+
+### Real World Application
+
+> Why would we want to have an interface being readonly?
+
+Some properties should not be changed after they are set initially. For example, an employee's ID should remain constant throughout their tenure at a company. By marking the `id` property as `readonly`, we ensure that it cannot be accidentally modified, thus maintaining data integrity.
+
+### Implementation
+
+```typescript
+class Employee {
+  readonly id: number;
+  name: string;
+
+  constructor(id: number, name: string) {
+    this.id = id;
+    this.name = name;
+  }
+}
+```
+
+Since `readonly` properties cannot be changed outside the class, they can only be assigned a value during declaration or within the constructor of the class.
+
+In the same way, you can yse `Readonly<T>` utility type to make all properties of an interface or type `T` readonly.
+
+```typescript
+interface IEmployee {
+  id: number;
+  name: string;
+  position: string;
+}
+
+let employee: Readonly<IEmployee> = {
+  id: 1,
+  name: "John Doe",
+  position: "Software Engineer",
+};
+
+employee.name = "Jane Smith"; // Error: Cannot assign to 'name' because it is a read-only property.
+employee.position = "Senior Software Engineer"; // Error: Cannot assign to 'position' because it is a read-only property.
+```
