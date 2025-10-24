@@ -586,3 +586,176 @@ const Modes = {
 
 fetchData(Modes.CREATE); // Now works correctly
 ```
+
+## Type Guards
+
+#### Type Guards and Differentiating Types
+
+Union types are useful for modeling situations where values can overlap in the types they can take on. What happens if we need to know specifically whether we have a `Fish` or some other type in a union? A common idiom in JavaScript is to check for the presence of a property that only one of the types has.
+
+```javascript
+let pet = getSmallPet();
+
+// You can use 'in' to check for the presence of a property
+if ("swim" in pet) {
+  pet.swim();
+}
+
+// However, you cannot use property access directly without a type guard
+if (pet.fly) {
+  // Property 'fly' does not exist on type 'Fish | Bird'
+  pet.fly();
+}
+```
+
+To get the same code working via property access, we can use type assertion.
+
+```typescript
+let pet = getSmallPet();
+
+let fish = pet as Fish;
+let bird = pet as Bird;
+```
+
+However, this is not the sort of code we want to write all the time.
+
+#### User-Defined Type Guards
+
+It would be much better if, once we performed the check, we could know the type of pet within each branch of our conditional.
+
+TypeScript allows us to define our own type guards using functions that return a type predicate. A type guard is an expression that performs a runtime check that guarantees the type in some scope.
+
+##### Using Type Predicates
+
+To define a type guard, we simply need to write a function that returns a type predicate. A type predicate takes the form `parameterName is Type`. Here is how we can define a type guard for our `Fish` type:
+
+```typescript
+function isFish(pet: Fish | Bird): pet is Fish {
+  return (pet as Fish).swim !== undefined;
+}
+```
+
+Anytime we call `isFish`, TypeScript will narrow the type of `pet` to `Fish` within the true branch of an `if` statement.
+
+```typescript
+let pet = getSmallPet();
+
+if (isFish(pet)) {
+  pet.swim(); // pet is of type Fish here
+} else {
+  pet.fly(); // pet is of type Bird here
+}
+```
+
+Notice that TypeScript not only knows that `pet` is a `Fish` in the true branch, but it also knows that `pet` must be a `Bird` in the false branch. This is because the type guard function has excluded `Fish` from the type of `pet` in that branch.
+
+You can use type guards to filter arrays as well:
+
+```typescript
+const pets: (Fish | Bird)[] = [getSmallPet(), getSmallPet(), getSmallPet()];
+
+const fishPets: Fish[] = pets.filter(isFish); // fishPets is of type Fish[]
+const fishPets2: Fish[] = pets.filter((pet) => isFish(pet)); // fishPets2 is of type Fish[]
+```
+
+#### Using the `in` Operator
+
+The `in` operator can also be used as a type guard to check for the presence of a property in an object and narrow the type accordingly.
+
+```typescript
+function move(pet: Fish | Bird) {
+  if ("swim" in pet) {
+    pet.swim(); // pet is of type Fish here
+  } else {
+    pet.fly(); // pet is of type Bird here
+  }
+}
+```
+
+#### Using `typeof` Type Guards
+
+The `typeof` operator can be used as a type guard to check the type of a variable at runtime and narrow its type accordingly.
+
+```typescript
+function isNumber(x: any): x is number {
+  return typeof x === "number";
+}
+
+function isString(x: any): x is string {
+  return typeof x === "string";
+}
+
+function padLeft(value: string, padding: string | number) {
+  if (isNumber(padding)) {
+    return Array(padding + 1).join(" ") + value;
+  }
+  if (isString(padding)) {
+    return padding + value;
+  }
+  throw new Error(`Expected string or number, got '${padding}'.`);
+}
+```
+
+However, TypeScript has built-in support for `typeof` type guards, so we can simplify the above code without needing to define our own type guard functions:
+
+```typescript
+function padLeft(value: string, padding: string | number) {
+  if (typeof padding === "number") {
+    return Array(padding + 1).join(" ") + value;
+  }
+  if (typeof padding === "string") {
+    return padding + value;
+  }
+  throw new Error(`Expected string or number, got '${padding}'.`);
+}
+```
+
+#### `instanceof` Type Guards
+
+The `instanceof` operator can be used as a type guard to check if an object is an instance of a specific class and narrow its type accordingly.
+
+```typescript
+class Dog {
+  bark() {
+    console.log("Woof!");
+  }
+}
+
+class Cat {
+  meow() {
+    console.log("Meow!");
+  }
+}
+
+function speak(animal: Dog | Cat) {
+  if (animal instanceof Dog) {
+    animal.bark(); // animal is of type Dog here
+  } else {
+    animal.meow(); // animal is of type Cat here
+  }
+}
+```
+
+#### Nullable Types
+
+TypeScript has two special types, `null` and `undefined`, which represent the absence of a value.
+
+By default, the type checker considers `null` and `undefined` to be valid values for all types. This means that you can assign `null` or `undefined` to any variable, regardless of its declared type. Effectively, this means that all types are nullable by default.
+
+However, when the `--strictNullChecks` flag is enabled, `null` and `undefined` are only assignable to `any`, `unknown`, `void`, and their respective types. This means that you cannot assign `null` or `undefined` to a variable of a different type unless you explicitly include them in a union type.
+
+#### Optional Parameters and Properties
+
+With `strictNullChecks` enabled, optional parameters and properties are treated as potentially `undefined`. This means that if a parameter or property is marked as optional, its type is effectively a union of its declared type and `undefined`.
+
+```typescript
+function greet(name?: string) {
+  if (name) {
+    console.log(`Hello, ${name.toUpperCase()}!`);
+  } else {
+    console.log("Hello!");
+  }
+}
+greet(); // "Hello!"
+greet("Alice"); // "Hello, ALICE!"
+```
