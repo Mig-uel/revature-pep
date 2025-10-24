@@ -794,3 +794,34 @@ Angular is widely used in the industry for building complex web applications. So
   - `app-component.ts` - This file contains the TypeScript code for the main component of the application. It defines the component's behavior, properties, and methods.
   - `app-module.ts` - This file defines the main module of the application. It imports necessary modules, declares components, and sets up the application's structure.
   - `main.ts` - This file is the entry point of the application. It bootstraps the main module and starts the application.
+
+## Video - Angular Setup
+
+Angular has core features that are essential for building applications:
+
+- Directives - Special markers in the HTML that tell Angular to do something with a DOM element (e.g., show/hide elements, repeat elements, etc.).
+
+  ```html
+  <!-- ng-app directive initializes the Angular application -->
+  <body ng-app="myApp">
+    <div ng-controller="myCtrl">
+      <h1>{{ greeting }}</h1>
+    </div>
+  </body>
+  <!-- ng-controller directive binds the controller to the div element -->
+  ```
+
+- Controllers - Provide a way to communicate between the view and the model. They contain the business logic and handle user interactions.
+
+  ```javascript
+  // Define an Angular module and controller
+  var app = angular.module("myApp", []);
+  app.controller("myCtrl", function ($scope) {
+    $scope.greeting = "Hello, World!";
+  });
+  ```
+
+- Modules - Containers for different parts of the application, such as controllers, services, directives, etc. They help organize the code and manage dependencies.
+- Services - Reusable components that provide specific functionality (e.g., data fetching, authentication, etc.) and can be injected into controllers and other components.
+- Expressions and Filters - Allow you to bind data to the view and format it as needed.
+- Routing - Enables navigation between different views and components in a single-page application.
