@@ -759,3 +759,24 @@ function greet(name?: string) {
 greet(); // "Hello!"
 greet("Alice"); // "Hello, ALICE!"
 ```
+
+## Angular Intro
+
+Angular is a framework built on TypeScript that is used for building web applications. It provides a robust set of tools and features for developing single-page applications (SPAs) with a focus on performance, scalability, and maintainability.
+
+Angular includes:
+
+- A component-based framework to create single-page and scalable web applications.
+- A collection of well-defined libraries that include many features such as routing, forms management, client-server communication, and more.
+- Tools to develop, build, test, and deploy applications.
+
+Angular should be preferred as a front-end framework when:
+
+- Developing large scale dynamic web applications.
+- Developing PWAs (Progressive Web Applications) or SPAs (Single Page Applications).
+- Developing cross-platform applications (web, mobile, desktop) using a single codebase.
+- You have a massive project with a large development team that requires a structured framework with strong typing and modularity.
+
+### Real World Application
+
+Angular is widely used in the industry for building complex web applications. Some notable companies that use Angular include Google, Microsoft, IBM, and PayPal. Angular's robust features and scalability make it a popular choice for enterprise-level applications.
