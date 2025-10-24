@@ -313,3 +313,133 @@ let CapitalGeneric: Array<string | string> = [
   "New Delhi",
 ];
 ```
+
+## KeyOf
+
+In JavaScript, we often use `Object.keys()` to get a list of keys from an object. In TypeScript, the equivalent concept is the `keyof` operator, which is used to obtain the keys of a type as a union of string literal types.
+
+Although they are similar, `keyof` only works on the type level and returns a literal union type of the keys, while `Object.keys()` works at runtime and returns an array of strings.
+
+#### Defining the Keyof Operator
+
+> The `keyof` operator takes an object type and produces a string or numeric literal union of its keys.
+
+```typescript
+type Staff = {
+  name: string;
+  salary: number;
+};
+type StaffKeys = keyof Staff; // "name" | "salary"
+```
+
+We apply the `keyof` operator to the `Staff` type, which results in a union type of its keys: `"name" | "salary"`.
+
+`keyof` can also be used for non-object types, including primitive types like `string`, `number`, and `boolean`.
+
+```typescript
+type BooleanKeys = keyof boolean; // "toString" | "valueOf" | ...
+type NumberKeys = keyof number; // "toString" | "valueOf" | ...
+type SymbolKeys = keyof symbol; // "toString" | "valueOf" | ...
+```
+
+This is less useful in practice, but it demonstrates that `keyof` can be applied to any type.
+
+#### Using Keyof with Generics
+
+The `keyof` operator can be used to apply constraints to generic types. This is particularly useful when you want to ensure that a generic type parameter is limited to the keys of a specific type.
+
+```typescript
+function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
+  return obj[key];
+}
+```
+
+If you are new to TypeScript, this example may look complex. Let's break it down:
+
+- `T` is a generic type parameter representing the type of the object.
+- `K` is another generic type parameter constrained to the keys of `T` using `K extends keyof T`.
+- The function takes an object of type `T` and a key of type `K`, and returns the value of the property at that key, which is of type `T[K]`.
+- `extends` means "is a subtype of" or "is assignable to" instead of "inherits from" in this context.
+
+This ensures that the `key` parameter is always a valid key of the object `obj`, providing type safety and preventing runtime errors.
+
+```typescript
+const developer: Staff = {
+  name: "Alice",
+  salary: 70000,
+};
+
+const nameType = getProperty(developer, "name"); // type is string
+const salaryType = getProperty(developer, "pay"); // Error: Argument of type '"pay"' is not assignable to parameter of type '"name" | "salary"'
+```
+
+##### Using Keyof with Mapped Types
+
+A common use for the `keyof` operator is in conjunction with mapped types. Mapped types allow you to transform existing types into new ones by iterating over their keys, often via the `keyof` operator.
+
+```typescript
+type OptionsFlags<T> = {
+  [K in keyof T]: boolean;
+}; // Mapped type
+
+type FeatureFlags = {
+  darkMode: () => void;
+  newUserProfile: () => void;
+}; // Original type
+
+type FeatureOptions = OptionsFlags<FeatureFlags>; // Mapped type result
+
+/* Resulting type:
+type FeatureOptions = {
+  darkMode: boolean;
+  newUserProfile: boolean;
+}
+```
+
+In this example:
+
+- We define a mapped type `OptionsFlags<T>` that takes a type `T` and creates a new type where each property key `K` in `T` is mapped to a `boolean` type.
+- We then define an original type `FeatureFlags` with two properties, each being a function.
+- Finally, we create a new type `FeatureOptions` by applying the `OptionsFlags` mapped type to `FeatureFlags`, resulting in a type where each property is now a `boolean`.
+
+This pattern is useful for creating types that represent configurations or options based on existing types, leveraging the power of `keyof` and mapped types in TypeScript.
+
+##### Using Keyof with Conditional Mapped Types
+
+In the previous example, we created a mapped type that transformed all properties of a type to `boolean`. We can go one step further by using conditional types within mapped types to create more complex transformations based on the original property types.
+
+```typescript
+type OptionsFlags<T> = {
+  [K in keyof T]: T[K] extends Function ? T[K] : boolean; // Conditional mapped type
+};
+
+type Features = {
+  darkMode: () => void;
+  newUserProfile: () => void;
+  userManagement: string;
+  resetPassword: string;
+};
+
+type FeatureOptions = OptionsFlags<Features>; // Mapped type result
+
+/* Resulting type:
+type FeatureOptions = {
+  darkMode: () => void;
+  newUserProfile: () => void;
+  userManagement: boolean;
+  resetPassword: boolean;
+}
+```
+
+In this example:
+
+- We define a mapped type `OptionsFlags<T>` that iterates over each key `K` in type `T`.
+- For each property, we use a conditional type to check if the property type `T[K]` extends `Function`. If it does, we keep the original type; otherwise, we map it to `boolean`.
+- We then define a `Features` type with a mix of function and string properties.
+- Finally, we create a new type `FeatureOptions` by applying the `OptionsFlags` mapped type to `Features`, resulting in a type where function properties remain unchanged, while string properties are transformed to `boolean`.
+
+This approach allows for more nuanced type transformations based on the characteristics of the original property types, providing greater flexibility in type definitions.
+
+### Real World Application
+
+The `keyof` operator is also known as indexed type query operator, and it yields the union that contains property names and keys of its operand type. It is commonly used in scenarios where you want to create functions or types that operate on the keys of an object type, ensuring type safety and preventing errors.
