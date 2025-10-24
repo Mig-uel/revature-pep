@@ -253,3 +253,63 @@ function setContents(this: Box, value: string) {
 setContents.call(box, "world");
 console.log(box.contents); // "world"
 ```
+
+## Array Generics
+
+In TypeScript, an array is a data type that store multiple values of different data types simultaneously. Similar to JavaScript, TypeScript supports array declaration, and there are multiple ways to declare arrays using generics.
+
+### Real World Application
+
+The main reason to use generics in arrays is to enable types, classes, or interfaces to act as parameters when defining arrays. This allows for greater flexibility and reusability of code.
+
+Some benefits of generics are:
+
+- Defining a relationship between input and output types. For example, the function `test<T>(input: T): T` allows you to make sure input and output use the same type, where input is an array of type `T` and output is also of type `T`.
+- Stronger type checks at compile time will be available. In the case of the above example, the compiler lets you know that array methods are available for input and not any other methods.
+- You can remove unnecessary type casts. For example, you have `const list: Array<Item> = []`, going over array elements, you will have access to all the properties of `Item` without needing to cast each element to `Item`.
+
+### Implementation
+
+#### How to Declare Generic Arrays
+
+##### Declaring and Initializing On Separate Lines
+
+```typescript
+let ArrayName: Array<dataType>; // Declaration
+ArrayName = [value1, value2, value3]; // Initialization
+```
+
+```typescript
+let fruits: Array<string>; // Declaration
+fruits = ["Apple", "Banana", "Orange"]; // Initialization
+
+let digits: Array<number>; // Declaration
+digits = [1, 2, 3, 4, 5]; // Initialization
+```
+
+##### Declaring and Initializing On the Same Line
+
+```typescript
+let fruits: string[] = ["Apple", "Banana", "Orange"];
+let fruitsGeneric: Array<string> = ["Apple", "Banana", "Orange"];
+let digits: number[] = [1, 2, 3, 4, 5];
+let digitsGeneric: Array<number> = [1, 2, 3, 4, 5];
+```
+
+##### Declaring MultiType Arrays
+
+```typescript
+let Capital: (string | string)[] = [
+  "USA",
+  "Washington D.C.",
+  "India",
+  "New Delhi",
+];
+
+let CapitalGeneric: Array<string | string> = [
+  "USA",
+  "Washington D.C.",
+  "India",
+  "New Delhi",
+];
+```
