@@ -866,3 +866,40 @@ A Single Page Application (SPA) is a web application that loads a single HTML pa
 - SPAs loads a single page which is a disadvantage for SEO as search engines may have difficulty indexing dynamic content.
 - SPAs requires many browser resources, which can lead to performance issues on low-end devices or slow network connections.
 - SPAs are prone to security vulnerabilities, such as cross-site scripting (XSS) attacks, if not properly implemented.
+
+## Webpack
+
+Webpack is a powerful module bundler for JavaScript applications. It takes modules with dependencies and generates static assets representing those modules. Webpack is highly configurable and can be extended with plugins and loaders to handle various types of files and transformations.
+
+- Webpack is a powerful module bundler.
+- A JavaScript file that contains all the files that belong together and served to the client in a response to a request is called a bundle.
+- A bundle can include JavaScript files, CSS files, images, and other assets.
+
+The following files can be configured in Webpack:
+
+- **Entry**: The entry point is the file where Webpack starts bundling. It can be a single file or multiple files.
+- **Output**: The output configuration specifies where the bundled files will be saved and how they will be named.
+- **Loaders**: Loaders are used to transform files before they are bundled. They can be used to transpile code, compile stylesheets, and more.
+- **Plugins**: Plugins are used to extend Webpack's functionality. They can be used to optimize the bundle, generate HTML files, and more.
+- **Mode**: The mode configuration specifies whether Webpack should optimize the bundle for development or production.
+- **DevServer**: The dev server configuration specifies how Webpack should serve the bundled files during development.
+
+### Implementation
+
+In order to configure Webpack, the following files are needed:
+
+- `package.json`: This file contains the dependencies and scripts for the project.
+- `src/tsconfig.json`: This file contains the TypeScript configuration for the project.
+- `webpack.config.js`: This file contains the Webpack configuration for the project.
+- `karma.conf.js`: This file contains the Karma configuration for the project.
+- `config/`: This directory contains the configuration files for the project.
+
+But there is no `webpack.config.js` file in an Angular project created with Angular CLI because the Angular CLI abstracts away the Webpack configuration.
+
+However, if you navigate to the `node_modules/@angular/cli/` and to the `package.json` file, you will see that the Angular CLI has Webpack as a dependency. This means that the Angular CLI uses Webpack under the hood to bundle and build Angular applications.
+
+#### Accessing Webpack Configuration
+
+If you need to customize the Webpack configuration in an Angular project created with Angular CLI, you can use the `ng eject` command. This command will extract the Webpack configuration files from the Angular CLI and place them in your project directory, allowing you to modify them as needed.
+
+> Note: The `ng eject` command has been deprecated in recent versions of Angular CLI. Instead, you can use custom builders or third-party tools like `ngx-build-plus` to extend or modify the Webpack configuration without ejecting.
