@@ -506,3 +506,83 @@ let employee: Readonly<IEmployee> = {
 employee.name = "Jane Smith"; // Error: Cannot assign to 'name' because it is a read-only property.
 employee.position = "Senior Software Engineer"; // Error: Cannot assign to 'position' because it is a read-only property.
 ```
+
+## `as const` Assertion
+
+The `as const` assertion in TypeScript is used to indicate that the value should be treated as a constant, meaning that its type will be inferred as the most specific literal type possible.
+
+When we use `as const`, we tell TypeScript to infer the narrowest type for the value, making all properties `readonly` and inferring literal types for strings, numbers, and booleans.
+
+- No literal types in that expression should be widened (e.g., `string` instead of `"hello"`).
+- Object literals get inferred as `readonly` types.
+- Array literals get inferred as `readonly` tuples.
+
+```typescript
+// Type "hello"
+let greeting = "hello" as const; // Type "hello"
+
+// Type "readonly [10, 20, 30]"
+let numbers = [10, 20, 30] as const; // Type "readonly [10, 20, 30]"
+
+// Type "{ readonly name: "Alice"; readonly age: 30; }"
+let person = { name: "Alice", age: 30 } as const; // Type "{ readonly name: "Alice"; readonly age: 30; }"
+```
+
+Outside of `.tsx` files, the angle, `<>`, syntax can also be used for `as const` assertions:
+
+```typescript
+// Type "hello"
+let greeting = <const>"hello"; // Type "hello"
+
+// Type "readonly [10, 20, 30]"
+let numbers = <const>[10, 20, 30]; // Type "readonly [10, 20, 30]"
+
+// Type "{ readonly name: "Alice"; readonly age: 30; }"
+let person = <const>{ name: "Alice", age: 30 }; // Type "{ readonly name: "Alice"; readonly age: 30; }"
+```
+
+This can even be used to enable enum-like behavior in plain JavaScript if you choose not to use TypeScript's `enum` feature:
+
+```typescript
+export const Colors = {
+  red: "red",
+  green: "green",
+  blue: "blue",
+} as const;
+```
+
+### Real World Application
+
+> Where to use `const` assertions?
+
+The `const` assertion comes particularly handy when mixing with object literals. Imagine a function designed to obtain some sort of data from the backend:
+
+```typescript
+function fetchData(mode: "CREATE" | "EDIT") {
+  // Implementation here
+}
+```
+
+This function expects a specific set of string literals as its argument. It us a union of string literals, which can be tedious to type out every time we want to call the function.
+
+In such cases, it is common practice to declare an enum-like object to hold these string literals and pass one of its properties to the function:
+
+```typescript
+const Modes = {
+  CREATE: "CREATE",
+  EDIT: "EDIT",
+};
+```
+
+Interestingly, the compiler will notify us that the argument passed to `fetchData` is not assignable to the expected parameter type. This happens because the properties of the `Modes` object are inferred as type `string`, not as the specific string literals `"CREATE"` or `"EDIT"`.
+
+To resolve this, we can use the `as const` assertion when defining the `Modes` object. This way, the properties will be inferred as their literal types, allowing us to pass them directly to the `fetchData` function without any type errors.
+
+```typescript
+const Modes = {
+  CREATE: "CREATE",
+  EDIT: "EDIT",
+} as const;
+
+fetchData(Modes.CREATE); // Now works correctly
+```
