@@ -825,3 +825,27 @@ Angular has core features that are essential for building applications:
 - Services - Reusable components that provide specific functionality (e.g., data fetching, authentication, etc.) and can be injected into controllers and other components.
 - Expressions and Filters - Allow you to bind data to the view and format it as needed.
 - Routing - Enables navigation between different views and components in a single-page application.
+
+## Angular CLI
+
+The Angular CLI (Command Line Interface) is a powerful tool that helps developers create, manage, and build Angular applications. It provides a set of commands that automate common tasks, such as creating new projects, generating components, services, and modules, running tests, and building the application for production.
+
+### Implementation
+
+#### Creating a New Angular Project
+
+To create a new Angular project using the Angular CLI, follow these steps:
+
+Navigate to the directory where you want to create the project and run the following command:
+
+```bash
+ng new my-angular-app
+```
+
+This command will prompt you to choose options for your new project, such as whether to include Angular routing and which stylesheet format to use (CSS, SCSS, etc.). After you make your selections, the CLI will generate a new Angular project with the specified configuration.
+
+```bash
+ng serve
+```
+
+This command will compile the application and start a development server. By default, the server runs on `http://localhost:4200/`. You can open this URL in your web browser to see your Angular application in action. The development server also supports live reloading, so any changes you make to the source code will automatically refresh the application in the browser.
