@@ -780,3 +780,17 @@ Angular should be preferred as a front-end framework when:
 ### Real World Application
 
 Angular is widely used in the industry for building complex web applications. Some notable companies that use Angular include Google, Microsoft, IBM, and PayPal. Angular's robust features and scalability make it a popular choice for enterprise-level applications.
+
+## Video - Angular 2+ Intro
+
+- Angular is a Model-View-Whatever (MVW) framework.
+- Define models to represent data, views to present data to users, and controllers to handle user interactions and update models and views accordingly (in TypeScript).
+- The view is defined using HTML templates, which can include Angular-specific syntax for data binding and directives.
+- Angular will manage the rest of the application lifecycle, including rendering views, handling user input, and updating models.
+
+### Main Angular Files
+
+- There are 3 main files in an Angular application that reside inside the `src` directory:
+  - `app-component.ts` - This file contains the TypeScript code for the main component of the application. It defines the component's behavior, properties, and methods.
+  - `app-module.ts` - This file defines the main module of the application. It imports necessary modules, declares components, and sets up the application's structure.
+  - `main.ts` - This file is the entry point of the application. It bootstraps the main module and starts the application.
