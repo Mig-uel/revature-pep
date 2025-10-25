@@ -172,7 +172,6 @@
 </style>
 
 <main class="main">
-  <app-child [childCount]="parentCount" />
   <div class="content">
     <div class="left-side">
       <svg
@@ -215,6 +214,12 @@
       </svg>
       <h1>Hello, {{ title() }}</h1>
       <p>Congratulations! Your app is running. 🎉</p>
+
+      <div>
+        <h2>Event Emitter</h2>
+        <p>At AppComponent, count = {{ count }}</p>
+        <app-child [count]="count" (change)="countChange($event)" />
+      </div>
     </div>
     <div class="divider" role="separator" aria-label="Divider"></div>
     <div class="right-side">

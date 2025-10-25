@@ -11,5 +11,9 @@ import { Child } from './child/child';
 export class App {
   protected readonly title = signal('event-emitter-demo');
 
-  parentCount = 9;
+  count = 9;
+
+  countChange(event: any) {
+    this.count = event;
+  }
 }
