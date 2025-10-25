@@ -903,3 +903,121 @@ However, if you navigate to the `node_modules/@angular/cli/` and to the `package
 If you need to customize the Webpack configuration in an Angular project created with Angular CLI, you can use the `ng eject` command. This command will extract the Webpack configuration files from the Angular CLI and place them in your project directory, allowing you to modify them as needed.
 
 > Note: The `ng eject` command has been deprecated in recent versions of Angular CLI. Instead, you can use custom builders or third-party tools like `ngx-build-plus` to extend or modify the Webpack configuration without ejecting.
+
+## Basic Generics
+
+#### Generic Classes
+
+A generic class is a class that can work with different data types while maintaining type safety. It allows you to define a class with a placeholder for the data type, which can be specified when creating an instance of the class.
+
+```typescript
+class GenericNumber<T> {
+  zeroValue: T;
+  add: (x: T, y: T) => T;
+}
+
+let myGenericNumber = new GenericNumber<number>();
+myGenericNumber.zeroValue = 0;
+myGenericNumber.add = function (x, y) {
+  return x + y;
+};
+```
+
+This is a simple example of a generic class that works with numbers, but you may have notices that nothing is restricting it to only numbers. You can create instances of `GenericNumber` with different data types, such as strings or booleans.
+
+```typescript
+let stringGenericNumber = new GenericNumber<string>();
+stringGenericNumber.zeroValue = "";
+stringGenericNumber.add = function (x, y) {
+  return x + y;
+};
+console.log(stringGenericNumber.add(stringGenericNumber.zeroValue, "test")); // Output: "test"
+```
+
+#### Generic Constraints
+
+You sometimes may want to write a generic function that works on a set of types where you have some knowledge about what capabilities those types have. For example, you might want to write a function that works on any type that has a `length` property. To do this, you can use generic constraints.
+
+```typescript
+function loggingIdentity<T>(arg: T): T {
+  console.log(arg.length); // Error: Property 'length' does not exist on type 'T'.
+  return arg;
+}
+```
+
+To fix this error, you can add a constraint to the generic type `T` that requires it to have a `length` property. You can do this by defining an interface that describes the required structure and using it as a constraint. As long as the type has this member, it will satisfy the constraint.
+
+```typescript
+interface Lengthwise {
+  length: number;
+}
+
+function loggingIdentity<T extends Lengthwise>(arg: T): T {
+  console.log(arg.length); // Now we know it has a .length property, so no error
+  return arg;
+}
+```
+
+Because the generic function is now constrained, it will only accept arguments that have a `length` property. For example, passing a string or an array will work, but passing a number will result in a compile-time error.
+
+```typescript
+loggingIdentity("Hello, world!"); // Works, string has a length property
+loggingIdentity([1, 2, 3, 4]); // Works, array has a length property
+loggingIdentity(42); // Error: Argument of type 'number' is not assignable to parameter of type 'Lengthwise'.
+```
+
+#### Using Type Parameters in Generic Constraints
+
+You can also use type parameters in generic constraints to create more flexible and reusable functions. For example, you can create a function that retrieves a property from an object, given the object and the property name. We'd like to ensure that we are not accidentally trying to access a property that doesn't exist on the object. To do this, we can use the `keyof` operator along with generic constraints.
+
+```typescript
+function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
+  return obj[key];
+}
+
+let x = { a: 1, b: 2, c: 3, d: 4 };
+
+getProperty(x, "a"); // okay
+getProperty(x, "m"); // Error: Argument of type '"m"' is not assignable to parameter of type '"a" | "b" | "c" | "d".
+```
+
+#### Using Class Types in Generics
+
+When working with generics in TypeScript, you may sometimes need to refer to the type of a class itself, rather than an instance of the class. This is particularly useful when you want to create factory functions or work with class constructors.
+
+```typescript
+function create<T>(c: { new (): T }): T {
+  return new c();
+}
+```
+
+This `create` function takes a class constructor as an argument and returns a new instance of that class. The type parameter `T` represents the type of the instance that will be created.
+
+```typescript
+class BeeKeeper {
+  hasMask: boolean = true;
+}
+
+class ZooKeeper {
+  nametag: string = "Mikle";
+}
+
+class Animal {
+  numLegs: number = 4;
+}
+
+class Bee extends Animal {
+  keeper: BeeKeeper = new BeeKeeper();
+}
+
+class Lion extends Animal {
+  keeper: ZooKeeper = new ZooKeeper();
+}
+
+function createInstance<A extends Animal>(c: new () => A): A {
+  return new c();
+}
+
+createInstance(Lion).keeper.nametag; // typechecks!
+createInstance(Bee).keeper.hasMask; // typechecks!
+```
