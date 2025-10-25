@@ -351,3 +351,72 @@ export class AppComponent {
 ```
 
 By using event binding, the `showAlert()` method in the component class is called when the button is clicked, triggering an alert message.
+
+## Two Way Data Binding
+
+Two Way Data Binding allows data to flow in both directions, from the component to the template (view) and from the template (view) back to the component. This is typically achieved using the `ngModel` directive or the `[(ngModel)]` syntax.
+
+Two-way data binding is commonly used to listen for events and update the data model accordingly, while also reflecting changes in the data model back to the view.
+
+### Real World Application
+
+- While settings a new password, based on the password rules, dynamic feedback can be provided to the user as they type.
+
+### Implementation
+
+To implement two-way data binding in Angular, you can use the `ngModel` directive or the `[(ngModel)]` syntax.
+
+`app.component.html`
+
+```html
+<label>Enter text:</label>
+<br />
+<input type="text" name="textInput" [(ngModel)]="value" />
+<p>You entered: {{ value }}</p>
+<button (click)="clearValue()">Clear</button>
+```
+
+This HTML template includes an input field bound to the `value` property in the component class using two-way data binding. The entered text is displayed below the input field, and a button is provided to clear the input.
+
+`app.component.ts`
+
+```typescript
+import { Component } from "@angular/core";
+
+@Component({
+  selector: "app-root",
+  templateUrl: "./app.component.html",
+  styleUrls: ["./app.component.css"],
+})
+export class AppComponent {
+  value = "";
+
+  clearValue() {
+    this.value = "";
+  }
+}
+```
+
+In this TypeScript component, the `value` property is initialized as an empty string. The `clearValue()` method sets the `value` property to an empty string when the "Clear" button is clicked, effectively clearing the input field.
+
+By using two-way data binding, any changes made in the input field are automatically reflected in the `value` property of the component class, and vice versa.
+
+`app.module.ts`
+
+```typescript
+import { NgModule } from "@angular/core";
+import { BrowserModule } from "@angular/platform-browser";
+import { FormsModule } from "@angular/forms"; // Import FormsModule
+import { AppComponent } from "./app.component";
+@NgModule({
+  declarations: [AppComponent],
+  imports: [BrowserModule, FormsModule], // Add FormsModule to imports
+  providers: [],
+  bootstrap: [AppComponent],
+})
+export class AppModule {}
+```
+
+In this module, the `FormsModule` is imported from `@angular/forms` and added to the `imports` array of the `NgModule` decorator. This is necessary to use the `ngModel` directive for two-way data binding.
+
+Note: Make sure to import the `FormsModule` in your Angular module to use two-way data binding with `ngModel`.
