@@ -725,3 +725,91 @@ In this example, we use several built-in pipes to format the date, currency, and
 - `currency` pipe formats the price as USD currency.
 - `lowercase`, `uppercase`, and `titlecase` pipes transform the text case of the strings.
 - `user` is a custom pipe that transforms the username to uppercase.
+
+## Custom Pipes
+
+Custom pipes can be created to implement specific data transformations that are not covered by the built-in pipes. To create a custom pipe, we can use the Angular CLI command:
+
+```bash
+ng generate pipe pipe-name
+# or
+ng g p pipe-name
+```
+
+This command generates a pipe file `pipe-name.pipe.ts` with the following content:
+
+```typescript
+import { Pipe, PipeTransform } from "@angular/core";
+@Pipe({
+  name: "pipeName",
+})
+export class PipeNamePipe implements PipeTransform {
+  transform(value: any, ...args: any[]): any {
+    // Transformation logic here
+    return transformedValue;
+  }
+}
+```
+
+In this file, we define a class that implements the `PipeTransform` interface and provides the transformation logic in the `transform` method. The `value` parameter is the input data to be transformed, and `args` are optional arguments that can be passed to the pipe.
+
+To use the custom pipe, we can apply it in the template as follows:
+
+```html
+<p>Custom pipe: {{ value | pipeName:arg1:arg2 }}</p>
+```
+
+In this example, we apply the custom pipe `pipeName` to the `value`, passing optional arguments `arg1` and `arg2` for additional configuration.
+
+### Implementation
+
+We will create a custom pipe called `user` that transforms a username to initials in uppercase.
+
+First, we generate the pipe using the Angular CLI:
+
+```bash
+ng g p user
+```
+
+This generates a file `user.pipe.ts` with the following content:
+
+```typescript
+import { Pipe, PipeTransform } from "@angular/core";
+
+@Pipe({
+  name: "user",
+})
+export class UserPipe implements PipeTransform {
+  transform(value: string, ...args: any[]): string {
+    return value;
+  }
+}
+```
+
+We will modify the `transform` method to convert the username to initials in uppercase.
+
+```typescript
+import { Pipe, PipeTransform } from "@angular/core";
+
+@Pipe({
+  name: "user",
+})
+export class UserPipe implements PipeTransform {
+  transform(value: string, ...args: any[]): string {
+    const names = value.split("_");
+    return names[0][0] + names[1][0];
+  }
+}
+```
+
+In this implementation, the `transform` method splits the username by the underscore character (`_`), extracts the first letter of each part, converts them to uppercase, and returns the initials.
+
+To use the custom `user` pipe, we can apply it in the template as follows:
+
+```html
+<p>Custom pipe: {{ username | user | uppercase }}</p>
+```
+
+In this example, we apply the custom `user` pipe to the `username`, which transforms it to initials, and then we use the built-in `uppercase` pipe to convert the initials to uppercase.
+
+Are pipes processed from left to right or right to left? Pipes are processed from left to right. In the example `{{ username | user | uppercase }}`, the `user` pipe is applied first to transform the `username`, and then the result is passed to the `uppercase` pipe for further transformation.
