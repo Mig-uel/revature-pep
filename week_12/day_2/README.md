@@ -428,3 +428,142 @@ Note: Make sure to import the `FormsModule` in your Angular module to use two-wa
 - One-way data binding allows data to flow in one direction, either from the component to the template or from the template to the component.
 - Two-way data binding allows data to flow in both directions, from the component to the template and from the template back to the component.
   - Any changes made in the model or the view are automatically reflected in the other instantly.
+
+## Structural Directives
+
+Structural directives are used to change the structure of the DOM by adding or removing elements based on certain conditions. Structural directives are prefixed with an asterisk (`*`) followed by the directive name.
+
+There are three built-in structural directives in Angular:
+
+1. `*ngIf`: Conditionally includes or excludes an element from the DOM based on a boolean expression.
+
+- It does not hide the element; it completely removes it from the DOM when the condition is false.
+
+2. `*ngFor`: Repeats an element for each item in a collection.
+
+- It is used to create lists or tables by iterating over an array or collection of data.
+
+3. `*ngSwitch`: Displays one of a set of elements based on a matching expression
+
+- It has a set of nested directives: `*ngSwitchCase` and `*ngSwitchDefault`.
+- `*ngSwitchCase`: Defines a case to match against the switch expression.
+- `*ngSwitchDefault`: Defines a default case to display when no other cases match.
+
+```html
+<select [ngSwitch]="selectedOption">
+  <option *ngSwitchCase="'option1'">Option 1 Selected</option>
+  <option *ngSwitchCase="'option2'">Option 2 Selected</option>
+  <option *ngSwitchDefault>No Option Selected</option>
+</select>
+```
+
+#### `<ng-template>`
+
+Structural directives can also be used with the `<ng-template>` element, which is a container for template content that is not rendered until it is explicitly referenced.
+
+### Real World Application
+
+- Displaying or hiding sections of a webpage based on user's role can be implemented using `*ngIf`.
+- Generating lists of items, such as product listings or user comments, can be achieved using `*ngFor`.
+- Displaying different content based on user selections or conditions can be handled using `*ngSwitch`.
+
+### Implementation
+
+#### `*ngIf` Directive
+
+> The `*ngIf` directive is used to conditionally include or exclude an element from the DOM based on a boolean expression.
+
+`app.component.html`
+
+```html
+<!-- This paragraph will be displayed because the condition is true -->
+<p *ngIf="10 > 5">10 is greater than 5</p>
+<!-- This paragraph will not be displayed because the condition is false -->
+<p *ngIf="5 > 10">5 is greater than 10</p>
+```
+
+We can also use `else` with `*ngIf` to provide an alternative template when the condition is false.
+
+`app.component.html`
+
+```html
+<div *ngIf="isLoggedIn; else loginTemplate">
+  <p>Welcome back, user!</p>
+</div>
+<ng-template #loginTemplate>
+  <p>Please log in to continue.</p>
+</ng-template>
+```
+
+#### `*ngFor` Directive
+
+> The `*ngFor` directive is used to repeat an element for each item in a collection.
+
+`app.component.html`
+
+```html
+<ul>
+  <li *ngFor="let customer of customers">{{ customer.name }}</li>
+</ul>
+```
+
+`app.component.ts`
+
+```typescript
+import { Component } from "@angular/core";
+
+@Component({
+  selector: "app-root",
+  templateUrl: "./app.component.html",
+  styleUrls: ["./app.component.css"],
+})
+export class AppComponent {
+  customers = [
+    { name: "John Doe" },
+    { name: "Jane Smith" },
+    { name: "Alice Johnson" },
+  ];
+}
+```
+
+In this example, the `*ngFor` directive iterates over the `customers` array and creates an `<li>` element for each customer, displaying their name.
+
+#### `*ngSwitch` Directive
+
+> The `*ngSwitch` directive is used to display one of a set of elements based on a matching expression.
+
+`app.component.html`
+
+```html
+<div>Enter the a number between 1 to 5:</div>
+<input type="number" [(ngModel)]="number" />
+
+<div [ngSwitch]="number">
+  <p *ngSwitchCase="1">You selected One</p>
+  <p *ngSwitchCase="2">You selected Two</p>
+  <p *ngSwitchCase="3">You selected Three</p>
+  <p *ngSwitchCase="4">You selected Four</p>
+  <p *ngSwitchCase="5">You selected Five</p>
+  <p *ngSwitchDefault>Please select a number between 1 and 5</p>
+</div>
+```
+
+`app.component.ts`
+
+```typescript
+import { Component } from "@angular/core";
+import { FormsModule } from "@angular/forms";
+
+@Component({
+  selector: "app-root",
+  templateUrl: "./app.component.html",
+  styleUrls: ["./app.component.css"],
+  imports: [FormsModule],
+  standalone: true, // Enable standalone component in Angular 14+
+})
+export class AppComponent {
+  number: number;
+}
+```
+
+In this example, the `*ngSwitch` directive evaluates the `number` property and displays the corresponding message based on the selected number. If the number does not match any case, the default message is shown.
