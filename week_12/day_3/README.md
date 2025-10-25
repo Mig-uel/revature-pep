@@ -49,3 +49,72 @@ In Angular, an `EventEmitter` is a class that is used to create custom events th
 To emit data and events out from a child component to a parent component, we create an instance of `EventEmitter` in the child component and decorate it with `@Output`. The parent component can then listen for these events using event binding syntax.
 
 This instance calls the `emit()` method to send a payload (data) to the parent component when a specific event occurs, such as a button click or form submission, and can be received by an event object `$event` in the parent component's template.
+
+## Component Styles
+
+Angular applications can be styled using standard CSS, SCSS, or other preprocessor languages. CSS stylesheets, selectors, rules, and media queries can be directly applied to Angular components. Each component can have its own styles defined in the `styles` or `styleUrls` properties of the `@Component` decorator.
+
+Ways to add styles to a component:
+
+- `styles` or `styleUrls` properties in the `@Component` decorator.
+- Inline styles using the `style` attribute in the component's template.
+- CSS import statements in the component's stylesheet.
+
+### Implementation
+
+We can use Angular's CLI to create a component with empty styles:
+
+```bash
+ng g c component-name --inline-style
+```
+
+This command generates a new component with an empty styles array in the `@Component` decorator, allowing us to add styles directly within the component file.
+
+```typescript
+import { Component } from "@angular/core";
+
+@Component({
+  selector: "app-root",
+  template: `<h1>App Component</h1>
+    <p>Styles is working</p>
+    <p></p>`,
+  styles: ["p { color: red,}"],
+})
+export class AppComponent {
+  color = "white";
+  title = "Sample";
+  highlightColor(newColor: string): void {
+    this.color = newColor;
+  }
+}
+```
+
+We can also add styles in a separate CSS file and link it using the `styleUrls` property:
+
+```typescript
+import { Component } from "@angular/core";
+
+@Component({
+  selector: "app-root",
+  templateUrl: "./app.component.html",
+  styleUrls: ["./app.component.css"],
+})
+export class AppComponent {
+  color = "white";
+  title = "Sample";
+  highlightColor(newColor: string): void {
+    this.color = newColor;
+  }
+}
+```
+
+And, we can also define styles directly in the template using the `style` attribute:
+
+```html
+<h1>App Component</h1>
+<p style="color: red;">Styles is working</p>
+<p [style.color]="color">This is a sample paragraph.</p>
+<button (click)="highlightColor('yellow')">Yellow</button>
+<button (click)="highlightColor('blue')">Blue</button>
+<button (click)="highlightColor('green')">Green</button>
+```
