@@ -670,3 +670,58 @@ To use this directive, we can apply it to an HTML element in the template:
 ```
 
 In this example, the `HighlightDirective` sets the background color of the host element to yellow using the `Renderer2` service. When applied to a paragraph element, it highlights the background of that paragraph.
+
+## Pipes
+
+Pipes are used to transform data in Angular templates. They take input data and transform it into a desired output format. Pipes can be used in interpolation expressions, property bindings, and other template expressions.
+
+In any full-stack application, the data received from the backend may not always be in the desired format for display in the frontend. Pipes help in transforming this data into a more user-friendly format.
+
+Pipes can be categorized into two types:
+
+1. **Built-in Pipes**: Angular provides several built-in pipes for common data transformations, such as formatting dates, numbers, currencies, and more.
+2. **Custom Pipes**: Developers can create their own custom pipes to implement specific data transformations that are not covered by the built-in pipes.
+
+Data, currency, and percentage formatting are some of the most commonly used built-in pipes in Angular.
+
+**Syntax**: `{{ value | pipeName:arg1:arg2 }}`
+
+- Here, `value` is the data to be transformed, `pipeName` is the name of the pipe to be applied, and `arg1`, `arg2`, etc., are optional arguments that can be passed to the pipe for additional configuration.
+
+### Implementation
+
+`app.component.ts`
+
+```typescript
+import { Component } from "@angular/core";
+
+@Component({
+  selector: "app-root",
+  templateUrl: "./app.component.html",
+  styleUrls: ["./app.component.css"],
+})
+export class AppComponent {
+  title = "Angular Pipes Example";
+  username = "john_doe";
+  today = new Date();
+  price = 333;
+}
+```
+
+`app.component.html`
+
+```html
+<p>Date: {{ today | date: "fullDate" }}</p>
+<p>Price: {{ price | currency: "USD" }}</p>
+<p>Lowercase title: {{ title | lowercase }}</p>
+<p>Uppercase username: {{ username | uppercase }}</p>
+<p>Title case title: {{ title | titlecase }}</p>
+<p>Custom pipe: {{username | user | uppercase}}</p>
+```
+
+In this example, we use several built-in pipes to format the date, currency, and text case.
+
+- `date` pipe formats the date to a full date format.
+- `currency` pipe formats the price as USD currency.
+- `lowercase`, `uppercase`, and `titlecase` pipes transform the text case of the strings.
+- `user` is a custom pipe that transforms the username to uppercase.
