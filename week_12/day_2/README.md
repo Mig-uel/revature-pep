@@ -420,3 +420,11 @@ export class AppModule {}
 In this module, the `FormsModule` is imported from `@angular/forms` and added to the `imports` array of the `NgModule` decorator. This is necessary to use the `ngModel` directive for two-way data binding.
 
 Note: Make sure to import the `FormsModule` in your Angular module to use two-way data binding with `ngModel`.
+
+## Video - Data Binding
+
+- Data binding syncs data between the component (model) and the template (view).
+- Angular supports one-way and two-way data binding.
+- One-way data binding allows data to flow in one direction, either from the component to the template or from the template to the component.
+- Two-way data binding allows data to flow in both directions, from the component to the template and from the template back to the component.
+  - Any changes made in the model or the view are automatically reflected in the other instantly.
