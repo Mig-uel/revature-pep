@@ -132,3 +132,64 @@ The `external-template.component.html` file would contain:
 ```
 
 In this example, the `ExternalTemplateComponent` uses an external HTML file for its template, allowing for better organization and separation of concerns.
+
+## Template Statements
+
+Template statements are used to handle user events in Angular templates. They allow you to bind event handlers to HTML elements, enabling interactivity in your application.
+
+- Template statements use a language similar to JavaScript but the parser for the template statements is not similar to template expressions.
+- The following JavaScript and template expressions are not allows in template statements:
+  - `new`
+  - `this`
+  - `throw`
+  - `return`
+  - `break`
+  - `continue`
+  - `++` and `--` operators
+  - `=`, `+=`, `-=`, `*=`, `/=`, and `%=` operators
+  - Bitwise operators
+
+Syntax:
+
+```html
+<!-- HTML Element -->
+<button (click)="onClick()">Click Me</button>
+<!-- Event Binding -->
+```
+
+In this example, the `(click)` event binding listens for click events on the button element and calls the `onClick()` method defined in the component class when the button is clicked.
+
+### Real World Application
+
+- Submitting data after the submit button is clicked can be implemented using template statements.
+- Incrementing or decrementing a value when a button is clicked can be handled using template statements.
+
+### Implementation
+
+Consider a text which dynamically displays the number of times a button has been clicked.
+
+```html
+<button (click)="countClicks()">Click Me</button>
+<p>You have clicked the button {{ count }} times.</p>
+```
+
+In the component class, you would define the `count` property and the `countClicks()` method:
+
+```typescript
+import { Component } from "@angular/core";
+@Component({
+  selector: "app-click-counter",
+  templateUrl: "./click-counter.component.html",
+  styleUrls: ["./click-counter.component.css"],
+})
+export class ClickCounterComponent {
+  title = "Click Counter";
+  count: number = 0;
+
+  countClicks() {
+    this.count++;
+  }
+}
+```
+
+In this example, each time the button is clicked, the `countClicks()` method increments the `count` property, and the updated count is displayed in the paragraph element.
