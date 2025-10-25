@@ -567,3 +567,106 @@ export class AppComponent {
 ```
 
 In this example, the `*ngSwitch` directive evaluates the `number` property and displays the corresponding message based on the selected number. If the number does not match any case, the default message is shown.
+
+## Attribute Directives
+
+Attribute directives are used to change the appearance or behavior of an element, component, or another directive. Unlike structural directives that change the structure of the DOM, attribute directives modify the attributes of existing elements.
+
+Examples of built-in attribute directives in Angular include:
+
+- `ngClass`: Adds or removes CSS classes based on conditions.
+- `ngStyle`: Adds or removes inline styles based on conditions.
+- `ngModel`: Binds the value of an input element to a property in the component class (also used for two-way data binding).
+
+A custom attribute directive can also be created to implement specific behavior or styling.
+
+```bash
+ng g directive directive-name
+```
+
+#### `ngClass` Directive
+
+The `[ngClass]` directive is used to add or remove CSS classes on an HTML element based on conditions. It can take a string, array, or object as input to determine which classes to apply.
+
+**Syntax**: `<div [ngClass]="value">Content</div>`
+
+The value can be:
+
+- A string: A space-separated list of class names to add.
+- An array: An array of class names to add.
+- An object: An object where the keys are class names and the values are boolean expressions that determine whether to add or remove the class.
+
+**Example**:
+
+```html
+<div [ngClass]="{ 'active': isActive, 'disabled': isDisabled }">
+  This div will have 'active' class if isActive is true and 'disabled' class if
+  isDisabled is true.
+</div>
+```
+
+#### `ngStyle` Directive
+
+The `[ngStyle]` directive is used to add or remove inline styles on an HTML element based on conditions. It takes an object as input, where the keys are CSS property names and the values are the corresponding CSS values.
+
+**Syntax**: `<div [ngStyle]="styles">Content</div>`
+
+**Example**:
+
+```html
+<div [ngStyle]="{ 'color': textColor, 'font-size.px': fontSize }">
+  This div will have dynamic text color and font size.
+</div>
+```
+
+`app.component.ts`
+
+```typescript
+import { Component } from "@angular/core";
+
+@Component({
+  selector: "app-root",
+  templateUrl: "./app.component.html",
+  styleUrls: ["./app.component.css"],
+})
+export class AppComponent {
+  textColor: string = "blue";
+  fontSize: number = 16;
+}
+```
+
+In this example, the `ngStyle` directive dynamically sets the text color and font size of the `<div>` element based on the `textColor` and `fontSize` properties in the component class.
+
+#### Custom Attribute Directive
+
+We can create our own attribute directive to implement specific behavior or styling.
+
+FDor example, when we run the following command:
+
+```bash
+ng g directive highlight
+```
+
+It generates a directive file `highlight.directive.ts` with the following content:
+
+```typescript
+import { Directive, ElementRef, Renderer2 } from "@angular/core";
+@Directive({
+  selector: "[appHighlight]",
+})
+export class HighlightDirective {
+  constructor(private el: ElementRef, private renderer: Renderer2) {
+    this.renderer.setStyle(this.el.nativeElement, "backgroundColor", "yellow");
+  }
+}
+```
+
+This directive highlights the background of the host element in yellow.
+
+To use this directive, we can apply it to an HTML element in the template:
+
+```html
+<p appHighlight>This paragraph will have a yellow background.</p>
+```
+
+In this example, the `HighlightDirective` sets the background color of the host element to yellow using the `Renderer2` service. When applied to a paragraph element, it highlights the background of that paragraph.
