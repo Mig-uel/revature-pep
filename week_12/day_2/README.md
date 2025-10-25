@@ -813,3 +813,55 @@ To use the custom `user` pipe, we can apply it in the template as follows:
 In this example, we apply the custom `user` pipe to the `username`, which transforms it to initials, and then we use the built-in `uppercase` pipe to convert the initials to uppercase.
 
 Are pipes processed from left to right or right to left? Pipes are processed from left to right. In the example `{{ username | user | uppercase }}`, the `user` pipe is applied first to transform the `username`, and then the result is passed to the `uppercase` pipe for further transformation.
+
+## `NgModule` Decorator
+
+The `NgModule` decorator is used to define a module in Angular. A module is a cohesive block of code dedicated to an application domain, a workflow, or a closely related set of capabilities. The `NgModule` decorator provides metadata that tells Angular how to compile and run the module.
+
+Every Angular application has at least one module, the root module, which is typically named `AppModule`. The root module is the entry point of the application and is responsible for bootstrapping the application.
+
+NgModules are TypeScript classes decorated with the `@NgModule` decorator imported from `@angular/core`.
+
+`NgModule` takes metadata and describes how to compile a component's template and how to create an injector at runtime. It identifies the module's own components, directives, and pipes, making some of them public so external components can use them.
+
+The Angular CLI generates the basic structure of the `AppModule` in the `app.module.ts` file when creating a new Angular project.
+
+`@NgModule` metadata properties include:
+
+- `declarations`: An array of components, directives, and pipes that belong to this module.
+- `imports`: An array of other modules whose exported classes are needed by component templates declared in this module.
+- `providers`: An array of services that are available to the entire application.
+- `bootstrap`: An array of components that are bootstrapped when this module is bootstrapped. Typically, this array contains only the root component of the application.
+
+### Implementation
+
+The Angular CLI generates the `AppModule` in the `app.module.ts` file with the following content:
+
+```typescript
+import { BrowserModule } from '@angular/platform browser;
+import { NgModule } from '@angular/core';
+
+import { AppComponent } from './app.component';
+
+// @NgModule decorator with its metadata
+@NgModule({
+  declarations: [AppComponent],
+  imports: [BrowserModule],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule {}
+```
+
+In this file, we import the necessary modules and components, and we define the `AppModule` class decorated with the `@NgModule` decorator. The metadata object passed to the decorator specifies the declarations, imports, providers, and bootstrap components for the module.
+
+#### Angular Project Work Flow
+
+1. The Angular application starts at the `angular.json` file, which contains the configuration settings for the Angular CLI.
+2. The `main.ts` file is the entry point of the application, where the `AppModule` is bootstrapped using the `platformBrowserDynamic().bootstrapModule(AppModule)` method.
+3. The `AppModule` is defined in the `app.module.ts` file, which imports the necessary modules and declares the components used in the application.
+4. The `AppComponent` is the root component of the application, defined in the `app.component.ts` file, and it is bootstrapped in the `AppModule`.
+5. The `index.html` file is the main HTML file that loads the Angular application and contains the root component selector `<app-root>`, which is replaced by the `AppComponent` template during runtime.
+
+Every Angular application has a file named `angular.json` at the root level. This file contains configuration settings for the Angular CLI, including project structure, build options, and other settings.
+While building the application, the builder looks for this file to determine how to compile and bundle the application as well as to find the entry point of the application.
