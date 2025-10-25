@@ -19,3 +19,23 @@ Angular creates a component, renders it, creates and renders its children, check
 7. **ngAfterViewInit**: This hook is called once after the component's view (and its child views) have been initialized.
 8. **ngAfterViewChecked**: This hook is called after every check of the component's view (and its child views).
 9. **ngOnDestroy**: This hook is called just before Angular destroys the component. It is typically used for cleanup tasks, such as unsubscribing from observables or detaching event handlers.
+
+## Sharing Data Between Child and Parent Components
+
+In Angular, data can be shared between child and parent components using `@Input` and `@Output` decorators.
+
+Angular uses `@Input` and `@Output` decorators to flow data between components. We can also use Angular Services to share data between components that do not have a direct parent-child relationship. If we have to pass data into a component, we use `@Input`. If we have to send/emit data out of a component, we use `@Output` with the `EventEmitter` API.
+
+#### `@Input` Decorator
+
+In Angular, the `@Input` decorator is used to define input properties in a child component. These properties allow data to be passed from a parent component to a child component. It marks a class field as an **input property** and supplies configuration metadata. The parent component can bind to these input properties using property binding syntax.
+
+#### `@Output` Decorator
+
+In Angular, a component can emit or send an event to its parent component using the `@Output` decorator along with the `EventEmitter` class. The `@Output` decorator marks a property in a child component as an output property, which means it can emit events that the parent component can listen to.
+
+The child component creates an instance of `EventEmitter` and uses it to emit events. The parent component can then bind to these events using event binding syntax.
+
+#### `EventEmitter` Class
+
+An `EventEmitter` is used to emit custom events synchronously or asynchronously, and register handlers for those events by subscribing to an instance. It is commonly used in Angular components to create custom events that can be listened to by parent components.
