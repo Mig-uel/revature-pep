@@ -73,3 +73,62 @@ ng generate component component-name
 # or
 ng g c component-name
 ```
+
+## Template Overview
+
+Angular templates are HTML files that define the view for a component. They can include Angular-specific syntax for data binding, directives, and pipes to create dynamic and interactive user interfaces.
+
+- A template is a blueprint for a part of the user interface.
+- Templates can be considered as HTML files with additional Angular syntax.
+- A special syntax can be used in templates to add additional functionality to HTML elements.
+- As Angular templates are only a part of the UI, some tags like `<html>`, `<head>`, and `<body>` are not used in Angular templates.
+- Angular templates are associated with components, and each component has its own template.
+- Angular templates is directly related to the component's view.
+
+### Implementation
+
+> Inline Templates
+
+Inline templates are defined directly within the `@Component` decorator using the `template` property. This approach is useful for small components with simple templates.
+
+```typescript
+import { Component } from "@angular/core";
+@Component({
+  selector: "app-inline-template",
+  template: `<h1>Hello, {{ name }}!</h1>`,
+  styles: [
+    `
+      h1 {
+        color: blue;
+      }
+    `,
+  ],
+})
+export class InlineTemplateComponent {
+  name: string = "Angular";
+}
+```
+
+> External Templates
+
+External templates are defined in separate HTML files and linked to the component using the `templateUrl` property. This approach is preferred for larger components with more complex templates.
+
+```typescript
+import { Component } from "@angular/core";
+@Component({
+  selector: "app-external-template",
+  templateUrl: "./external-template.component.html",
+  styleUrls: ["./external-template.component.css"],
+})
+export class ExternalTemplateComponent {
+  name: string = "Angular";
+}
+```
+
+The `external-template.component.html` file would contain:
+
+```html
+<h1>Hello, {{ name }}!</h1>
+```
+
+In this example, the `ExternalTemplateComponent` uses an external HTML file for its template, allowing for better organization and separation of concerns.
