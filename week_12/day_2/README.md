@@ -193,3 +193,51 @@ export class ClickCounterComponent {
 ```
 
 In this example, each time the button is clicked, the `countClicks()` method increments the `count` property, and the updated count is displayed in the paragraph element.
+
+## Video - Angular Templates
+
+### Data Binding
+
+- Template support data injection via interpolation, property binding, class binding, style binding, two-way binding, and event binding.
+
+### Template Expressions
+
+```html
+<img [src]="imageSrc" alt="Image" />
+```
+
+- Property binding is used to bind the value of a property in the component class to an HTML element property.
+- In this case, the `src` attribute of the `<img>` tag is bound to the `imageSrc` property in the component class.
+
+```html
+<li *ngFor="let item of items">{{ item }}</li>
+```
+
+- The `*ngFor` directive is used to iterate over a list of items and create an `<li>` element for each item in the list.
+- The `let item of items` syntax defines a template input variable `item` that represents each item in the `items` array.
+- The `{{ item }}` syntax is used for interpolation to display the value of each item in the list.
+
+```html
+<div #myDiv>This is a sentence</div>
+<p>The above div says: {{ myDiv.innerText }}</p>
+```
+
+- Template reference variables are used to reference HTML elements within the template.
+- In this example, `#myDiv` creates a template reference variable that refers to the `<div>` element.
+- The `{{ myDiv.innerText }}` syntax is used to access the `innerText` property of the referenced `<div>` element and display its content in the `<p>` element.
+
+### Template Input vs. Reference Variables
+
+- Template input variables are used with structural directives like `*ngFor` to represent data items in a collection.
+- Template reference variables are used to reference HTML elements within the template for accessing their properties and methods.
+- Template input variables are defined using the `let` keyword, while template reference variables are defined using the `#` symbol.
+- A template reference variable can be uses anywhere within the template, while a template input variable is only accessible within the scope of the structural directive where it is defined.
+
+### Event Binding
+
+```html
+<button (click)="handleClick()">Click Me</button>
+```
+
+- Event binding is used to bind an event handler method in the component class to an HTML element event.
+- In this example, the `(click)` event binding listens for click events on the button element and calls the `handleClick()` method defined in the component class when the button is clicked.
