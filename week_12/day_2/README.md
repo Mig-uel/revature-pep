@@ -241,3 +241,113 @@ In this example, each time the button is clicked, the `countClicks()` method inc
 
 - Event binding is used to bind an event handler method in the component class to an HTML element event.
 - In this example, the `(click)` event binding listens for click events on the button element and calls the `handleClick()` method defined in the component class when the button is clicked.
+
+## One Way Data Binding
+
+The data transfer between the template and the model (component) is called data binding.
+
+Binding is used to synchronize the view and model using Angular's change detection mechanism.
+
+#### One Way Data Binding
+
+1 Way Data Binding allows data to flow in one direction, either from the component to the template (view) or from the template (view) to the component.
+
+- **From Component to Template (View)**: This is typically done using interpolation (`{{ }}`) or property binding (`[property]="value"`). Changes in the component's data will automatically update the view.
+- **From Template (View) to Component**: This is typically done using event binding (`(event)="handler()"`). User interactions in the view can trigger methods in the component to update its data.
+
+Other types of binding include:
+
+- **Attribute Binding**: Binds an attribute of an HTML element to a property in the component.
+- **Class Binding**: Binds a CSS class to an element based on a condition in the component.
+- **Style Binding**: Binds a style property to an element based on a condition in the component.
+
+### Real World Application
+
+- **Text Interpolation**: Displaying dynamic data in the UI, such as user names, product details, etc.
+- **Property Binding**: Dynamically setting properties of HTML elements, such as disabling/enabling buttons based on certain conditions.
+- **Event Binding**: Handling user interactions, such as button clicks, form submissions, etc.
+
+### Implementation
+
+#### Text Interpolation
+
+> Text interpolation is used to display dynamic data from the component in the template.
+
+`app.component.html`
+
+```html
+<p><b>{{title}}</b></p>
+```
+
+`app.component.ts`
+
+```typescript
+import { Component } from "@angular/core";
+
+@Component({
+  selector: "app-root",
+  templateUrl: "./app.component.html",
+  styleUrls: ["./app.component.css"],
+})
+export class AppComponent {
+  title = "Angular Data Binding Example";
+}
+```
+
+By using text interpolation, the data from the TypeScript component is displayed in the HTML template.
+
+#### Property Binding
+
+> Property binding is used to bind the value of a property in the component class to an HTML element property.
+
+`app.component.html`
+
+```html
+<img [src]="imageSrc" alt="Angular Logo" />
+```
+
+`app.component.ts`
+
+```typescript
+import { Component } from "@angular/core";
+
+@Component({
+  selector: "app-root",
+  templateUrl: "./app.component.html",
+  styleUrls: ["./app.component.css"],
+})
+export class AppComponent {
+  imageSrc = "https://angular.io/assets/images/logos/angular/angular.svg";
+}
+```
+
+By using property binding, the `src` attribute of the `<img>` tag is dynamically set based on the `imageSrc` property in the component class.
+
+#### Event Binding
+
+> Event binding is used to bind an event handler method in the component class to an HTML element event.
+
+`app.component.html`
+
+```html
+<button (click)="showAlert()">Save</button>
+```
+
+`app.component.ts`
+
+```typescript
+import { Component } from "@angular/core";
+
+@Component({
+  selector: "app-root",
+  templateUrl: "./app.component.html",
+  styleUrls: ["./app.component.css"],
+})
+export class AppComponent {
+  showAlert() {
+    alert("Button clicked!");
+  }
+}
+```
+
+By using event binding, the `showAlert()` method in the component class is called when the button is clicked, triggering an alert message.
