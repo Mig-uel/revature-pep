@@ -39,3 +39,13 @@ The child component creates an instance of `EventEmitter` and uses it to emit ev
 #### `EventEmitter` Class
 
 An `EventEmitter` is used to emit custom events synchronously or asynchronously, and register handlers for those events by subscribing to an instance. It is commonly used in Angular components to create custom events that can be listened to by parent components.
+
+## Event Emitters
+
+In Angular, an `EventEmitter` is a class that is used to create custom events that can be emitted by a component and listened to by its parent component. It is part of the `@angular/core` package and is commonly used in conjunction with the `@Output` decorator to facilitate communication between child and parent components.
+
+#### `@Output` with `EventEmitter`
+
+To emit data and events out from a child component to a parent component, we create an instance of `EventEmitter` in the child component and decorate it with `@Output`. The parent component can then listen for these events using event binding syntax.
+
+This instance calls the `emit()` method to send a payload (data) to the parent component when a specific event occurs, such as a button click or form submission, and can be received by an event object `$event` in the parent component's template.
