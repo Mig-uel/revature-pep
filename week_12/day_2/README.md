@@ -865,3 +865,49 @@ In this file, we import the necessary modules and components, and we define the 
 
 Every Angular application has a file named `angular.json` at the root level. This file contains configuration settings for the Angular CLI, including project structure, build options, and other settings.
 While building the application, the builder looks for this file to determine how to compile and bundle the application as well as to find the entry point of the application.
+
+## Video - Angular Directives
+
+- `NgModule` decorator is used to define a module in Angular.
+- Its purpose is to configure and define module properties such as declarations, imports, providers, and bootstrap components.
+
+```typescript
+@NgModule({
+  declarations: [AppComponent],
+  imports: [BrowserModule],
+  providers: [],
+  bootstrap: [AppComponent],
+})
+export class AppModule {}
+```
+
+- `@Component` decorator is used to define a component in Angular.
+- Its purpose is to configure and define component properties such as selector, template, and styles.
+- Metadata options for `@Component` include:
+  - `selector`: A CSS selector that identifies this component in a template.
+  - `templateUrl`: The location of the component's template file.
+  - `styleUrls`: An array of URLs to stylesheets to be applied to this component's view.
+  - `standalone`: A boolean value that indicates whether the component is a standalone component (available in Angular 14+).
+
+```typescript
+@Component({
+  selector: "app-root",
+  templateUrl: "./app.component.html",
+  styleUrls: ["./app.component.css"],
+  standalone: true, // Enable standalone component in Angular 14+
+})
+export class AppComponent {
+  title = "my first angular app";
+}
+```
+
+- One-way data binding allows data to flow in one direction, either from the component to the template or from the template to the component.
+- The component changes update the view (template) but not vice versa.
+- Two-way data binding allows data to flow in both directions, from the component to the template and from the template back to the component.
+- Any changes made in the model or the view are automatically reflected in the other instantly.
+- It allows for real-time synchronization between the component and the template.
+
+- Structural directives change the structure of the DOM by adding or removing elements based on certain conditions.
+- Examples of structural directives include `*ngIf`, `*ngFor`, and `*ngSwitch`.
+- Attribute directives change the appearance or behavior of an element, component, or another directive.
+- Examples of attribute directives include `ngClass`, `ngStyle`, and custom attribute directives.
