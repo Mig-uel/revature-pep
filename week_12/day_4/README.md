@@ -103,3 +103,25 @@ const routes: Routes = [
 })
 export class AppRoutingModule {}
 ```
+
+## Services and Dependency Injection
+
+A service in Angular is a class that provides specific functionality that can be shared across components. Services are typically used for tasks such as data fetching, business logic, and state management.
+
+Dependency Injection (DI) is a design pattern used in Angular to provide components with their dependencies rather than having the components create them. This promotes loose coupling and makes the code more modular and testable.
+
+A service can be created and injected in the following way:
+
+- Create a class and decorate it with `@Injectable()`.
+- Register the service in a module or component using the `providers` array.
+- We can add the service tho the `providers` array property in either:
+  - The `@NgModule` decorator of a module (e.g., `AppModule`) which makes the service available application-wide.
+  - The `@Component` decorator of a component which makes the service available only to that component and its child components.
+- Inject the service into a component or another service using the constructor.
+  - We achieve dependency injection by adding the service as a parameter in the constructor of the component or service where it is needed.
+
+```typescript
+export class MyComponent {
+  constructor(private myService: MyService) {}
+}
+```
