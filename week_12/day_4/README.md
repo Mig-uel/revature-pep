@@ -548,3 +548,102 @@ ng test
 ```
 
 This command will start the Karma test runner, which will execute all the tests defined in your project using the Jasmine testing framework. The tests will run in the specified browsers (e.g., Chrome) and display the results in the console or a browser window.
+
+## Jasmine
+
+Jasmine is a popular behavior-driven development (BDD) testing framework for JavaScript. It provides a clean and easy-to-read syntax for writing tests, making it a great choice for testing Angular applications. Jasmine is often used in conjunction with Karma, a test runner that executes the tests in various browsers.
+
+Jasmine allows developers to write unit tests, integration tests, and end-to-end tests for their code. It provides features such as spies, matchers, and asynchronous testing support, making it a powerful tool for ensuring code quality and reliability.
+
+Three main components of Jasmine:
+
+- A library with classes and functions for constructing tests.
+- A test execution environment that runs the tests and reports the results.
+- A reporting engine that formats and displays the test results.
+
+In Jasmine, every test consists of one or more suites and each suite consists of one or more specifications (specs). A spec is a single test case that checks a specific behavior or functionality of the code being tested.
+
+Suites and specs are defined as follows:
+
+```typescript
+describe("Suite Name", () => {
+  it("Spec Name", () => {
+    // Test code goes here
+  });
+});
+```
+
+### Implementation
+
+We will test a function that displays a welcome message:
+
+`welcome.ts` file:
+
+```typescript
+export function welcomeMessage(name: string): string {
+  return `Welcome, ${name}!`;
+}
+```
+
+`welcome.spec.ts` file:
+
+**Note**: every testing file should have a `.spec.ts` extension.
+
+```typescript
+import { welcomeMessage } from "./welcome";
+
+// Test Suite named "welcome"
+describe("welcome" () => {
+  // Spec named "should return the correct welcome message"
+  it("should return the correct welcome message", () => {
+    const name = "Alice";
+    const expectedMessage = "Welcome, Alice!";
+    const result = welcomeMessage(name);
+    expect(result).toBe(expectedMessage); // Assertion
+  });
+})
+```
+
+`expect()` is used to create an expectation for a value. In this case, we expect the result of the `welcomeMessage` function to be equal to the expected message.
+
+- `toBe()` is a matcher that checks for strict equality between the actual value and the expected value.
+
+---
+
+We will test a function that returns `0` if number is negative and increment the number by `1` if it is positive:
+
+`compute.ts` file:
+
+```typescript
+export function compute(num: number): number {
+  if (num < 0) return 0;
+
+  return num + 1;
+}
+```
+
+`compute.spec.ts` file:
+
+```typescript
+import { compute } from "./compute";
+
+describe("compute", () => {
+  it("should return 0 for negative numbers", () => {
+    const result = compute(-5);
+    expect(result).toBe(0);
+  });
+
+  it("should increment positive numbers by 1", () => {
+    const result = compute(5);
+    expect(result).toBe(6);
+  });
+
+  it("should return 1 for zero", () => {
+    const result = compute(0);
+    expect(result).toBe(1);
+  });
+});
+```
+
+- `toBe()` internally uses the `===` operator to compare the actual and expected values for strict equality. It is used to match the actual value against the expected value in tests.
+- However, for comparing objects or arrays, `toEqual()` should be used instead of `toBe()`, as it checks for deep equality rather than reference equality.
