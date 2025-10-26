@@ -779,3 +779,13 @@ ng test
 ```
 
 This command will start the Karma test runner, which will execute all the tests defined in your project using the Jasmine testing framework. The tests will run in the specified browsers (e.g., Chrome) and display the results in the console or a browser window.
+
+## Routing and Navigation
+
+In Single Page Applications (SPAs), only one page is requested from the server, and it provides multiple views dynamically rather than loading new pages from the server.
+
+The Router mechanism in Angular enables navigation from one view to another as users perform application tasks. It interprets a browser URL as an instruction to navigate to a client-generated view.
+
+Angular provides a `RouterModule` that allows developers to define routes and manage navigation within their applications. The router defines the navigation paths of views and maps them to the corresponding components while intercepting URL changes.
+
+A routing component imports the `RouterModule`, and its template contains a `<router-outlet>` element that acts as a placeholder for the views.
