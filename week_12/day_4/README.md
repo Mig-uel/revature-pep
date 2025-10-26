@@ -242,3 +242,8 @@ export class EmployeeService {
   }
 }
 ```
+
+## Pub-Sub Design Pattern
+
+The Publish-Subscribe (Pub-Sub) design pattern is a messaging pattern where senders (publishers) send messages without knowing who will receive them (subscribers). Subscribers express interest in specific types of messages and receive them when they are published.
+This pattern promotes loose coupling between components, as publishers and subscribers do not need to be aware of each other. It is commonly used in event-driven architectures, messaging systems, and real-time applications.
