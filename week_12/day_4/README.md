@@ -400,3 +400,83 @@ const subscription = observable.subscribe((x) => console.log(x));
 // Later, when you want to stop receiving values
 subscription.unsubscribe();
 ```
+
+## RxJS Subjects
+
+RxJS Subjects are a special type of Observable that allows values to be multicasted to many Observers. They are both an Observable and an Observer, meaning they can emit values and also subscribe to other Observables.
+
+- Every Subject is an Observable. A Subject can be subscribed providing an observer. From the perspective of the Observer, it is ambiguous to tell whether the Observable execution is coming from a Subject or a regular Observable. In simple terms, a Subject is like an event emitter.
+- Every Subject is an Observer. It is an object with methods `next(value)`, `error(err)`, and `complete()` that can be used to feed a value to the Subject and it will be broadcast to all its subscribers.
+
+### Implementation
+
+Implementation of a Subject as an Observable that multicasts values to multiple subscribers:
+
+```typescript
+import { Subject } from "rxjs";
+
+const subject = new Subject<number>();
+
+// Subscriber 1
+subject.subscribe({
+  next: (v) => console.log(`Subscriber 1: ${v}`),
+});
+
+// Subscriber 2
+subject.subscribe({
+  next: (v) => console.log(`Subscriber 2: ${v}`),
+});
+
+// Emit values
+subject.next(1);
+subject.next(2);
+subject.next(3);
+subject.complete();
+```
+
+The output of the above code will be:
+
+```plaintext
+Subscriber 1: 1
+Subscriber 2: 1
+Subscriber 1: 2
+Subscriber 2: 2
+Subscriber 1: 3
+Subscriber 2: 3
+```
+
+---
+
+Implementation of a Subject as an Observer that receives values from another Observable and multicasts them to its subscribers:
+
+```typescript
+import { Subject, from } from "rxjs";
+
+const subject = new Subject<number>();
+
+// Subscriber 1
+subject.subscribe({
+  next: (v) => console.log(`Subscriber 1: ${v}`),
+});
+
+// Subscriber 2
+subject.subscribe({
+  next: (v) => console.log(`Subscriber 2: ${v}`),
+});
+
+const observable = from([1, 2, 3]);
+
+// Subject subscribes to the Observable
+observable.subscribe(subject);
+```
+
+The output of the above code will be:
+
+```plaintext
+Subscriber 1: 1
+Subscriber 2: 1
+Subscriber 1: 2
+Subscriber 2: 2
+Subscriber 1: 3
+Subscriber 2: 3
+```
