@@ -247,3 +247,156 @@ export class EmployeeService {
 
 The Publish-Subscribe (Pub-Sub) design pattern is a messaging pattern where senders (publishers) send messages without knowing who will receive them (subscribers). Subscribers express interest in specific types of messages and receive them when they are published.
 This pattern promotes loose coupling between components, as publishers and subscribers do not need to be aware of each other. It is commonly used in event-driven architectures, messaging systems, and real-time applications.
+
+## RxJS Observables
+
+#### Observer Design Pattern
+
+The Observer design pattern is a behavioral design pattern that defines a one-to-many dependency between objects. In this pattern, an object (the subject) maintains a list of its dependents (observers) and notifies them automatically of any state changes, usually by calling one of their methods.
+
+When the subject's state changes, it sends a notification to all registered observers, allowing them to update themselves accordingly.
+
+The two main strategies in the Observer pattern are:
+
+- Push Model: The subject pushes updates to the observers whenever there is a change in its state. Observers receive the updated data directly from the subject.
+- Pull Model: Observers pull updates from the subject when they need them. The subject does not actively notify observers; instead, observers request the data when required.
+
+#### RxJS Observables
+
+RxJS (Reactive Extensions for JavaScript) is the most popular library for the Observer design pattern in JavaScript and TypeScript. It provides a powerful way to work with asynchronous data streams using Observables. The data can be:
+
+- Observable: An invokable collection of future values or events.
+- Observer: A collection of callbacks that know how to listen to values delivered by the Observable.
+- Subscription: Represents the execution of an Observable, primarily used to cancel the execution.
+- Operators: Pure functions that enable a functional programming style of dealing with collections with operations like map, filter, concat, etc.
+- Subject: A special type of Observable that allows values to be multicasted to many Observers.
+- Schedulers: Define the execution context for Observables, allowing control over concurrency and timing.
+
+### Implementation
+
+The following is the simple implementation of a button when clicked, it sends a `console.log('Button Clicked')` message using RxJS Observables.
+
+```typescript
+const button = document.querySelector("button");
+button.addEventListener("click", () => {
+  console.log("Button Clicked");
+});
+```
+
+The above implementation can be achieved using RxJS Observables as shown below:
+
+```typescript
+const button = document.querySelector("button");
+Rx.Observable.fromEvent(button, "click").subscribe(() => {
+  console.log("Button Clicked");
+});
+```
+
+The difference between the two implementations:
+
+- `Rx.Observable.fromEvent(button, "click")` is the interface that listens for the button click event and creates an Observable from it.
+- A callback function receives notification of the click event and logs the message to the console (observer).
+- We call our Observable, passing it the Observer callback function (subscription).
+
+#### Methods to Create An Observable
+
+- Multiple values:
+
+```typescript
+const observable = Rx.Observable.of(1, 2, 3, 4, 5);
+```
+
+- An array:
+
+```typescript
+const observable = Rx.Observable.from([1, 2, 3, 4, 5]);
+```
+
+- An event:
+
+```typescript
+const observable = Rx.Observable.fromEvent(
+  document.querySelector("button"),
+  "click"
+);
+```
+
+- A promise:
+
+```typescript
+const observable = Rx.Observable.fromPromise(
+  fetch("https://api.example.com/data")
+);
+```
+
+- A function:
+
+```typescript
+const observable = Rx.Observable.create((observer) =>
+  observer.next("Hello World")
+);
+```
+
+#### Subscribing to Observables and Executing the Observable
+
+Subscribing to an Observable is like calling a function. When you subscribe to an Observable, you provide an Observer (a set of callback functions) that will handle the data emitted by the Observable.
+
+There are three types of values an Observable Execution can emit:
+
+- Next: Represents a value that is emitted by the Observable.
+- Error: Represents an error that occurred during the Observable execution.
+- Complete: Indicates that the Observable has finished emitting values.
+
+```typescript
+import { Observable } from "rxjs";
+
+// Create an Observable that emits multiple values over time
+const observable = new Observable((subscriber) => {
+  subscriber.next("First value");
+  subscriber.next("Second value");
+  subscriber.next("Third value");
+  setTimeout(() => {
+    subscriber.next("Fourth value after 1 second");
+    subscriber.complete();
+  }, 1000);
+});
+
+console.log("Before subscribing to the Observable");
+
+observable.subscribe({
+  next(value) {
+    console.log("Received value:", value);
+  },
+  error(err) {
+    console.error("Error occurred:", err);
+  },
+  complete() {
+    console.log("Observable completed");
+  },
+});
+
+console.log("After subscribing to the Observable");
+```
+
+The output of the above code will be:
+
+```
+Before subscribing to the Observable
+Received value: First value
+Received value: Second value
+Received value: Third value
+After subscribing to the Observable
+Received value: Fourth value after 1 second
+Observable completed
+```
+
+#### Disposing Observables
+
+Disposing of an Observable is important to prevent memory leaks and unnecessary processing, especially in long-running applications or when dealing with user interactions. When you subscribe to an Observable, it returns a Subscription object that represents the execution of the Observable. You can use this Subscription object to unsubscribe from the Observable when you no longer need it.
+
+```typescript
+const subscription = observable.subscribe((x) => console.log(x));
+
+// Later, when you want to stop receiving values
+subscription.unsubscribe();
+```
