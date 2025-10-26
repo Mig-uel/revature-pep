@@ -480,3 +480,71 @@ Subscriber 2: 2
 Subscriber 1: 3
 Subscriber 2: 3
 ```
+
+## Karma
+
+Karma is a test runner developed by the AngularJS team. It is designed to make testing JavaScript code easier by providing a simple and efficient way to run tests in multiple browsers. Karma allows developers to write tests using popular testing frameworks like Jasmine, Mocha, or QUnit and execute them in real browsers or headless browsers.
+
+Karma provides features such as automatic test execution on file changes, support for multiple browsers, and integration with continuous integration tools. It is commonly used in Angular projects to ensure code quality and reliability through automated testing.
+
+Angular downloads and installs all the necessary dependencies for Karma and Jasmine when you create a new Angular project using the Angular CLI.
+
+Karma uses a configuration file named `karma.conf.js` to define how tests should be run. This file specifies the testing framework, browsers to use, files to include, and other settings.
+
+`karma.conf.js` file example:
+
+```javascript
+// Karma configuration file, see link for more information
+// https://karma-runner.github.io/1.0/config/configuration-file.html
+
+module.exports = function (config) {
+  config.set({
+    basePath: "",
+    frameworks: ["jasmine", "@angular-devkit/build-angular"],
+    plugins: [
+      require("karma-jasmine"),
+      require("karma-chrome-launcher"),
+      require("karma-jasmine-html-reporter"),
+      require("karma-coverage"),
+      require("@angular-devkit/build-angular/plugins/karma"),
+    ],
+    client: {
+      jasmine: {
+        // you can add configuration options for Jasmine here
+        // the possible options are listed at https://jasmine.github.io/api/edge/Configuration.html
+        // for example, you can disable the random execution with `random: false`
+        // or set a specific seed with `seed: 4321`
+      },
+      clearContext: false, // leave Jasmine Spec Runner output visible in browser
+    },
+    jasmineHtmlReporter: {
+      suppressAll: true, // removes the duplicated traces
+    },
+    coverageReporter: {
+      dir: require("path").join(__dirname, "./coverage/testing"),
+      subdir: ".",
+      reporters: [{ type: "html" }, { type: "text-summary" }],
+    },
+    reporters: ["progress", "kjhtml"],
+    port: 9876,
+    colors: true,
+    logLevel: config.LOG_INFO,
+    autoWatch: true,
+    browsers: ["Chrome"],
+    singleRun: false,
+    restartOnFileChange: true,
+  });
+};
+```
+
+In Angular, Karma and Jasmine are used to perform unit tests, integration tests, and end-to-end tests to ensure the quality and reliability of the application code.
+
+### Implementation
+
+To run tests using Karma in an Angular project, you can use the Angular CLI command:
+
+```bash
+ng test
+```
+
+This command will start the Karma test runner, which will execute all the tests defined in your project using the Jasmine testing framework. The tests will run in the specified browsers (e.g., Chrome) and display the results in the console or a browser window.
