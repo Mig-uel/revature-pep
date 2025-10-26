@@ -647,3 +647,135 @@ describe("compute", () => {
 
 - `toBe()` internally uses the `===` operator to compare the actual and expected values for strict equality. It is used to match the actual value against the expected value in tests.
 - However, for comparing objects or arrays, `toEqual()` should be used instead of `toBe()`, as it checks for deep equality rather than reference equality.
+
+## Testing in Angular With Jasmine and Karma
+
+#### Automated Testing
+
+Automated testing is a software testing technique that involves using specialized tools and frameworks to execute tests on software applications automatically. The primary goal of automated testing is to improve the efficiency, accuracy, and coverage of the testing process by reducing the need for manual intervention.
+
+Automated tests can be run repeatedly and consistently, making it easier to identify bugs and regressions in the codebase. They can also help ensure that new features or changes do not break existing functionality.
+
+In Angular, automated testing is typically performed using the Jasmine testing framework in combination with the Karma test runner. Jasmine provides a clean and easy-to-read syntax for writing tests, while Karma allows developers to run tests in multiple browsers and environments.
+
+When you create a new Angular project using the Angular CLI, it automatically sets up the necessary dependencies for Jasmine and Karma, making it easy to get started with automated testing in your Angular applications.
+
+#### Types of Testing
+
+- Unit Testing
+  - Angular components are tested in isolation, without external dependencies (e.g., services, HTTP requests) using unit tests.
+- Integration Testing
+  - Angular components are tested together with their dependencies to ensure they work correctly as a group using integration tests.
+  - Integration tests verify the interaction between different components and services in the application.
+  - They are run on a component with a template and a mock service.
+- End-to-End (E2E) Testing
+  - The entire Angular application is tested from the user's perspective using end-to-end tests.
+  - E2E tests simulate real user interactions and verify that the application behaves as expected in a real browser environment.
+  - E2E tests are very slow and a even a small change can break them.
+
+**Note**: Unit tests and integration tests are mostly preferred over E2E tests due to their speed and reliability.
+
+#### Testing in Angular
+
+In Angular, Karma is the test runner and Jasmine is the testing framework used for writing and executing tests.
+
+Karma checks for `component.spec.ts` files in the Angular project and runs the tests defined in those files using Jasmine.
+
+Jasmine provides a clean and easy-to-read syntax for writing tests, making it a great choice for testing Angular applications. It allows developers to write unit tests, integration tests, and end-to-end tests for their code.
+
+### Implementation
+
+Consider a component named `product`. This component has two methods, `increment` and `decrement`, which increase and decrease the product quantity respectively.
+
+`product.component.ts` file:
+
+```typescript
+import { Component } from "@angular/core";
+
+@Component({
+  selector: "app-product",
+  templateUrl: "./product.component.html",
+  styleUrls: ["./product.component.css"],
+})
+export class ProductComponent {
+  quantity: number = 0;
+
+  increment(): void {
+    this.quantity++;
+  }
+
+  decrement(): void {
+    if (this.quantity > 0) {
+      this.quantity--;
+    }
+  }
+}
+```
+
+A unit test is created for the `ProductComponent` to test the `increment` and `decrement` methods.
+
+The following statements are part of every unit test:
+
+- Arrange
+- Act
+- Assert
+
+Two tests are created in the `product.component.spec.ts` file to verify the functionality of the `increment` and `decrement` methods.
+
+- Arrange: The `ProductComponent` is instantiated in the `beforeEach` block to set up the test environment.
+- Act: The `increment` and `decrement` methods are called in their respective test cases.
+- Assert: The `expect` function is used to verify that the `quantity` property has the expected value after calling the methods.
+
+`product.component.spec.ts` file:
+
+```typescript
+import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { ProductComponent } from "./product.component";
+
+describe("ProductComponent", () => {
+  let component: ProductComponent;
+  let fixture: ComponentFixture<ProductComponent>;
+
+  beforeEach(async () => {
+    // Arrange
+    component = new ProductComponent();
+    await TestBed.configureTestingModule({
+      declarations: [ProductComponent],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(ProductComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  // Test for component instantiation
+  it("should create", () => {
+    expect(component).toBeTruthy();
+  });
+
+  // Test for increment method
+  it("should increment quantity", () => {
+    // Act
+    component.increment();
+    // Assert
+    expect(component.quantity).toBe(1);
+  });
+
+  // Test for decrement method
+  it("should decrement quantity", () => {
+    // Act
+    component.increment(); // quantity = 1
+    component.decrement(); // quantity = 0
+    // Assert
+    expect(component.quantity).toBe(0);
+  });
+});
+```
+
+We can run the tests using the Angular CLI command:
+
+```bash
+ng test
+```
+
+This command will start the Karma test runner, which will execute all the tests defined in your project using the Jasmine testing framework. The tests will run in the specified browsers (e.g., Chrome) and display the results in the console or a browser window.
